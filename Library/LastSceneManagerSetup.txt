@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/donut.unity
+  isLoaded: 1
+  isActive: 1
