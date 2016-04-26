@@ -47,18 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\OSPNative\editor\ONSPAudioSourceEditor.cs" />
      <Compile Include="Assets\OSPNative\editor\ONSPReflectionCustomGUI.cs" />
-     <Compile Include="Assets\SteamVR\Editor\SteamVR_Editor.cs" />
-     <Compile Include="Assets\SteamVR\Editor\SteamVR_RenderModelEditor.cs" />
-     <Compile Include="Assets\SteamVR\Editor\SteamVR_Settings.cs" />
-     <Compile Include="Assets\SteamVR\Editor\SteamVR_SkyboxEditor.cs" />
-     <Compile Include="Assets\SteamVR\Editor\SteamVR_Update.cs" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_HiddenArea.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Overlay.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Blit.shader" />
      <None Include="Assets\Resources\donut.shader" />
-     <None Include="Assets\SteamVR\readme.txt" />
      <None Include="Assets\Resources\donut.compute" />
  <Reference Include="Assembly-UnityScript">
  <HintPath>C:/Users/cabbibo/Desktop/sharedDonut/Library/ScriptAssemblies/Assembly-UnityScript.dll</HintPath>
@@ -95,8 +84,6 @@
  </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{63845B88-3B81-7495-C236-3ABB9B1FF729}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{B8BB0762-7E27-A674-030B-B3242E6F54E7}</Project>      <Name>Assembly-CSharp</Name>    </ProjectReference>
   </ItemGroup>

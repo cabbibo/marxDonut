@@ -45,46 +45,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\OSPNative\scenes\Standard Assets\Character Controllers\Sources\Scripts\MouseLook.cs" />
-     <Compile Include="Assets\OSPNative\scripts\ONSPAudioSource.cs" />
      <Compile Include="Assets\Scripts\AssignStructs.cs" />
      <Compile Include="Assets\Scripts\Donut.cs" />
+     <Compile Include="Assets\Scripts\ObjExporter.cs" />
      <Compile Include="Assets\Scripts\PostRenderEvent.cs" />
-     <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
-     <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
-     <Compile Include="Assets\SteamVR\Extras\SteamVR_Teleporter.cs" />
-     <Compile Include="Assets\SteamVR\Extras\SteamVR_TestThrow.cs" />
-     <Compile Include="Assets\SteamVR\Extras\SteamVR_TrackedController.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Camera.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_CameraFlip.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_CameraMask.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Controller.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_ControllerManager.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Fade.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Frustum.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_GameView.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_IK.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_LoadLevel.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Menu.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Overlay.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_PlayArea.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Render.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_RenderModel.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Skybox.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Stats.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Status.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_StatusText.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_TestController.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_TrackedObject.cs" />
-     <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_HiddenArea.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Overlay.shader" />
-     <None Include="Assets\SteamVR\Resources\SteamVR_Blit.shader" />
      <None Include="Assets\Resources\donut.shader" />
-     <None Include="Assets\SteamVR\readme.txt" />
      <None Include="Assets\Resources\donut.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
@@ -92,10 +57,6 @@
  <Reference Include="UnityEngine.Networking">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{63845B88-3B81-7495-C236-3ABB9B1FF729}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

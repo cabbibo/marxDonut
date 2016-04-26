@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+using System.IO;
+using System.Text;
+
 public class Donut : MonoBehaviour {
 
 
@@ -25,6 +29,8 @@ public class Donut : MonoBehaviour {
     public float tubeRadius = .6f;
     public float shellRadius = .8f;
 
+    private float[] inValues;
+
 
     private ComputeBuffer _vertBuffer;
     private ComputeBuffer _ogBuffer;
@@ -47,7 +53,7 @@ public class Donut : MonoBehaviour {
     private int vertexCount { get { return gridX * gridY * gridZ; } }
 
 
-    private int ribbonWidth = 256;
+    private int ribbonWidth = 1024;
     private int ribbonLength { get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
     
 
@@ -57,6 +63,7 @@ public class Donut : MonoBehaviour {
     private Vector3 p1;
     private Vector3 p2;
 
+    private bool objMade = false;
     private float[] transValues = new float[32];
     private float[] handValues;
 
@@ -64,6 +71,9 @@ public class Donut : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+
+
+        
         handValues = new float[ 4 * AssignStructs.HandStructSize ];
 
         createBuffers();
@@ -77,19 +87,139 @@ public class Donut : MonoBehaviour {
 
         //TODO:
         //Figure out how to add this script to the main camera!
-        PostRenderEvent.PostRender += Render;
+        Camera.onPostRender += Render;
+
+
     
+    }
+
+    void Update(){
+
+        //print(Input.GetKey ("a"));
+        if( Input.GetKey(KeyCode.Space)){
+            createOBJ();
+        }
+
+        Dispatch();
+
     }
 
     //When this GameObject is disabled we must release the buffers or else Unity complains.
     private void OnDisable(){
-      ReleaseBuffer();
+        Camera.onPostRender -= Render;
+        ReleaseBuffer();
     }
 
       //For some reason I made this method to create a material from the attached shader.
     private void createMaterial(){
 
       material = new Material( shader );
+
+    }
+
+    private int getID( int id  ){
+
+        int b = (int)Mathf.Floor( id / 6 );
+        int tri  = id % 6;
+        int row = (int)Mathf.Floor( b / ribbonWidth );
+        int col = (b) % ribbonWidth;
+
+        int rowU = (row + 1) % ribbonLength;
+        int colU = (col + 1) % ribbonWidth;
+
+        int rDoID = row * ribbonWidth;
+        int rUpID = rowU * ribbonWidth;
+
+        int cDoID = col;
+        int cUpID = colU;
+
+        int fID = 0;
+
+        if( tri == 0 ){
+            fID = rDoID + cDoID;
+        }else if( tri == 1 ){
+            fID = rUpID + cUpID;
+        }else if( tri == 2 ){
+            fID = rUpID + cDoID;
+        }else if( tri == 3 ){
+            fID = rDoID + cDoID;
+        }else if( tri == 4 ){
+            fID = rDoID + cUpID;
+        }else if( tri == 5 ){
+            
+            fID = rUpID + cUpID;
+        }else{
+            fID = 0;
+        }
+
+        return fID;
+
+    }
+
+    static void WriteToFile(string s, string filename)
+    {
+        var sr = File.CreateText(filename);
+        sr.WriteLine(s);
+        sr.Close();
+    }
+
+
+    void createOBJ(){
+
+        if( objMade == false ){
+            objMade = true;
+
+            _vertBuffer.GetData( inValues );
+
+            print( inValues[0] );
+
+            int numVertsTotal = ribbonWidth * 3 * 2 * (ribbonLength);
+
+            
+            AssignStructs.MeshInfo mesh = new AssignStructs.MeshInfo();
+
+            Vector3[] verts = new Vector3[ ribbonLength * ribbonWidth ];
+            Vector3[] norms = new Vector3[ ribbonLength * ribbonWidth ];
+            Vector2[] uvs   = new Vector2[ ribbonLength * ribbonWidth ];
+            int[] triangles = new int[numVertsTotal];
+
+            for( int i = 0; i < ribbonWidth * ribbonLength; i++ ){
+                
+                int baseID = i * AssignStructs.VertC4StructSize;
+
+                Vector3 v = new Vector3( inValues[baseID+0] , inValues[baseID+1], inValues[baseID+2]);
+                Vector3 n = new Vector3( inValues[baseID+6] , inValues[baseID+7], inValues[baseID+8]);
+                Vector2 u = new Vector2( inValues[baseID+9] , inValues[baseID+10]);
+
+                verts[i] = v;
+                norms[i] = n;
+                uvs[i]   = u;
+
+            }
+
+            for( int i = 0; i < numVertsTotal; i++ ){
+                triangles[i] = getID( i );
+            }
+
+            mesh.vertices = verts;
+            mesh.normals = norms;
+            mesh.uvs = uvs;
+            mesh.triangles = triangles;
+            mesh.name = "DONTUTEST";
+
+
+        
+
+            //string objString = makeString( mesh , transform );
+            //print( objString );
+            //WriteToFile( objString , "DONUT_TEST.obj");
+
+            ObjExporter.MeshToFile( mesh );
+
+        }
+
+
+
 
     }
  
@@ -105,10 +235,10 @@ public class Donut : MonoBehaviour {
 
         //After all rendering is complete we dispatch the compute shader and then set the material before drawing with DrawProcedural
     //this just draws the "mesh" as a set of points
-    private void Render() {
-     
-        Dispatch();
+    public void Render(Camera camera) {
 
+
+        
         int numVertsTotal = ribbonWidth * 3 * 2 * (ribbonLength);
 
         material.SetPass(0);
@@ -154,7 +284,7 @@ public class Donut : MonoBehaviour {
       _transBuffer = new ComputeBuffer( 32 ,  sizeof(float));
       _handBuffer = new ComputeBuffer( 4 , AssignStructs.HandStructSize * sizeof(float));
       
-      float[] inValues = new float[ AssignStructs.VertC4StructSize * vertexCount];
+      inValues = new float[ AssignStructs.VertC4StructSize * vertexCount];
       float[] ogValues = new float[ 3         * vertexCount];
 
       // Used for assigning to our buffer;
