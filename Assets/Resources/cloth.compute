@@ -1,0 +1,275 @@
+﻿#pragma kernel CSMain
+ 
+#define threadX 8
+#define threadY 8
+#define threadZ 8
+
+#define strideX 8
+#define strideY 8
+#define strideZ 8
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+ 
+//Shaping Factors;
+#define _LengthOfConnectionSprings       0.0001
+#define _ConnectionSpringStrength        .3
+#define _MaxVel                          3.5
+#define _MaxForce                        3.2
+#define _ForceMultiplier                 0.001
+
+#define _Dampening                       .9
+#define _HandRepelRadius                 10.0
+#define _HandRepelStrength               1.5
+
+#define _ReturnSpringStrength            10.1
+
+
+
+//low level
+float _Time;
+float _Delta;
+
+
+float  _Drawing;
+int _RibbonWidth;
+int _RibbonLength;
+int _NumberHands;
+int _Iteration;
+
+
+float radius = .4;
+
+struct VertC4 {
+
+  float3 pos;
+  float3 vel;
+  float3 nor;
+  float2 uv;
+
+  float  ribbonID;
+  float  life; 
+
+  float3 debug;
+
+  float row;
+  float col;
+
+  float lID;
+  float rID;
+  float uID;
+  float dID;
+
+};
+
+struct Pos {
+  float3 pos;
+};
+
+struct Hand{
+  float3 pos;
+  float  triggerVal;
+};
+
+
+float3 springForce( float3 p1 , float3 p2 , float d ){
+
+  float3 dir = p1 - p2;
+  float l = length( dir );
+  dir = normalize( dir );
+
+  float dif = l - d;
+
+  return dif * dif * float(sign(dif)) * -dir;
+
+}
+
+float3 handForce( float3 p1 , float3 p2 , float d ){
+
+  float3 dir = p1 - p2;
+  float l = length( dir );
+  dir = normalize( dir );
+
+  float dif = 0.;
+  if( l < d ){
+
+    dif = (d-l)/ d;
+  }
+
+  return dif * -dir;
+
+}
+
+
+float map( float3 pos , float3 sphere , float r ){
+
+  return length(( pos - sphere)) - r;
+}
+// Calculates the normal by taking a very small distance,
+// remapping the function, and getting normal for that
+float3 calcNormal( in float3 pos , in float3 sphere , in float radius){
+    
+  float3 eps = float3( 0.001, 0.0, 0.0 );
+  float3 nor = float3(
+      map(pos+eps.xyy, sphere, radius)- map(pos-eps.xyy, sphere, radius),
+      map(pos+eps.yxy, sphere, radius)- map(pos-eps.yxy, sphere, radius),
+      map(pos+eps.yyx, sphere, radius)- map(pos-eps.yyx, sphere, radius));
+  return normalize(nor);
+    
+}
+
+
+
+
+RWStructuredBuffer<VertC4> vertBuffer;
+RWStructuredBuffer<Pos> ogBuffer;
+RWStructuredBuffer<float4x4> transBuffer;
+RWStructuredBuffer<Hand> handBuffer;
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  VertC4 vert = vertBuffer[pID];
+  Pos og = ogBuffer[pID];
+
+  float3 force = float3( 0 , 0 , 0 );
+
+  //Gravity
+  force += float3( 0 , -1. , 0 );
+
+  float hitSphere = 0;
+ 
+  //Hand Forces
+  for( int i = 0; i < _NumberHands; i++ ){
+    Hand  h = handBuffer[i];
+
+    float3 dif = vert.pos - h.pos;
+    float l = length( dif );
+    if( l < .15){
+      force += float3( 0 , 10 , 0 );
+      //force += 1000000. * calcNormal( vert.pos , h.pos , .15 );
+      vert.pos = h.pos +  normalize(dif) * .15;
+      hitSphere = 1;
+
+    }
+
+  }
+
+  if( vert.pos.y < 0 ){
+
+  }
+
+
+  //Return Spring Forces
+  float3 transformedOG =  mul( transBuffer[0] , float4( og.pos , 1.) ).xyz;
+  //force +=  _ReturnSpringStrength * springForce( vert.pos , transformedOG  , 0.001 );
+
+
+
+  float3 connectionForce = float3( 0. , 0. , 0. );
+
+  float cs = 1.1;
+  float ls = .003;
+
+  float3 l = vert.pos;
+  float3 r = vert.pos;
+  float3 u = vert.pos;
+  float3 d = vert.pos;
+
+  float edge = 0;
+
+  float numberHits = 0;
+  float3 desiredPos = float3( 0 , 0 , 0 );
+
+  //Connection Spring Forces
+  if( vert.lID >= 0){
+    l = vertBuffer[vert.lID].pos;
+    connectionForce += cs * springForce( vert.pos , l , ls );
+    numberHits ++;
+    desiredPos += l;
+
+  }else{
+    edge = 1;
+  }
+
+  if( vert.rID >= 0){
+    r = vertBuffer[vert.rID].pos;
+    connectionForce += cs * springForce( vert.pos , r , ls );
+    numberHits ++;
+    desiredPos += r;
+  }else{
+    edge = 1;
+  }
+
+  if( vert.uID >= 0){
+    u = vertBuffer[vert.uID].pos;
+    connectionForce += cs * springForce( vert.pos , u , ls );
+    numberHits ++;
+    desiredPos += u;
+  }else{
+    edge = 1;
+  }
+
+  if( vert.dID >= 0){
+    d = vertBuffer[vert.dID].pos;
+    connectionForce += cs * springForce( vert.pos , d , ls );
+    numberHits ++;
+    desiredPos += d;
+  }else{
+    edge = 1;
+  }
+
+  float3 avePos = desiredPos / numberHits;
+  float3 dir = vert.pos - avePos;
+
+
+  //vert.pos -= dir * 1.1 / float(_Iteration*3+1);//20000000000000. * connectionForce;
+  //vert.debug = connectionForce;
+
+  //Calculate normal from connections here instead of vert shader
+  vert.nor = normalize( cross( (l - r) , (u-d) ));
+
+  if(_Iteration == 4 ){
+    // Limit Force;
+    if( length( force ) > _MaxForce ){ force = normalize( force )* _MaxForce; }
+
+    vert.vel += force * _ForceMultiplier;
+
+    // Limit Velocity
+    if( length( vert.vel ) > _MaxVel ){ vert.vel = normalize( vert.vel )* _MaxVel; }
+
+    vert.vel *= _Dampening ;
+
+    vert.pos += vert.vel ;
+  }
+
+  vert.pos -= dir * 500.1 / float(_Iteration*30+30);//20000000000000. * connectionForce;
+  vert.debug = connectionForce;
+
+  Pos p;
+
+  p.pos = vert.pos * .99;
+
+  if( vert.pos.y < 0 ){
+
+    vert.pos.y = 0;
+    
+  }
+
+
+  if( vert.life < 0 ){
+    vert.pos = transformedOG * .999;
+    vert.life = 1;
+  }
+
+  //vert.pos = transformedOG * .999;
+
+
+
+  vertBuffer[pID] = vert;
+
+}
