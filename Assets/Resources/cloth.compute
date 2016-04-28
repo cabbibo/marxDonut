@@ -1,12 +1,12 @@
 ﻿#pragma kernel CSMain
  
-#define threadX 8
-#define threadY 8
-#define threadZ 8
+#define threadX 6
+#define threadY 6
+#define threadZ 6
 
-#define strideX 8
-#define strideY 8
-#define strideZ 8
+#define strideX 6
+#define strideY 6
+#define strideZ 6
 
 #define gridX (threadX * strideX)
 #define gridY (threadY * strideY)
@@ -61,6 +61,20 @@ struct VertC4 {
   float rID;
   float uID;
   float dID;
+
+  float luID;
+  float ldID;
+  float rdID;
+  float ruID;
+
+  float3 p1;
+  float3 p2;
+  float3 p3;
+  float3 p4;
+  float3 p5;
+  float3 p6;
+  float3 p7;
+  float3 p8;
 
 };
 
@@ -182,8 +196,17 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
   float edge = 0;
 
+
+  float3 ribbonSize = float3(
+    float(_RibbonWidth), 
+    float(_RibbonLength),
+    length(float2(float(_RibbonWidth), float(_RibbonLength)))
+  );
+
   float numberHits = 0;
   float3 desiredPos = float3( 0 , 0 , 0 );
+
+
 
   //Connection Spring Forces
   if( vert.lID >= 0){
@@ -191,7 +214,6 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
     connectionForce += cs * springForce( vert.pos , l , ls );
     numberHits ++;
     desiredPos += l;
-
   }else{
     edge = 1;
   }
@@ -247,7 +269,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
     vert.pos += vert.vel ;
   }
 
-  vert.pos -= dir * 500.1 / float(_Iteration*30+30);//20000000000000. * connectionForce;
+  vert.pos -= dir * 5.1 / float(_Iteration*30+30);//20000000000000. * connectionForce;
   vert.debug = connectionForce;
 
   Pos p;
@@ -265,6 +287,9 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
     vert.pos = transformedOG * .999;
     vert.life = 1;
   }
+
+  //vert.pos = transformedOG * .9999;
+ // vert.pos = transformedOG * .9999;
 
   //vert.pos = transformedOG * .999;
 

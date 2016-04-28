@@ -1,0 +1,272 @@
+﻿
+
+#pragma kernel CSMain
+ 
+#define threadX 4
+#define threadY 4
+#define threadZ 4
+
+#define strideX 4
+#define strideY 4
+#define strideZ 4
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+
+
+int _RibbonWidth;
+int _RibbonLength;
+//int _NumberHands;
+int _Iteration;
+int _Offset;
+int _Total;
+int _WhichOne;
+float _DeltaTime;
+
+
+/*
+
+	Possible bugs
+	-otherVertIds array can't be used in struct?
+	-can't write to multiple locations?
+
+
+*/
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float mass;
+	float o0;
+	float o1;
+	float o2;
+	float o3;
+	float o4;
+	float o5;
+	float o6;
+	float o7;
+};
+
+struct Pos{
+	float3 pos;
+};
+
+struct Hand{
+  float3 pos;
+  float  triggerVal;
+};
+
+
+RWStructuredBuffer<Vert> vertBuffer;
+RWStructuredBuffer<Pos> ogBuffer;
+RWStructuredBuffer<float4x4> transBuffer;
+RWStructuredBuffer<Hand> handBuffer;
+
+
+int getID( Vert v , int id ){
+
+	if( id == 0 ){ return v.o0; }else
+	if( id == 1 ){ return v.o1; }else
+	if( id == 2 ){ return v.o2; }else
+	if( id == 3 ){ return v.o3; }else
+	if( id == 4 ){ return v.o4; }else
+	if( id == 5 ){ return v.o5; }else
+	if( id == 6 ){ return v.o6; }else
+				 { return v.o7; }
+
+
+}
+
+float3 getVel( float3 p1 , float3 p2 ){
+
+	float3 v = p1 - p2;
+
+	if( length( v )> .0001){ v = normalize( v ) * .0001; }
+	return v;
+}
+
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  	int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  	Vert vert = vertBuffer[ pID ];
+	vert.mass = .4;
+
+  	int row = int(floor( float(pID) / float(_RibbonWidth)));
+  	int col = int(pID) % int(_RibbonWidth);
+
+
+  	//choosing which lil critters we are dealing with
+  	//this round!
+  	bool o1 = _Offset == 0 && (row % 2) == 0 && (col % 2) == 0;
+  	bool o2 = _Offset == 1 && (row % 2) == 0 && (col % 2) == 1;
+  	bool o3 = _Offset == 2 && (row % 2) == 1 && (col % 2) == 0;
+  	bool o4 = _Offset == 3 && (row % 2) == 1 && (col % 2) == 1;
+
+
+  	// don't need to compute this every time;
+  	float clothSize = 1;
+  	float2 xy = float2( clothSize / float(_RibbonWidth) ,  clothSize / float(_RibbonWidth) );
+  	float3 clothDistances =  float3( xy.x , xy.y , length( xy ) );
+ 
+ 	float3 ogPos = vert.pos;
+	
+
+ 	//o1 = true;
+
+ 	// flips the verts that we are solving force
+ 	// depending on which iteration of the computer shader
+ 	// we are working with;
+  	if( o1 || o2 || o3 || o4 ){
+
+  		vert.mass = 1;
+
+  		
+
+		// Inertia: objects in motion stay in motion.
+		float3 vel = getVel( vert.pos , vert.oPos);
+
+		// GRAVITY
+		float3 force = float3( 0 , -.1 , 0 );
+		float mass = 1;
+		float3 acceleration= 0; 
+
+
+		// In iteration 0, solve for external forces
+		if( _Iteration == 0 ){
+
+			vert.mass = 1;
+			acceleration = force / float3( mass , mass , mass );
+
+			float3 testSphere = float3( 0.2 , .5, 0);
+			if( length(vert.pos - testSphere) < .15 ){
+				//vert.oPos = vert.pos;
+				vert.pos = testSphere + normalize( vert.pos - testSphere + float3( 0 , .0001 , 0 ) ) * .15;
+				vert.oPos =vert.pos;
+				acceleration = float3( 0 , 0 , 0);
+			}
+
+			testSphere = float3( -0.2 , .5, 0);
+			if( length(vert.pos - testSphere) < .15 ){
+				//vert.oPos = vert.pos;
+				vert.pos = testSphere + normalize( vert.pos - testSphere + float3( 0 , .0001 , 0 ) ) * .15;
+				vert.oPos =vert.pos;
+				acceleration = float3( 0 , 0 , 0);
+			}
+
+
+			testSphere = float3( 0.0 , .5, -0.2);
+			if( length(vert.pos - testSphere) < .15 ){
+				//vert.oPos = vert.pos;
+				vert.pos = testSphere + normalize( vert.pos - testSphere + float3( 0 , .0001 , 0 ) ) * .15;
+				vert.oPos =vert.pos;
+				acceleration = float3( 0 , 0 , 0);
+			}
+
+
+			
+				
+
+			float3 next = vert.pos + vel * .9 / float( _WhichOne + 1 )  + acceleration * _DeltaTime * _DeltaTime / float( _WhichOne + 1 );
+
+			vert.oPos = vert.pos;
+			vert.pos = next;
+
+			if( vert.o0 < 0 ){
+				vert.pos = ogPos;
+			}
+			
+			for( int i = 0; i < 8 ; i++ ){
+
+				int vertID = getID( vert , i ); //int(vert.otherVertIds[iterationID]);
+
+				// Dont solve if there is no connection
+				if( vertID >= 0){
+
+					Vert vert2 = vertBuffer[ vertID ];
+					float3 og2 = vert2.pos;
+
+					float3 next2 = vert2.pos + getVel( vert2.pos , vert2.oPos ) * .9 / float( _WhichOne + 1 )  + (acceleration / float( _WhichOne + 1 )) * _DeltaTime * _DeltaTime;
+
+					
+					vert2.oPos = vert2.pos;
+					vert2.pos = next2;
+
+					vertBuffer[ vertID ] = vert2;
+
+					if( vert2.o0 < 0 ){
+						vert2.pos = og2;
+					}
+
+				}
+
+			}
+			
+
+		// Solve for cloth constraints
+		}else{
+
+			// 5 6 7 
+			// 4 o 0
+            // 3 2 1
+			int iterationID = _Iteration - 1;
+
+			int vertID = getID( vert , iterationID ); //int(vert.otherVertIds[iterationID]);
+
+			// Dont solve if there is no connection
+			if( vertID >= 0){
+            
+				Vert vert2 = vertBuffer[ vertID ];
+				float3 og2 = vert2.pos;
+
+				float clothDistance = clothDistances.x;
+
+				//Setting to diagonal
+				if(iterationID % 2 == 1){ clothDistance = clothDistances.z; }
+
+				//Setting to vertical
+				if(iterationID ==2 || iterationID == 6){ clothDistance = clothDistances.y; }
+
+				float3 dif = vert.pos - vert2.pos;
+
+				float l = length( dif );
+
+				float difference = ((clothDistance) - l ) / l;
+
+				float3 translate = dif * .5 * difference / float( _WhichOne + 1 );
+
+				float3 n1 = vert.pos + translate;
+				float3 n2 = vert2.pos - translate;
+				
+				vert.pos = n1;
+				vert2.pos = n2;
+			
+				vertBuffer[ vertID ] = vert2;
+
+			}
+
+		}
+
+		
+
+
+	}
+
+if( vert.o0 < 0 ){
+				vert.pos = ogPos;
+			}
+
+
+	vertBuffer[pID] = vert;
+
+
+
+	//vert.pos = float3( 0 , 1 , 0 );
+
+
+	
+}

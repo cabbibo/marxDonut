@@ -10,6 +10,7 @@ public class Cloth : MonoBehaviour {
 
     // How the donut looks
     public Shader shader;
+    public Shader debugShader;
 
     // How the donut feels
     public ComputeShader computeShader;
@@ -38,13 +39,13 @@ public class Cloth : MonoBehaviour {
     private ComputeBuffer _transBuffer;
 
 
-    private const int threadX = 8;
-    private const int threadY = 8;
-    private const int threadZ = 8;
+    private const int threadX = 4;
+    private const int threadY = 4;
+    private const int threadZ = 4;
 
-    private const int strideX = 8;
-    private const int strideY = 8;
-    private const int strideZ = 8;
+    private const int strideX = 4;
+    private const int strideY = 4;
+    private const int strideZ = 4;
 
     private int gridX { get { return threadX * strideX; } }
     private int gridY { get { return threadY * strideY; } }
@@ -53,27 +54,43 @@ public class Cloth : MonoBehaviour {
     private int vertexCount { get { return gridX * gridY * gridZ; } }
 
 
-    private int ribbonWidth = 512;
+    private int ribbonWidth = 64;
     private int ribbonLength { get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
     
 
     private int _kernel;
     private Material material;
+    private Material debugMaterial;
 
     private Vector3 p1;
     private Vector3 p2;
 
-    private bool objMade = false;
+    //private bool objMade = false;
     private float[] transValues = new float[32];
     private float[] handValues;
 
+    private float oTime = 0;
+
+    struct Vert{
+		public Vector3 position;
+		public Vector3 oPosition;
+		public float mass;
+		public float o0;
+		public float o1;
+		public float o2;
+		public float o3;
+		public float o4;
+		public float o5;
+		public float o6;
+		public float o7;
+	}
+
+	private int VertStructSize =  3 + 3 + 8 + 1;
 
     // Use this for initialization
     void Start () {
 
-
-
-        
+    	oTime = Time.time;
         handValues = new float[ 4 * AssignStructs.HandStructSize ];
 
         createBuffers();
@@ -95,11 +112,7 @@ public class Cloth : MonoBehaviour {
 
     void Update(){
 
-        //print(Input.GetKey ("a"));
-        if( Input.GetKey(KeyCode.Space)){
-            createOBJ();
-        }
-
+     
         Dispatch();
 
     }
@@ -114,114 +127,11 @@ public class Cloth : MonoBehaviour {
     private void createMaterial(){
 
       material = new Material( shader );
+      debugMaterial = new Material( debugShader );
 
     }
 
-    private int getID( int id  ){
-
-        int b = (int)Mathf.Floor( id / 6 );
-        int tri  = id % 6;
-        int row = (int)Mathf.Floor( b / (ribbonWidth -1) );
-        int col = (b) % (ribbonWidth-1);
-
-        int rowU = (row + 1);
-        int colU = (col + 1);
-
-        int rDoID = row * ribbonWidth;
-        int rUpID = rowU * ribbonWidth;
-
-        int cDoID = col;
-        int cUpID = colU;
-
-        int fID = 0;
-
-        if( tri == 0 ){
-            fID = rDoID + cDoID;
-        }else if( tri == 1 ){
-            fID = rUpID + cUpID;
-        }else if( tri == 2 ){
-            fID = rUpID + cDoID;
-        }else if( tri == 3 ){
-            fID = rDoID + cDoID;
-        }else if( tri == 4 ){
-            fID = rDoID + cUpID;
-        }else if( tri == 5 ){
-            
-            fID = rUpID + cUpID;
-        }else{
-            fID = 0;
-        }
-
-        return fID;
-
-    }
-
-    static void WriteToFile(string s, string filename)
-    {
-        var sr = File.CreateText(filename);
-        sr.WriteLine(s);
-        sr.Close();
-    }
-
-
-    void createOBJ(){
-
-        if( objMade == false ){
-            objMade = true;
-
-            _vertBuffer.GetData( inValues );
-
-            print( inValues[0] );
-
-            int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
-
-            
-            AssignStructs.MeshInfo mesh = new AssignStructs.MeshInfo();
-
-            Vector3[] verts = new Vector3[ ribbonLength * ribbonWidth ];
-            Vector3[] norms = new Vector3[ ribbonLength * ribbonWidth ];
-            Vector2[] uvs   = new Vector2[ ribbonLength * ribbonWidth ];
-            int[] triangles = new int[numVertsTotal];
-
-            for( int i = 0; i < ribbonWidth * ribbonLength; i++ ){
-                
-                int baseID = i * AssignStructs.VertC4StructSize;
-
-                Vector3 v = new Vector3( inValues[baseID+0] , inValues[baseID+1], inValues[baseID+2]);
-                Vector3 n = new Vector3( inValues[baseID+6] , inValues[baseID+7], inValues[baseID+8]);
-                Vector2 u = new Vector2( inValues[baseID+9] , inValues[baseID+10]);
-
-                verts[i] = v;
-                norms[i] = n;
-                uvs[i]   = u;
-
-            }
-
-            for( int i = 0; i < numVertsTotal; i++ ){
-                triangles[i] = getID( i );
-            }
-
-            mesh.vertices = verts;
-            mesh.normals = norms;
-            mesh.uvs = uvs;
-            mesh.triangles = triangles;
-            mesh.name = "clothTest1";
-
-
-        
-
-            //string objString = makeString( mesh , transform );
-            //print( objString );
-            //WriteToFile( objString , "DONUT_TEST.obj");
-
-            ObjExporter.MeshToFile( mesh );
-
-        }
-
-
-
-
-    }
+ 
  
     //Remember to release buffers and destroy the material when play has been stopped.
     void ReleaseBuffer(){
@@ -230,6 +140,7 @@ public class Cloth : MonoBehaviour {
       _ogBuffer.Release(); 
       _transBuffer.Release(); 
       DestroyImmediate( material );
+      DestroyImmediate( debugMaterial );
 
     }
 
@@ -255,6 +166,19 @@ public class Cloth : MonoBehaviour {
 
         Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
 
+        debugMaterial.SetPass(0);
+
+        debugMaterial.SetBuffer("buf_Points", _vertBuffer);
+
+        debugMaterial.SetInt( "_RibbonWidth"  , ribbonWidth  );
+        debugMaterial.SetInt( "_RibbonLength" , ribbonLength );
+        debugMaterial.SetInt( "_TotalVerts"   , vertexCount  );
+
+        debugMaterial.SetMatrix("worldMat", transform.localToWorldMatrix);
+        debugMaterial.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+        //Graphics.DrawProcedural(MeshTopology.Lines, 16 * ribbonLength * ribbonWidth );
+
 
     }
 
@@ -263,18 +187,18 @@ public class Cloth : MonoBehaviour {
         float u = (uvY -.5f);
         float v = (uvX -.5f);
 
-        return new Vector3( u , 0 , v );
+        return new Vector3( u , 1 , v );
 
     }
 
     private void createBuffers() {
 
-      _vertBuffer = new ComputeBuffer( vertexCount ,  AssignStructs.VertC4StructSize * sizeof(float));
+      _vertBuffer = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
       _ogBuffer = new ComputeBuffer( vertexCount ,  3 * sizeof(float));
       _transBuffer = new ComputeBuffer( 32 ,  sizeof(float));
       _handBuffer = new ComputeBuffer( 4 , AssignStructs.HandStructSize * sizeof(float));
       
-      inValues = new float[ AssignStructs.VertC4StructSize * vertexCount];
+      inValues = new float[ VertStructSize * vertexCount];
       float[] ogValues = new float[ 3         * vertexCount];
 
       // Used for assigning to our buffer;
@@ -303,25 +227,41 @@ public class Cloth : MonoBehaviour {
             ogValues[indexOG++] = fVec.y;
             ogValues[indexOG++] = fVec.z;
 
-            AssignStructs.VertC4 vert = new AssignStructs.VertC4();
+            Vert vert = new Vert();
 
 
-            vert.pos = fVec * .9f;
-            vert.vel = new Vector3( 0 , 0 , 0 );
-            vert.nor = new Vector3( 0 , 1 , 0 );
-            vert.uv  = new Vector2( uvX , uvY );
-            vert.ribbonID = 0;
-            vert.life = -5;
-            vert.debug = new Vector3( 0 , 1 , 0 );
-            vert.row   = row; 
-            vert.col   = col; 
+            vert.position = fVec * 1.000001f;
 
-            vert.lID = convertToID( col - 1 , row + 0 );
-            vert.rID = convertToID( col + 1 , row + 0 );
-            vert.uID = convertToID( col + 0 , row + 1 );
-            vert.dID = convertToID( col + 0 , row - 1 );
+            vert.oPosition = fVec;
 
-            AssignStructs.AssignVertC4Struct( inValues , index , out index , vert );
+            vert.mass = 0.3f;
+            vert.o0 = convertToID( col + 1 , row + 0 );
+            vert.o1 = convertToID( col + 1 , row - 1 );
+            vert.o2 = convertToID( col + 0 , row - 1 );
+            vert.o3 = convertToID( col - 1 , row - 1 );
+            vert.o4 = convertToID( col - 1 , row - 0 );
+            vert.o5 = convertToID( col - 1 , row + 1 );
+            vert.o6 = convertToID( col - 0 , row + 1 );
+            vert.o7 = convertToID( col + 1 , row + 1 );
+
+            inValues[index++] = vert.position.x;
+            inValues[index++] = vert.position.y;
+            inValues[index++] = vert.position.z;
+
+            inValues[index++] = vert.oPosition.x;
+            inValues[index++] = vert.oPosition.y;
+            inValues[index++] = vert.oPosition.z;
+
+            inValues[index++] = vert.mass;
+
+            inValues[index++] = vert.o0;
+            inValues[index++] = vert.o1;
+            inValues[index++] = vert.o2;
+            inValues[index++] = vert.o3;
+            inValues[index++] = vert.o4;
+            inValues[index++] = vert.o5;
+            inValues[index++] = vert.o6;
+            inValues[index++] = vert.o7;
 
           }
         }
@@ -336,11 +276,11 @@ public class Cloth : MonoBehaviour {
 
         float id;
 
-        if( col >= ribbonWidth ){ return -1; }
-        if( col < 0 ){ return -1; }
+        if( col >= ribbonWidth ){ return -10; }
+        if( col < 0 ){ return -10; }
 
-        if( row >= ribbonLength ){ return -1; }
-        if( row < 0 ){ return -1; }
+        if( row >= ribbonLength ){ return -10; }
+        if( row < 0 ){ return -10; }
 
         id = row * ribbonWidth + col;
 
@@ -349,6 +289,8 @@ public class Cloth : MonoBehaviour {
     }
     
     private void Dispatch() {
+
+
 
         AssignStructs.AssignTransBuffer( transform , transValues , _transBuffer );
 
@@ -361,35 +303,79 @@ public class Cloth : MonoBehaviour {
         _handBuffer.SetData( handValues );
 
 
-        computeShader.SetInt( "_NumberHands", 4 );
-        computeShader.SetInt("_Iteration" , 0 );
+        //computeShader.SetInt( "_NumberHands", 4 );
 
-        computeShader.SetFloat( "_DeltaTime"    , Time.deltaTime );
+
+
+        computeShader.SetFloat( "_DeltaTime"    , Time.time - oTime );
         computeShader.SetFloat( "_Time"         , Time.time      );
+
+        oTime = Time.time;
 
         computeShader.SetInt( "_RibbonWidth"   , ribbonWidth     );
         computeShader.SetInt( "_RibbonLength"  , ribbonLength    );
 
 
-        computeShader.SetBuffer( _kernel , "transBuffer"  , _transBuffer    );
+        //computeShader.SetBuffer( _kernel , "transBuffer"  , _transBuffer    );
         computeShader.SetBuffer( _kernel , "vertBuffer"   , _vertBuffer     );
-        computeShader.SetBuffer( _kernel , "ogBuffer"     , _ogBuffer       );
-        computeShader.SetBuffer( _kernel , "handBuffer"   , _handBuffer     );
+        //computeShader.SetBuffer( _kernel , "ogBuffer"     , _ogBuffer       );
+        //computeShader.SetBuffer( _kernel , "handBuffer"   , _handBuffer     );
 
-        computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
 
-        computeShader.SetInt("_Iteration" , 1 );
-        computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
+        /*
+		
+			TODO: Call proper amount of times 
+			per frame, passing off extra time to next frame!
 
-        computeShader.SetInt("_Iteration" , 2 );
-        computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
+			elapsedTime = lastTime - currentTime
+			lastTime = currentTime // reset lastTime
+			  
+			// add time that couldn't be used last frame
+			elapsedTime += leftOverTime
+			  
+			// divide it up in chunks of 16 ms
+			timesteps = floor(elapsedTime / 16)
+			  
+			// store time we couldn't use for the next frame.
+			leftOverTime = elapsedTime - timesteps * 16
 
-        computeShader.SetInt("_Iteration" , 3 );
-        computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
+        */
 
-        computeShader.SetInt("_Iteration" , 4 );
-        computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
 
+
+		// Which link in compute are we doing
+    	//computeShader.SetInt("_Iteration" , 0 );
+
+    	//Switch which pairs we are doing
+    	//computeShader.SetInt("_Offset" , 0 );
+
+    	//TODO: only need to dispatch for half of the buffer size!
+    	//computeShader.Dispatch( _kernel , strideX , strideY  , strideZ );
+
+        //solver accuracy
+		for( int k = 0; k < 4; k++ ){
+        for( int i = 0; i < 4; i++ ){
+
+        	// number of Links in solver Loop
+        	for( int j = 0; j < 9; j++ ){
+
+	        	// Which link in compute are we doing
+	        	computeShader.SetInt("_Iteration" , j );
+	        	computeShader.SetInt("_Total" , i );
+	        	computeShader.SetInt("_WhichOne", k);
+
+	        	//Switch which pairs we are doing
+	        	computeShader.SetInt("_Offset" , i % 4 );
+
+	        	//TODO: only need to dispatch for half of the buffer size!
+	        	computeShader.Dispatch( _kernel , strideX , strideY  , strideZ );
+
+        	}
+
+        }
+    	}
 
     }
+
+    
 }

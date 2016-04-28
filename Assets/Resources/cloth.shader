@@ -1,4 +1,4 @@
-﻿Shader "Custom/donut" {
+﻿Shader "Custom/cloth" {
 
 
 
@@ -20,25 +20,39 @@
 
             struct VertC4 {
 
-                float3 pos;
-                float3 vel;
-                float3 nor;
-                float2 uv;
+  float3 pos;
+  float3 vel;
+  float3 nor;
+  float2 uv;
 
-                float  ribbonID;
-                float  life; 
-                
-                float3 debug;
+  float  ribbonID;
+  float  life; 
 
-                float row;
-                float col;
+  float3 debug;
 
-                float lID;
-                float rID;
-                float uID;
-                float dID;
+  float row;
+  float col;
 
-            };
+  float lID;
+  float rID;
+  float uID;
+  float dID;
+
+  float luID;
+  float ldID;
+  float rdID;
+  float ruID;
+
+  float3 p1;
+  float3 p2;
+  float3 p3;
+  float3 p4;
+  float3 p5;
+  float3 p6;
+  float3 p7;
+  float3 p8;
+
+};
             
             struct Pos {
                 float3 pos;
