@@ -76,7 +76,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	if( vert.pos.y < 0 ){ vert.pos.y = 0; }
 
 	// GRAVITY
-	float3 force = float3( 0 , -.03 , 0 );
+	float3 force = float3( 0 , -.06 , 0 );
 	float mass = 1;
 	float3 acceleration= float3( 0 ,0,0); 
 
