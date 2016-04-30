@@ -13,39 +13,36 @@ public class Cloth : MonoBehaviour {
     public Shader debugShader;
 
     // How the donut feels
-    public ComputeShader computeShader;
+    public ComputeShader constraintPass;
+    public ComputeShader collisionPass;
+    public ComputeShader forcePass;
 
+    public GameObject[] Shapes;
 
-    public GameObject hand1;
-    public GameObject hand2;
-    public GameObject hand3;
-    public GameObject hand4;
-
-
-    public float trigger1;
-    public float trigger2;
-    public float trigger3;
-    public float trigger4;
-
-    public float tubeRadius = .6f;
-    public float shellRadius = .8f;
+    public float clothSize = 1;
+    public float startingHeight = 1;
 
     private float[] inValues;
+    private float[] shapeValues;
 
 
     private ComputeBuffer _vertBuffer;
-    private ComputeBuffer _ogBuffer;
-    private ComputeBuffer _handBuffer;
-    private ComputeBuffer _transBuffer;
+
+    private ComputeBuffer _upLinkBuffer;
+    private ComputeBuffer _rightLinkBuffer;
+    private ComputeBuffer _diagonalDownLinkBuffer;
+    private ComputeBuffer _diagonalUpLinkBuffer;
+
+    private ComputeBuffer _shapeBuffer;
 
 
-    private const int threadX = 4;
-    private const int threadY = 4;
-    private const int threadZ = 4;
+    private const int threadX = 6;
+    private const int threadY = 6;
+    private const int threadZ = 6;
 
-    private const int strideX = 4;
-    private const int strideY = 4;
-    private const int strideZ = 4;
+    private const int strideX = 6;
+    private const int strideY = 6;
+    private const int strideZ = 6;
 
     private int gridX { get { return threadX * strideX; } }
     private int gridY { get { return threadY * strideY; } }
@@ -54,49 +51,62 @@ public class Cloth : MonoBehaviour {
     private int vertexCount { get { return gridX * gridY * gridZ; } }
 
 
-    private int ribbonWidth = 64;
+
+
+    private int ribbonWidth = 216;
     private int ribbonLength { get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
     
 
-    private int _kernel;
+    private int _kernelforce;
+    private int _kernelcollision;
+    private int _kernelconstraint;
+
+
     private Material material;
     private Material debugMaterial;
 
     private Vector3 p1;
     private Vector3 p2;
 
-    //private bool objMade = false;
-    private float[] transValues = new float[32];
-    private float[] handValues;
-
     private float oTime = 0;
 
     struct Vert{
-		public Vector3 position;
-		public Vector3 oPosition;
+		public Vector3 pos;
+		public Vector3 oPos;
+		public Vector3 ogPos;
 		public float mass;
-		public float o0;
-		public float o1;
-		public float o2;
-		public float o3;
-		public float o4;
-		public float o5;
-		public float o6;
-		public float o7;
+		public float[] ids;
+		public Vector3 debug;
+	};
+
+	struct Link{
+		public float id1;
+		public float id2;
+		public float distance;
+		public float stiffness;
 	}
 
-	private int VertStructSize =  3 + 3 + 8 + 1;
+	struct Shape{
+		public Matrix4x4 mat;
+		public float shape;
+	}
+
+	private int VertStructSize =  3 + 3 + 3 + 1 + 8 + 3;
+	private int LinkStructSize =  1 + 1 + 1 + 1;
+	private int ShapeStructSize = 16 + 1;
 
     // Use this for initialization
     void Start () {
 
     	oTime = Time.time;
-        handValues = new float[ 4 * AssignStructs.HandStructSize ];
+        shapeValues = new float[ Shapes.Length * ShapeStructSize ];
 
         createBuffers();
         createMaterial();
 
-        _kernel = computeShader.FindKernel("CSMain");
+        _kernelforce = forcePass.FindKernel("CSMain");
+        _kernelcollision = collisionPass.FindKernel("CSMain");
+        _kernelconstraint = constraintPass.FindKernel("CSMain");
 
 
         Camera.main.gameObject.AddComponent<PostRenderEvent>();
@@ -137,8 +147,13 @@ public class Cloth : MonoBehaviour {
     void ReleaseBuffer(){
 
       _vertBuffer.Release(); 
-      _ogBuffer.Release(); 
-      _transBuffer.Release(); 
+
+      _upLinkBuffer.Release(); 
+      _rightLinkBuffer.Release(); 
+      _diagonalUpLinkBuffer.Release(); 
+      _diagonalDownLinkBuffer.Release(); 
+
+    
       DestroyImmediate( material );
       DestroyImmediate( debugMaterial );
 
@@ -155,8 +170,7 @@ public class Cloth : MonoBehaviour {
         material.SetPass(0);
 
         material.SetBuffer("buf_Points", _vertBuffer);
-        material.SetBuffer("og_Points", _ogBuffer);
-
+     
         material.SetInt( "_RibbonWidth"  , ribbonWidth  );
         material.SetInt( "_RibbonLength" , ribbonLength );
         material.SetInt( "_TotalVerts"   , vertexCount  );
@@ -187,23 +201,43 @@ public class Cloth : MonoBehaviour {
         float u = (uvY -.5f);
         float v = (uvX -.5f);
 
-        return new Vector3( u , 1 , v );
+        return new Vector3( u * clothSize, startingHeight , v * clothSize );
 
     }
 
     private void createBuffers() {
 
+      _shapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );
+
       _vertBuffer = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
-      _ogBuffer = new ComputeBuffer( vertexCount ,  3 * sizeof(float));
-      _transBuffer = new ComputeBuffer( 32 ,  sizeof(float));
-      _handBuffer = new ComputeBuffer( 4 , AssignStructs.HandStructSize * sizeof(float));
+      
+      _upLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
+      _rightLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
+      _diagonalDownLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
+      _diagonalUpLinkBuffer = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
+
+      float lRight = clothSize / (float)ribbonWidth;
+      float lUp = clothSize / (float)ribbonLength;
+
+
+      Vector2 n = new Vector2( lRight , lUp );
+
+      float lDia = n.magnitude;
       
       inValues = new float[ VertStructSize * vertexCount];
-      float[] ogValues = new float[ 3         * vertexCount];
+
+      float[] upLinkValues = new float[ LinkStructSize * vertexCount / 2 ];
+      float[] rightLinkValues = new float[ LinkStructSize * vertexCount / 2 ];
+      float[] diagonalDownLinkValues = new float[ LinkStructSize * vertexCount / 2 ];
+      float[] diagonalUpLinkValues = new float[ LinkStructSize * vertexCount / 2 ];
 
       // Used for assigning to our buffer;
       int index = 0;
       int indexOG = 0;
+      int li1= 0;
+      int li2= 0;
+      int li3= 0;
+      int li4= 0;
 
 
       for (int z = 0; z < gridZ; z++) {
@@ -213,7 +247,41 @@ public class Cloth : MonoBehaviour {
             int id = x + y * gridX + z * gridX * gridY; 
             
             float col = (float)(id % ribbonWidth );
-            float row = Mathf.Floor( ((float)id+.01f) / ribbonWidth);
+            float row = Mathf.Floor( ((float)id) / ribbonWidth);
+
+            if( row % 2 == 0 ){
+
+            	upLinkValues[li1++] = id;
+            	upLinkValues[li1++] = convertToID( col + 0 , row + 1 );
+            	upLinkValues[li1++] = lUp;
+            	upLinkValues[li1++] = 1;
+
+            	float id1 , id2;
+
+            	if( col % 2 == 0 ){
+            		id1 = id;
+            		id2 = convertToID( col + 1 , row + 0 );
+            	}else{
+            		id1 = convertToID( col + 0 , row + 1 );
+            		id2 = convertToID( col + 1 , row + 1 );
+            	}
+            	rightLinkValues[li2++] = id1;
+            	rightLinkValues[li2++] = id2;
+            	rightLinkValues[li2++] = lRight;
+            	rightLinkValues[li2++] = 1;
+
+
+            	diagonalDownLinkValues[li3++] = id;
+            	diagonalDownLinkValues[li3++] = convertToID( col - 1 , row - 1 );
+            	diagonalDownLinkValues[li3++] = lDia;
+            	diagonalDownLinkValues[li3++] = 1;
+
+            	diagonalUpLinkValues[li4++] = id;
+            	diagonalUpLinkValues[li4++] = convertToID( col + 1 , row + 1 );
+            	diagonalUpLinkValues[li4++] = lDia;
+            	diagonalUpLinkValues[li4++] = 1;
+
+            }
 
 
             float uvX = col / ribbonWidth;
@@ -222,53 +290,68 @@ public class Cloth : MonoBehaviour {
             Vector3 fVec = getVertPosition( uvX , uvY );
 
 
-            //pos
-            ogValues[indexOG++] = fVec.x;
-            ogValues[indexOG++] = fVec.y;
-            ogValues[indexOG++] = fVec.z;
-
             Vert vert = new Vert();
 
 
-            vert.position = fVec * 1.000001f;
+            vert.pos = fVec * 1.000001f;
 
-            vert.oPosition = fVec;
+            vert.oPos = fVec;
+            vert.ogPos = fVec;
 
             vert.mass = 0.3f;
-            vert.o0 = convertToID( col + 1 , row + 0 );
-            vert.o1 = convertToID( col + 1 , row - 1 );
-            vert.o2 = convertToID( col + 0 , row - 1 );
-            vert.o3 = convertToID( col - 1 , row - 1 );
-            vert.o4 = convertToID( col - 1 , row - 0 );
-            vert.o5 = convertToID( col - 1 , row + 1 );
-            vert.o6 = convertToID( col - 0 , row + 1 );
-            vert.o7 = convertToID( col + 1 , row + 1 );
+            if( col == 0 || col == ribbonWidth || row == 0 || row == ribbonLength ){
+            	vert.mass = 2.0f;
+            }
+            vert.ids = new float[8];
+            vert.ids[0] = convertToID( col + 1 , row + 0 );
+            vert.ids[1] = convertToID( col + 1 , row - 1 );
+            vert.ids[2] = convertToID( col + 0 , row - 1 );
+            vert.ids[3] = convertToID( col - 1 , row - 1 );
+            vert.ids[4] = convertToID( col - 1 , row - 0 );
+            vert.ids[5] = convertToID( col - 1 , row + 1 );
+            vert.ids[6] = convertToID( col - 0 , row + 1 );
+            vert.ids[7] = convertToID( col + 1 , row + 1 );
 
-            inValues[index++] = vert.position.x;
-            inValues[index++] = vert.position.y;
-            inValues[index++] = vert.position.z;
+            vert.debug = new Vector3(0,1,0);
 
-            inValues[index++] = vert.oPosition.x;
-            inValues[index++] = vert.oPosition.y;
-            inValues[index++] = vert.oPosition.z;
+            inValues[index++] = vert.pos.x;
+            inValues[index++] = vert.pos.y;
+            inValues[index++] = vert.pos.z;
+
+            inValues[index++] = vert.oPos.x;
+            inValues[index++] = vert.oPos.y;
+            inValues[index++] = vert.oPos.z;
+
+            inValues[index++] = vert.ogPos.x;
+            inValues[index++] = vert.ogPos.y;
+            inValues[index++] = vert.ogPos.z;
 
             inValues[index++] = vert.mass;
 
-            inValues[index++] = vert.o0;
-            inValues[index++] = vert.o1;
-            inValues[index++] = vert.o2;
-            inValues[index++] = vert.o3;
-            inValues[index++] = vert.o4;
-            inValues[index++] = vert.o5;
-            inValues[index++] = vert.o6;
-            inValues[index++] = vert.o7;
+            inValues[index++] = vert.ids[0];
+            inValues[index++] = vert.ids[1];
+            inValues[index++] = vert.ids[2];
+            inValues[index++] = vert.ids[3];
+            inValues[index++] = vert.ids[4];
+            inValues[index++] = vert.ids[5];
+            inValues[index++] = vert.ids[6];
+            inValues[index++] = vert.ids[7];
+
+            inValues[index++] = vert.debug.x;
+            inValues[index++] = vert.debug.y;
+            inValues[index++] = vert.debug.z;
 
           }
         }
       }
 
       _vertBuffer.SetData(inValues);
-      _ogBuffer.SetData(ogValues);
+
+      _upLinkBuffer.SetData(upLinkValues);
+      _rightLinkBuffer.SetData(rightLinkValues);
+      _diagonalUpLinkBuffer.SetData(diagonalUpLinkValues);
+      _diagonalDownLinkBuffer.SetData(diagonalDownLinkValues);
+    
 
     }
 
@@ -287,95 +370,75 @@ public class Cloth : MonoBehaviour {
         return id;
 
     }
+
+    private void doConstraint( float v , int offset , ComputeBuffer b ){
+
+    	// Which link in compute are we doing
+    	constraintPass.SetInt("_Offset" , offset );
+    	constraintPass.SetFloat("_Multiplier" , v );
+    	constraintPass.SetBuffer( _kernelconstraint , "linkBuffer"   , b     );
+
+    	//TODO: only need to dispatch for 1/9th of the buffer size!
+    	constraintPass.Dispatch( _kernelconstraint , strideX / 2 , strideY  , strideZ );
+
+    } 
     
+    private void assignShapeBuffer(){
+
+    	int index = 0;
+
+    	for( int i = 0; i < Shapes.Length; i++ ){
+    		GameObject go = Shapes[i];
+		    for( int j = 0; j < 16; j++ ){
+		      int x = j % 4;
+		      int y = (int) Mathf.Floor(j / 4);
+		      shapeValues[index++] = go.transform.worldToLocalMatrix[x,y];
+		    }
+
+		    // TODO:
+		    // Make different for different shapes
+		    shapeValues[index++] = 1;
+
+    	}
+
+    	_shapeBuffer.SetData(shapeValues);
+
+
+    }
+
     private void Dispatch() {
 
+    	assignShapeBuffer();
 
-
-        AssignStructs.AssignTransBuffer( transform , transValues , _transBuffer );
-
-        // Setting up hand buffers
-        int index = 0;
-        AssignStructs.AssignHandStruct( handValues , index , out index , hand1 , trigger1 );
-        AssignStructs.AssignHandStruct( handValues , index , out index , hand2 , trigger2 );
-        AssignStructs.AssignHandStruct( handValues , index , out index , hand3 , trigger3 );
-        AssignStructs.AssignHandStruct( handValues , index , out index , hand4 , trigger4 );
-        _handBuffer.SetData( handValues );
-
-
-        //computeShader.SetInt( "_NumberHands", 4 );
-
-
-
-        computeShader.SetFloat( "_DeltaTime"    , Time.time - oTime );
-        computeShader.SetFloat( "_Time"         , Time.time      );
+        forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
+        forcePass.SetFloat( "_Time"         , Time.time      );
 
         oTime = Time.time;
 
-        computeShader.SetInt( "_RibbonWidth"   , ribbonWidth     );
-        computeShader.SetInt( "_RibbonLength"  , ribbonLength    );
+        forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+        forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
+        forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
 
+        forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
+        forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
+        forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
 
-        //computeShader.SetBuffer( _kernel , "transBuffer"  , _transBuffer    );
-        computeShader.SetBuffer( _kernel , "vertBuffer"   , _vertBuffer     );
-        //computeShader.SetBuffer( _kernel , "ogBuffer"     , _ogBuffer       );
-        //computeShader.SetBuffer( _kernel , "handBuffer"   , _handBuffer     );
+		constraintPass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+        constraintPass.SetInt( "_RibbonLength"  , ribbonLength    );
 
+		constraintPass.SetBuffer( _kernelconstraint , "vertBuffer"   , _vertBuffer     );
 
-        /*
-		
-			TODO: Call proper amount of times 
-			per frame, passing off extra time to next frame!
+		doConstraint( 1 , 1 , _upLinkBuffer );
+		doConstraint( 1 , 1 , _rightLinkBuffer );
+		doConstraint( 1 , 1 , _diagonalDownLinkBuffer );
+		doConstraint( 1 , 1 , _diagonalUpLinkBuffer );
 
-			elapsedTime = lastTime - currentTime
-			lastTime = currentTime // reset lastTime
-			  
-			// add time that couldn't be used last frame
-			elapsedTime += leftOverTime
-			  
-			// divide it up in chunks of 16 ms
-			timesteps = floor(elapsedTime / 16)
-			  
-			// store time we couldn't use for the next frame.
-			leftOverTime = elapsedTime - timesteps * 16
+		doConstraint( 1 , 0 , _upLinkBuffer );
+		doConstraint( 1 , 0 , _rightLinkBuffer );
+		doConstraint( 1 , 0 , _diagonalDownLinkBuffer );
+		doConstraint( 1 , 0 , _diagonalUpLinkBuffer );
 
-        */
-
-
-
-		// Which link in compute are we doing
-    	//computeShader.SetInt("_Iteration" , 0 );
-
-    	//Switch which pairs we are doing
-    	//computeShader.SetInt("_Offset" , 0 );
-
-    	//TODO: only need to dispatch for half of the buffer size!
-    	//computeShader.Dispatch( _kernel , strideX , strideY  , strideZ );
-
-        //solver accuracy
-		for( int k = 0; k < 4; k++ ){
-        for( int i = 0; i < 4; i++ ){
-
-        	// number of Links in solver Loop
-        	for( int j = 0; j < 9; j++ ){
-
-	        	// Which link in compute are we doing
-	        	computeShader.SetInt("_Iteration" , j );
-	        	computeShader.SetInt("_Total" , i );
-	        	computeShader.SetInt("_WhichOne", k);
-
-	        	//Switch which pairs we are doing
-	        	computeShader.SetInt("_Offset" , i % 4 );
-
-	        	//TODO: only need to dispatch for half of the buffer size!
-	        	computeShader.Dispatch( _kernel , strideX , strideY  , strideZ );
-
-        	}
-
-        }
-    	}
-
-    }
+	}
 
     
 }

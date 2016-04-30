@@ -55,6 +55,9 @@
      <None Include="Assets\Resources\ClothDebug.shader" />
      <None Include="Assets\Resources\cloth.shader" />
      <None Include="Assets\Resources\cloth.compute" />
+     <None Include="Assets\Resources\ConstraintPass.compute" />
+     <None Include="Assets\Resources\ForcePass.compute" />
+     <None Include="Assets\Resources\CollisionPass.compute" />
      <None Include="Assets\Resources\donut.shader" />
      <None Include="Assets\Resources\donut.compute" />
  <Reference Include="UnityEngine.UI">

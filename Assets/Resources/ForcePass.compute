@@ -1,0 +1,111 @@
+﻿#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 6
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+float _DeltaTime;
+int _NumShapes;
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float3 ogPos;
+	float mass;
+	float ids[8];
+	float3 debug;
+};
+
+struct Shape{
+	float4x4 mat;
+	float shape;
+};
+
+
+RWStructuredBuffer<Vert> vertBuffer;
+RWStructuredBuffer<Shape> shapeBuffer;
+
+
+float sdBox( float3 p, float3 b )
+{
+  float3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) +
+         length(max(d,0.0));
+}
+
+
+float boxDistance( float3 p , float4x4 m ){
+
+    float4 q = (mul( m , float4( p.x , p.y , p.z , 1. )));
+
+    float3 s = float3(  length( float3( m[0][0] , m[0][1] , m[0][2] ) ),
+    					length( float3( m[1][0] , m[1][1] , m[1][2] ) ),
+    					length( float3( m[2][0] , m[2][1] , m[2][2] ) ) );
+    return sdBox( q.xyz , float3( .51 , .51 , .51 ) ) ;
+
+}
+
+
+
+float3 getVel( float3 p1 , float3 p2 ){
+
+	float3 v = p1 - p2;
+
+	if( length( v )> .5){ v = normalize( v ) *.5; }
+	return v;
+}
+
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  	int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  	Vert vert = vertBuffer[ pID ];
+	vert.mass = .4;
+
+
+	if( vert.pos.y < 0 ){ vert.pos.y = 0; }
+
+	// GRAVITY
+	float3 force = float3( 0 , -.03 , 0 );
+	float mass = 1;
+	float3 acceleration= float3( 0 ,0,0); 
+
+
+	for( int i = 0; i < _NumShapes; i++ ){
+		float l = boxDistance( vert.pos , shapeBuffer[i].mat );
+		if( l < 0 ){
+			vert.pos += float3( 0. , -l * .5 , 0 );
+			//vert.oPos = vert.pos;
+		}
+	}
+
+	// Inertia: objects in motion stay in motion.
+	float3 vel = getVel( vert.pos , vert.oPos);
+	acceleration = force / float3(vert.mass, vert.mass , vert.mass);
+
+	float3 next = vert.pos + vel * .95 + acceleration * _DeltaTime * _DeltaTime;
+
+	vert.oPos = vert.pos;
+	vert.pos = next;
+
+
+
+	
+	
+
+
+	vertBuffer[pID] = vert;
+
+
+	
+}

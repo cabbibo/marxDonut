@@ -18,20 +18,13 @@
             #include "UnityCG.cginc"
  
 
-            struct Vert {
-
-			  float3 pos;
-			  float3 oPos;
-			  float mass;
-			  float o0;
-			  float o1;
-			  float o2;
-			  float o3;
-			  float o4;
-			  float o5;
-			  float o6;
-			  float o7;
-
+            struct Vert{
+				float3 pos;
+				float3 oPos;
+				float3 ogPos;
+				float mass;
+				float ids[8];
+				float3 debug;
 			};
             
             struct Pos {
@@ -117,15 +110,16 @@
 
                 float3 l = v.pos , u = v.pos , d = v.pos  , r = v.pos;
 
-                if( v.o0 > -1 ){ r = buf_Points[v.o0].pos; }
-                if( v.o2 > -1 ){ d = buf_Points[v.o2].pos; }
-                if( v.o4 > -1 ){ l = buf_Points[v.o4].pos; }
-                if( v.o6 > -1 ){ u = buf_Points[v.o6].pos; }
+                if( v.ids[0] > -1 ){ r = buf_Points[v.ids[0]].pos; }
+                if( v.ids[2] > -1 ){ d = buf_Points[v.ids[2]].pos; }
+                if( v.ids[4] > -1 ){ l = buf_Points[v.ids[4]].pos; }
+                if( v.ids[6] > -1 ){ u = buf_Points[v.ids[6]].pos; }
 
                 n = cross( normalize(l - r) , normalize( u-d));
 
                 n = normalize( n );
 
+                o.debug = v.debug;//n * .5 + .5;
                 o.debug = n * .5 + .5;
                 //o.debug = float3( v.mass , 0 , 0 );
 
