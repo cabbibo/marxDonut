@@ -22,6 +22,8 @@
 				float3 pos;
 				float3 oPos;
 				float3 ogPos;
+				float3 norm;
+				float2 uv;
 				float mass;
 				float ids[8];
 				float3 debug;
@@ -106,22 +108,9 @@
 
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
 
-                float3 n = float3( 0 , 0 , 0 );
-
-                float3 l = v.pos , u = v.pos , d = v.pos  , r = v.pos;
-
-                if( v.ids[0] > -1 ){ r = buf_Points[v.ids[0]].pos; }
-                if( v.ids[2] > -1 ){ d = buf_Points[v.ids[2]].pos; }
-                if( v.ids[4] > -1 ){ l = buf_Points[v.ids[4]].pos; }
-                if( v.ids[6] > -1 ){ u = buf_Points[v.ids[6]].pos; }
-
-                n = cross( normalize(l - r) , normalize( u-d));
-
-                n = normalize( n );
 
                 o.debug = v.debug;//n * .5 + .5;
-                o.debug = n * .5 + .5;
-                //o.debug = float3( v.mass , 0 , 0 );
+                o.debug = v.norm * .5 + .5;
 
             
                 return o;

@@ -27,6 +27,8 @@ struct Vert{
 	float3 pos;
 	float3 oPos;
 	float3 ogPos;
+	float3 norm;
+	float2 uv;
 	float mass;
 	float ids[8];
 	float3 debug;

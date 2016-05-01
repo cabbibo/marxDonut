@@ -14,13 +14,7 @@ public class AssignStructs : MonoBehaviour {
   };
 
 
-  public struct MeshInfo{
-    public string name;
-    public Vector3[] vertices;
-    public Vector3[] normals;
-    public Vector2[] uvs; 
-    public int[] triangles;
-  }
+
 
 
   public struct VertC4{

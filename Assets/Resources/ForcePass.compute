@@ -19,6 +19,8 @@ struct Vert{
 	float3 pos;
 	float3 oPos;
 	float3 ogPos;
+	float3 norm;
+	float2 uv;
 	float mass;
 	float ids[8];
 	float3 debug;
@@ -67,9 +69,13 @@ float3 getVel( float3 p1 , float3 p2 ){
 [numthreads(threadX,threadY,threadZ)]
 void CSMain (uint3 id : SV_DispatchThreadID) {
   
-  	int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+  int pID = id.x + id.y * gridX + id.z * gridX * gridY;
 
-  	Vert vert = vertBuffer[ pID ];
+  Vert vert = vertBuffer[ pID ];
+
+
+
+	
 	vert.mass = .4;
 
 
@@ -97,12 +103,6 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
 	vert.oPos = vert.pos;
 	vert.pos = next;
-
-
-
-	
-	
-
 
 	vertBuffer[pID] = vert;
 

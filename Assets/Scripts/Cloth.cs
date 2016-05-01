@@ -14,7 +14,7 @@ public class Cloth : MonoBehaviour {
 
     // How the donut feels
     public ComputeShader constraintPass;
-    public ComputeShader collisionPass;
+    public ComputeShader normalPass;
     public ComputeShader forcePass;
 
     public GameObject[] Shapes;
@@ -58,8 +58,8 @@ public class Cloth : MonoBehaviour {
     
 
     private int _kernelforce;
-    private int _kernelcollision;
     private int _kernelconstraint;
+    private int _kernelnormal;
 
 
     private Material material;
@@ -69,11 +69,14 @@ public class Cloth : MonoBehaviour {
     private Vector3 p2;
 
     private float oTime = 0;
+    private bool objMade = false;
 
-    struct Vert{
+  struct Vert{
 		public Vector3 pos;
 		public Vector3 oPos;
 		public Vector3 ogPos;
+		public Vector3 norm;
+		public Vector2 uv;
 		public float mass;
 		public float[] ids;
 		public Vector3 debug;
@@ -91,7 +94,7 @@ public class Cloth : MonoBehaviour {
 		public float shape;
 	}
 
-	private int VertStructSize =  3 + 3 + 3 + 1 + 8 + 3;
+	private int VertStructSize =  3 + 3 + 3 + 3 + 2 + 1 + 8 + 3;
 	private int LinkStructSize =  1 + 1 + 1 + 1;
 	private int ShapeStructSize = 16 + 1;
 
@@ -105,7 +108,7 @@ public class Cloth : MonoBehaviour {
         createMaterial();
 
         _kernelforce = forcePass.FindKernel("CSMain");
-        _kernelcollision = collisionPass.FindKernel("CSMain");
+        _kernelnormal = normalPass.FindKernel("CSMain");
         _kernelconstraint = constraintPass.FindKernel("CSMain");
 
 
@@ -121,11 +124,14 @@ public class Cloth : MonoBehaviour {
     }
 
     void Update(){
-
-     
+    	//print(Input.GetKey ("a"));
+        if( Input.GetKey(KeyCode.Space)){
+            createOBJ();
+        }
         Dispatch();
-
     }
+
+
 
     //When this GameObject is disabled we must release the buffers or else Unity complains.
     private void OnDisable(){
@@ -209,12 +215,12 @@ public class Cloth : MonoBehaviour {
 
       _shapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );
 
-      _vertBuffer = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
+      _vertBuffer  = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
       
-      _upLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
-      _rightLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
-      _diagonalDownLinkBuffer = new ComputeBuffer( vertexCount / 2  , LinkStructSize * sizeof(float));
-      _diagonalUpLinkBuffer = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
+      _upLinkBuffer 			      = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
+      _rightLinkBuffer 			    = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
+      _diagonalDownLinkBuffer 	= new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
+      _diagonalUpLinkBuffer 	  = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
 
       float lRight = clothSize / (float)ribbonWidth;
       float lUp = clothSize / (float)ribbonLength;
@@ -240,6 +246,15 @@ public class Cloth : MonoBehaviour {
       int li4= 0;
 
 
+      /*        // second rite up here
+			 u	 dU   x  . r
+			 . .					 // third rite down here
+			 x  . r        x  . r
+				 . 
+				   dD
+
+      */
+
       for (int z = 0; z < gridZ; z++) {
         for (int y = 0; y < gridY; y++) {
           for (int x = 0; x < gridX; x++) {
@@ -247,7 +262,7 @@ public class Cloth : MonoBehaviour {
             int id = x + y * gridX + z * gridX * gridY; 
             
             float col = (float)(id % ribbonWidth );
-            float row = Mathf.Floor( ((float)id) / ribbonWidth);
+            float row = Mathf.Floor( ((float)id +0.01f) / ribbonWidth);
 
             if( row % 2 == 0 ){
 
@@ -256,6 +271,12 @@ public class Cloth : MonoBehaviour {
             	upLinkValues[li1++] = lUp;
             	upLinkValues[li1++] = 1;
 
+
+            	// Because of the way the right links
+            	// are made, we need to alternate them,
+            	// and flip flop them back and forth
+            	// so they are not writing to the same
+            	// positions during the same path!
             	float id1 , id2;
 
             	if( col % 2 == 0 ){
@@ -265,6 +286,7 @@ public class Cloth : MonoBehaviour {
             		id1 = convertToID( col + 0 , row + 1 );
             		id2 = convertToID( col + 1 , row + 1 );
             	}
+
             	rightLinkValues[li2++] = id1;
             	rightLinkValues[li2++] = id2;
             	rightLinkValues[li2++] = lRight;
@@ -297,6 +319,8 @@ public class Cloth : MonoBehaviour {
 
             vert.oPos = fVec;
             vert.ogPos = fVec;
+            vert.norm = new Vector3( 0 , 1 , 0 );
+            vert.uv = new Vector2( uvX , uvY );
 
             vert.mass = 0.3f;
             if( col == 0 || col == ribbonWidth || row == 0 || row == ribbonLength ){
@@ -325,6 +349,13 @@ public class Cloth : MonoBehaviour {
             inValues[index++] = vert.ogPos.x;
             inValues[index++] = vert.ogPos.y;
             inValues[index++] = vert.ogPos.z;
+
+            inValues[index++] = vert.norm.x;
+            inValues[index++] = vert.norm.y;
+            inValues[index++] = vert.norm.z;
+
+            inValues[index++] = vert.uv.x;
+            inValues[index++] = vert.uv.y;
 
             inValues[index++] = vert.mass;
 
@@ -403,42 +434,160 @@ public class Cloth : MonoBehaviour {
 
     	_shapeBuffer.SetData(shapeValues);
 
-
     }
 
     private void Dispatch() {
 
     	assignShapeBuffer();
 
-        forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
-        forcePass.SetFloat( "_Time"         , Time.time      );
+		  forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
+		  forcePass.SetFloat( "_Time"         , Time.time      );
 
-        oTime = Time.time;
+		  oTime = Time.time;
 
-        forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
-        forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
-        forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
+		  forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+		  forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
+		  forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
 
-        forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
-        forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
-        forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
+		  forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
+		  forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
+		  forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
 
-		constraintPass.SetInt( "_RibbonWidth"   , ribbonWidth     );
-        constraintPass.SetInt( "_RibbonLength"  , ribbonLength    );
+			constraintPass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+      constraintPass.SetInt( "_RibbonLength"  , ribbonLength    );
 
-		constraintPass.SetBuffer( _kernelconstraint , "vertBuffer"   , _vertBuffer     );
+			constraintPass.SetBuffer( _kernelconstraint , "vertBuffer"   , _vertBuffer     );
 
-		doConstraint( 1 , 1 , _upLinkBuffer );
-		doConstraint( 1 , 1 , _rightLinkBuffer );
-		doConstraint( 1 , 1 , _diagonalDownLinkBuffer );
-		doConstraint( 1 , 1 , _diagonalUpLinkBuffer );
+			doConstraint( 1 , 1 , _upLinkBuffer );
+			doConstraint( 1 , 1 , _rightLinkBuffer );
+			doConstraint( 1 , 1 , _diagonalDownLinkBuffer );
+			doConstraint( 1 , 1 , _diagonalUpLinkBuffer );
 
-		doConstraint( 1 , 0 , _upLinkBuffer );
-		doConstraint( 1 , 0 , _rightLinkBuffer );
-		doConstraint( 1 , 0 , _diagonalDownLinkBuffer );
-		doConstraint( 1 , 0 , _diagonalUpLinkBuffer );
+			doConstraint( 1 , 0 , _upLinkBuffer );
+			doConstraint( 1 , 0 , _rightLinkBuffer );
+			doConstraint( 1 , 0 , _diagonalDownLinkBuffer );
+			doConstraint( 1 , 0 , _diagonalUpLinkBuffer );
+
+
+			//calculate our normals
+			normalPass.SetBuffer( _kernelnormal , "vertBuffer"   , _vertBuffer );
+			normalPass.Dispatch( _kernelnormal , strideX , strideY  , strideZ );
+	}
+
+
+
+	/*
+
+		EXPORT INFO
+
+
+	*/
+
+	private int getID( int id  ){
+
+	  int b = (int)Mathf.Floor( id / 6 );
+	  int tri  = id % 6;
+	  int row = (int)Mathf.Floor( b / (ribbonWidth-1) );
+	  int col = (b) % (ribbonWidth -1);
+
+	  int rowU = (row + 1);
+	  int colU = (col + 1);
+
+	  int rDoID = row * ribbonWidth;
+	  int rUpID = rowU * ribbonWidth;
+
+	  int cDoID = col;
+	  int cUpID = colU;
+
+	  if( row < 0 || row >= ribbonWidth || col < 0 || col >= ribbonWidth  ){
+	  	print( "no1");
+	  }
+
+	  if( rowU < 0 || rowU >= ribbonWidth || colU < 0 || colU >= ribbonWidth  ){
+	  	print( "no2");
+	  }
+
+	  int fID = 0;
+
+	  if( tri == 0 ){
+	      fID = rDoID + cDoID;
+	  }else if( tri == 1 ){
+	      fID = rUpID + cUpID;
+	  }else if( tri == 2 ){
+	      fID = rUpID + cDoID;
+	  }else if( tri == 3 ){
+	      fID = rDoID + cDoID;
+	  }else if( tri == 4 ){
+	      fID = rDoID + cUpID;
+	  }else if( tri == 5 ){
+	      fID = rUpID + cUpID;
+	  }else{
+	      fID = 0;
+	  }
+
+
+	  if( fID >= ribbonLength * ribbonWidth ){
+	  	print("NOOOOO");
+	  }
+
+	  return fID;
 
 	}
+
+
+
+	void createOBJ(){
+
+        if( objMade == false ){
+            objMade = true;
+
+            _vertBuffer.GetData( inValues );
+
+
+            int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
+
+            
+            ObjExporter.MeshInfo mesh = new ObjExporter.MeshInfo();
+
+            Vector3[] verts = new Vector3[ ribbonLength * ribbonWidth ];
+            Vector3[] norms = new Vector3[ ribbonLength * ribbonWidth ];
+            Vector2[] uvs   = new Vector2[ ribbonLength * ribbonWidth ];
+            int[] triangles = new int[numVertsTotal];
+
+            for( int i = 0; i < ribbonWidth * ribbonLength; i++ ){
+                
+                int baseID = i * VertStructSize;
+
+                Vector3 v = new Vector3( inValues[baseID+0] , inValues[baseID+1], inValues[baseID+2]);
+                v = v * 1000;
+
+                Vector3 n = new Vector3( inValues[baseID+10] , inValues[baseID+11], inValues[baseID+12]);//calculateVector( baseID//new Vector3( inValues[baseID+6] , inValues[baseID+7], inValues[baseID+8]);
+                Vector2 u = new Vector2( inValues[baseID+13] , inValues[baseID+14]);
+
+                verts[i] = v;
+                norms[i] = n;
+                uvs[i]   = u;
+
+            }
+
+            for( int i = 0; i < numVertsTotal; i++ ){
+                triangles[i] = getID( i );
+            }
+
+            mesh.vertices = verts;
+            mesh.normals = norms;
+            mesh.uvs = uvs;
+            mesh.triangles = triangles;
+            mesh.name = "ct2";
+
+
+            ObjExporter.MeshToFile( mesh );
+
+        }
+
+
+    }
+ 
 
     
 }

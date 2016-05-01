@@ -156,13 +156,6 @@ public class Donut : MonoBehaviour {
 
     }
 
-    static void WriteToFile(string s, string filename)
-    {
-        var sr = File.CreateText(filename);
-        sr.WriteLine(s);
-        sr.Close();
-    }
-
 
     void createOBJ(){
 
@@ -176,7 +169,7 @@ public class Donut : MonoBehaviour {
             int numVertsTotal = ribbonWidth * 3 * 2 * (ribbonLength);
 
             
-            AssignStructs.MeshInfo mesh = new AssignStructs.MeshInfo();
+            ObjExporter.MeshInfo mesh = new ObjExporter.MeshInfo();
 
             Vector3[] verts = new Vector3[ ribbonLength * ribbonWidth ];
             Vector3[] norms = new Vector3[ ribbonLength * ribbonWidth ];
@@ -208,17 +201,9 @@ public class Donut : MonoBehaviour {
             mesh.name = "DONTUTEST";
 
 
-        
-
-            //string objString = makeString( mesh , transform );
-            //print( objString );
-            //WriteToFile( objString , "DONUT_TEST.obj");
-
             ObjExporter.MeshToFile( mesh );
 
         }
-
-
 
 
     }
