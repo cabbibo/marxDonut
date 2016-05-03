@@ -1,0 +1,107 @@
+﻿
+
+#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 3
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+
+
+int _RibbonWidth;
+int _RibbonLength;
+
+int _Offset;
+float _Multiplier;
+
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float3 ogPos;
+	float3 norm;
+	float2 uv;
+	float life;
+	float ids[8];
+	float3 debug;
+};
+
+struct Link{
+	float id1;
+	float id2;
+	float distance;
+	float stiffness;
+};
+
+RWStructuredBuffer<Vert> vertBuffer;
+RWStructuredBuffer<Link> linkBuffer;
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  	int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+  	
+ 	Link link = linkBuffer[pID];
+
+ 	int id1 = int( link.id1 );
+ 	int id2 = int( link.id2 );
+
+ 	if( _Offset == 1 && id1 >= 0 && id2 >= 0 ){
+ 		
+ 		id1 += _RibbonWidth;
+ 		id2 += _RibbonWidth;
+
+ 		// we in a right buffer,
+ 		// both are above, so let em go to bottoms!
+ 		if( id1 >= _RibbonWidth * _RibbonLength && id2 >= _RibbonWidth * _RibbonLength ){
+ 			id1 -= _RibbonWidth * _RibbonLength;
+ 			id2 -= _RibbonWidth * _RibbonLength;
+ 		}
+
+ 		if( id1 >= _RibbonWidth * _RibbonLength ){ id1 = -1; }
+ 		if( id2 >= _RibbonWidth * _RibbonLength ){ id2 = -1; }
+ 	}
+
+ 	if( id1 > -1 && id2 > -1 ){
+
+ 		Vert v1 = vertBuffer[id1];
+ 		Vert v2 = vertBuffer[id2];
+
+ 		float3 dif = v1.pos - v2.pos;
+ 		float l = length( dif );
+
+		float difference = ((link.distance ) - l ) / l;
+
+		float3 translate = dif * .5 * difference * _Multiplier;// /  float( _WhichOne + 1);
+
+		float3 t1 = 1 * translate; // vert.mass;
+		float3 t2 = 1 * translate; // vert2.mass;
+		
+		float3 n1 = v1.pos + t1;
+		float3 n2 = v2.pos - t2;
+
+		v1.pos = n1;
+		v2.pos = n2;
+
+
+		
+		//v1.life = max( v1.life , v2.life );
+		//v2.life = v1.life;
+
+		vertBuffer[ id1 ] = v1;
+		vertBuffer[ id2 ] = v2;
+
+
+
+ 	}
+
+	
+}

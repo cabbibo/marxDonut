@@ -1,2 +1,848 @@
 Base path: C:/Program Files/Unity/Editor/Data
 Cmd: getPlatforms
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(46): syntax error: unexpected token '('
+  error: 2 plat 4 at ForcePass.compute(48): 'log': no matching 1 parameter intrinsic function; Possible intrinsic functions are: log(float|half|min10float|min16float)
+  error: 2 plat 4 at ForcePass.compute(48): undeclared identifier 'res'
+  api=4 insize=2190 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(46): syntax error: unexpected token '('
+  error: 2 plat 4 at ForcePass.compute(48): 'log': no matching 1 parameter intrinsic function; Possible intrinsic functions are: log(float|half|min10float|min16float)
+  error: 2 plat 4 at ForcePass.compute(48): undeclared identifier 'res'
+  api=4 insize=2190 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(46): syntax error: unexpected token '('
+  error: 2 plat 4 at ForcePass.compute(48): 'log': no matching 1 parameter intrinsic function; Possible intrinsic functions are: log(float|half|min10float|min16float)
+  error: 2 plat 4 at ForcePass.compute(48): undeclared identifier 'res'
+  api=4 insize=2189 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(46): syntax error: unexpected token '('
+  error: 2 plat 4 at ForcePass.compute(48): 'log': no matching 1 parameter intrinsic function; Possible intrinsic functions are: log(float|half|min10float|min16float)
+  error: 2 plat 4 at ForcePass.compute(48): undeclared identifier 'res'
+  api=4 insize=2189 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(101): syntax error: unexpected token '}'
+  api=4 insize=2190 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(101): syntax error: unexpected token '}'
+  api=4 insize=2190 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=2191 outsize=2393 ok=1
+Cmd: compileCompute
+  api=4 insize=2193 outsize=1097 ok=1
+Cmd: compileCompute
+  api=4 insize=2191 outsize=2393 ok=1
+Cmd: compileCompute
+  api=4 insize=2195 outsize=2221 ok=1
+Cmd: compileCompute
+  api=4 insize=2191 outsize=2393 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(68): incorrect number of arguments to numeric-type constructor
+  api=4 insize=2865 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(68): incorrect number of arguments to numeric-type constructor
+  api=4 insize=2865 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(75): undeclared identifier 'fract'
+  api=4 insize=2906 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(75): undeclared identifier 'fract'
+  api=4 insize=2906 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=2905 outsize=2393 ok=1
+Cmd: compileCompute
+  api=4 insize=3018 outsize=1325 ok=1
+Cmd: compileCompute
+  api=4 insize=3018 outsize=1325 ok=1
+Cmd: compileCompute
+  api=4 insize=3063 outsize=2769 ok=1
+Cmd: compileCompute
+  api=4 insize=3063 outsize=2769 ok=1
+Cmd: compileCompute
+  api=4 insize=3063 outsize=2765 ok=1
+Cmd: compileCompute
+  api=4 insize=3065 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3065 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3067 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3067 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3065 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3072 outsize=2645 ok=1
+Cmd: compileCompute
+  api=4 insize=3093 outsize=2253 ok=1
+Cmd: compileCompute
+  api=4 insize=3096 outsize=2249 ok=1
+Cmd: compileCompute
+  api=4 insize=3097 outsize=2257 ok=1
+Cmd: compileCompute
+  api=4 insize=3102 outsize=2297 ok=1
+Cmd: compileCompute
+  api=4 insize=3098 outsize=2273 ok=1
+Cmd: compileCompute
+  api=4 insize=3097 outsize=2261 ok=1
+Cmd: compileCompute
+  api=4 insize=3093 outsize=2253 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(123): undeclared identifier 'l'
+  api=4 insize=3108 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(123): undeclared identifier 'l'
+  api=4 insize=3108 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3112 outsize=2161 ok=1
+Cmd: compileCompute
+  api=4 insize=3117 outsize=2201 ok=1
+Cmd: compileCompute
+  api=4 insize=3117 outsize=2137 ok=1
+Cmd: compileCompute
+  api=4 insize=3112 outsize=2133 ok=1
+Cmd: compileCompute
+  api=4 insize=3137 outsize=2133 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(136): redefinition of 'vel'
+  api=4 insize=3227 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(136): redefinition of 'vel'
+  api=4 insize=3227 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3220 outsize=2189 ok=1
+Cmd: compileCompute
+  api=4 insize=3232 outsize=2069 ok=1
+Cmd: compileCompute
+  api=4 insize=3232 outsize=2097 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3232 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3232 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3206 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3206 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=1909 outsize=1937 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3208 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(102): invalid subscript 'mass'
+  api=4 insize=3208 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3186 outsize=2181 ok=1
+Cmd: preprocess
+  insize=3548 outsize=338 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (68): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3509 outsize=2617 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3509 outsize=373 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=2695 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (64): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=2656 outsize=1361 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=2656 outsize=373 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=2714 outsize=338 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (64): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=2677 outsize=1461 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=2677 outsize=397 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=3189 outsize=2189 ok=1
+Cmd: compileCompute
+  api=4 insize=1895 outsize=1849 ok=1
+Cmd: compileCompute
+  api=4 insize=1899 outsize=1661 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ConstraintPass.compute(97): syntax error: unexpected token '}'
+  error: 2 plat 4 at ConstraintPass.compute(112): syntax error: unexpected end of file
+  api=4 insize=2043 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ConstraintPass.compute(97): syntax error: unexpected token '}'
+  error: 2 plat 4 at ConstraintPass.compute(112): syntax error: unexpected end of file
+  api=4 insize=2043 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=2045 outsize=2085 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(144): 'normalize': no matching 1 parameter intrinsic function; Possible intrinsic functions are: normalize(floatM|halfM|min10floatM|min16floatM)
+  error: 2 plat 4 at ForcePass.compute(144): scalar, vector, or matrix expected
+  api=4 insize=3371 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(144): 'normalize': no matching 1 parameter intrinsic function; Possible intrinsic functions are: normalize(floatM|halfM|min10floatM|min16floatM)
+  error: 2 plat 4 at ForcePass.compute(144): scalar, vector, or matrix expected
+  api=4 insize=3371 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=2049 outsize=1661 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(144): 'normalize': no matching 1 parameter intrinsic function; Possible intrinsic functions are: normalize(floatM|halfM|min10floatM|min16floatM)
+  error: 2 plat 4 at ForcePass.compute(144): scalar, vector, or matrix expected
+  api=4 insize=3370 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(144): 'normalize': no matching 1 parameter intrinsic function; Possible intrinsic functions are: normalize(floatM|halfM|min10floatM|min16floatM)
+  error: 2 plat 4 at ForcePass.compute(144): scalar, vector, or matrix expected
+  api=4 insize=3370 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3378 outsize=2673 ok=1
+Cmd: compileCompute
+  api=4 insize=3379 outsize=2673 ok=1
+Cmd: compileCompute
+  api=4 insize=3381 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3384 outsize=2701 ok=1
+Cmd: compileCompute
+  api=4 insize=3379 outsize=2697 ok=1
+Cmd: compileCompute
+  api=4 insize=3375 outsize=2697 ok=1
+Cmd: compileCompute
+  api=4 insize=3375 outsize=2697 ok=1
+Cmd: compileCompute
+  api=4 insize=3378 outsize=2189 ok=1
+Cmd: compileCompute
+  api=4 insize=3377 outsize=2181 ok=1
+Cmd: compileCompute
+  api=4 insize=2047 outsize=2085 ok=1
+Cmd: preprocess
+  insize=3583 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (97): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3543 outsize=1409 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3543 outsize=409 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=2045 outsize=2085 ok=1
+Cmd: compileCompute
+  api=4 insize=3400 outsize=2205 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(110): undeclared identifier 'l1'
+  api=4 insize=3402 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(110): undeclared identifier 'l1'
+  api=4 insize=3402 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3402 outsize=2245 ok=1
+Cmd: compileCompute
+  api=4 insize=3402 outsize=2641 ok=1
+Cmd: compileCompute
+  api=4 insize=3403 outsize=2641 ok=1
+Cmd: compileCompute
+  api=4 insize=1902 outsize=1661 ok=1
+Cmd: compileCompute
+  api=4 insize=3436 outsize=2689 ok=1
+Cmd: compileCompute
+  api=4 insize=3436 outsize=2689 ok=1
+Cmd: compileCompute
+  api=4 insize=3409 outsize=2641 ok=1
+Cmd: compileCompute
+  api=4 insize=3447 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3447 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3447 outsize=2669 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(145): undeclared identifier 'force'
+  api=4 insize=3449 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(145): undeclared identifier 'force'
+  api=4 insize=3449 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3450 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3452 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3450 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3448 outsize=2669 ok=1
+Cmd: preprocess
+  insize=2714 outsize=338 ok=1
+Cmd: preprocess
+  insize=4098 outsize=355 ok=1
+Cmd: preprocess
+  insize=4122 outsize=355 ok=1
+Cmd: preprocess
+  insize=3583 outsize=340 ok=1
+Cmd: preprocess
+  insize=3678 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at Chunks/semLookup.cginc(5): syntax error: unexpected token '<'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(113): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(231): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(267): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(341): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(352): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(513): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(578): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(582): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(657): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(113): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(231): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(267): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(341): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(352): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(513): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(601): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(605): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(719): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3638 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3866 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at Chunks/semLookup.cginc(5): syntax error: unexpected token '<'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(113): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(231): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(267): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(341): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(352): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(513): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(578): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(582): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/semLookup.cginc(657): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(113): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(231): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(267): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(341): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(352): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(513): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(601): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(605): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at Chunks/uvNormalMap.cginc(719): string continues past end of line\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3826 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3870 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (120): invalid subscript 'norm'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3830 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3865 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (130): undeclared identifier '_NormalMap'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3825 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3867 outsize=339 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (100): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3827 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3827 outsize=409 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=3865 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (130): undeclared identifier '_NormalMap'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3825 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3908 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (132): invalid subscript 'norm'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3868 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3907 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (132): undeclared identifier 'disp'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3867 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=3894 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3854 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3854 outsize=409 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=3451 outsize=2669 ok=1
+Cmd: compileCompute
+  api=4 insize=3489 outsize=2777 ok=1
+Cmd: compileCompute
+  api=4 insize=3491 outsize=2677 ok=1
+Cmd: compileCompute
+  api=4 insize=3493 outsize=2761 ok=1
+Cmd: compileCompute
+  api=4 insize=3495 outsize=2785 ok=1
+Cmd: compileCompute
+  api=4 insize=3495 outsize=2785 ok=1
+Cmd: compileCompute
+  api=4 insize=3496 outsize=2785 ok=1
+Cmd: compileCompute
+  api=4 insize=3498 outsize=2785 ok=1
+Cmd: compileCompute
+  api=4 insize=3474 outsize=2677 ok=1
+Cmd: compileCompute
+  api=4 insize=3472 outsize=2677 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(106): undeclared identifier '_Time'
+  api=4 insize=3563 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(106): undeclared identifier '_Time'
+  api=4 insize=3563 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(106): undeclared identifier '_Time'
+  api=4 insize=3561 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(106): undeclared identifier '_Time'
+  api=4 insize=3561 outsize=29 ok=0
+Cmd: preprocess
+  insize=2715 outsize=338 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (64): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=2678 outsize=1461 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=2678 outsize=397 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=3572 outsize=2969 ok=1
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(110): syntax error: unexpected token ','
+  api=4 insize=3737 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(110): syntax error: unexpected token ','
+  api=4 insize=3737 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=3738 outsize=3113 ok=1
+Cmd: compileCompute
+  api=4 insize=3810 outsize=3241 ok=1
+Cmd: compileCompute
+  api=4 insize=3812 outsize=3241 ok=1
+Cmd: compileCompute
+  api=4 insize=3814 outsize=3113 ok=1
+Cmd: compileCompute
+  api=4 insize=3817 outsize=3241 ok=1
+Cmd: compileCompute
+  api=4 insize=3862 outsize=3189 ok=1
+Cmd: compileCompute
+  api=4 insize=3865 outsize=3181 ok=1
+Cmd: compileCompute
+  api=4 insize=3872 outsize=3189 ok=1
+Cmd: compileCompute
+  api=4 insize=3872 outsize=3189 ok=1
+Cmd: compileCompute
+  api=4 insize=3870 outsize=3189 ok=1
+Cmd: compileCompute
+  api=4 insize=3870 outsize=3189 ok=1
+Cmd: compileCompute
+  api=4 insize=3688 outsize=3917 ok=1
+Cmd: compileCompute
+  api=4 insize=3688 outsize=3917 ok=1
+Cmd: compileCompute
+  api=4 insize=3690 outsize=3917 ok=1
+Cmd: compileCompute
+  api=4 insize=3878 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3878 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3876 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3875 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3872 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3871 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3871 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3871 outsize=4141 ok=1
+Cmd: preprocess
+  error: 2 plat 18 at (20): Can't find include file Chunks/semLookup.cginc
+  error: 2 plat 18 at (21): Can't find include file Chunks/uvNormalMap.cginc
+  insize=3894 outsize=341 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(45): failed to open source file: 'Chunks/noise.cginc'
+  api=4 insize=3871 outsize=29 ok=0
+Cmd: compileCompute
+  error: 2 plat 4 at ForcePass.compute(45): failed to open source file: 'Chunks/noise.cginc'
+  api=4 insize=3871 outsize=29 ok=0
+Cmd: compileCompute
+  api=4 insize=1902 outsize=1661 ok=1
+Cmd: preprocess
+  insize=3912 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3872 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3872 outsize=1277 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=3912 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3872 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3872 outsize=1317 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=3911 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=3871 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=3871 outsize=1277 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4162 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (137): undeclared identifier 'uv'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4122 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4166 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4126 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4126 outsize=1553 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4166 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4126 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4126 outsize=1553 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4180 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4140 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4140 outsize=1609 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4186 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4146 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4146 outsize=1465 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4187 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4147 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4147 outsize=1465 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4187 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4147 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4147 outsize=1465 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4197 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4157 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4157 outsize=1473 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4213 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4173 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4173 outsize=1521 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4202 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4162 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4162 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4202 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4162 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4162 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4208 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4168 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4168 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4198 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4158 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4158 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4200 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4160 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4160 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4200 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4160 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4160 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4202 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4162 outsize=1493 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4162 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=3871 outsize=4141 ok=1
+Cmd: compileCompute
+  api=4 insize=3872 outsize=4149 ok=1
+Cmd: compileCompute
+  api=4 insize=3873 outsize=4149 ok=1
+Cmd: compileCompute
+  api=4 insize=3871 outsize=4141 ok=1
+Cmd: preprocess
+  insize=4193 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4153 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4153 outsize=1645 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=4004 outsize=6381 ok=1
+Cmd: compileCompute
+  api=4 insize=4002 outsize=6301 ok=1
+Cmd: compileCompute
+  api=4 insize=4008 outsize=6341 ok=1
+Cmd: compileCompute
+  api=4 insize=4059 outsize=6445 ok=1
+Cmd: preprocess
+  insize=4256 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4216 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4216 outsize=1633 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4269 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (139): if statement conditional expressions must evaluate to a scalar\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4229 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4273 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4233 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4233 outsize=1689 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4273 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4233 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4233 outsize=1689 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4316 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (139): undeclared identifier 'c'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4276 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4321 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (139): undeclared identifier 'c'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4281 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4319 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4279 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4279 outsize=1677 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4541 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4501 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4501 outsize=1865 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4569 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4529 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4529 outsize=1893 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4595 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4555 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4555 outsize=1865 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4617 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4577 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4577 outsize=1837 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4547 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4507 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4507 outsize=1853 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4528 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4488 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4488 outsize=1853 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4606 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (142): syntax error: unexpected token 'float2'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at (143): undeclared identifier 'nuv'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4566 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4609 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 2 plat 4 at (142): syntax error: unexpected token 'float2'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  error: 2 plat 4 at (143): undeclared identifier 'nuv'\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4569 outsize=0 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=0
+Cmd: preprocess
+  insize=4607 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4567 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4567 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4607 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4567 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4567 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4605 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4565 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4565 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4605 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4565 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4565 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4606 outsize=340 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4566 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4566 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=4607 outsize=341 ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at (102): Output value 'vert' is not completely initialized\nCompiling Vertex program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=0 insize=4567 outsize=1637 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=4567 outsize=1781 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileCompute
+  api=4 insize=4110 outsize=5521 ok=1

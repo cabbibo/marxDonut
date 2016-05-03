@@ -1,0 +1,191 @@
+﻿#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 6
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+
+
+
+float _DeltaTime;
+float _Time;
+int _NumShapes;
+
+
+
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float3 ogPos;
+	float3 norm;
+	float2 uv;
+	float life;
+	float ids[8];
+	float3 debug;
+};
+
+struct Shape{
+	float4x4 mat;
+	float shape;
+};
+
+
+RWStructuredBuffer<Vert> vertBuffer;
+RWStructuredBuffer<Shape> shapeBuffer;
+
+#include "Chunks/noise.cginc"
+
+
+float sdBox( float3 p, float3 b ){
+  float3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) +
+         length(max(d,0.0));
+}
+
+// exponential smooth min (k = 32);
+float smin( float a, float b, float k ){
+    float res = exp( -k*a ) + exp( -k*b );
+    return -log( res )/k;
+}
+
+
+float boxDistance( float3 p , float4x4 m ){
+
+    float4 q = (mul( m , float4( p.x , p.y , p.z , 1. )));
+
+    float3 s = float3(  length( float3( m[0][0] , m[0][1] , m[0][2] ) ),
+    					length( float3( m[1][0] , m[1][1] , m[1][2] ) ),
+    					length( float3( m[2][0] , m[2][1] , m[2][2] ) ) );
+    return sdBox( q.xyz , float3( .51 , .51 , .51 ) ) ;
+
+}
+
+
+// From https://www.shadertoy.com/view/XtjSRm
+// shane code
+float vNoise( in float3 p )
+{
+    float3 i = floor(p + dot(p, float3(0.333333,0.333333,0.333333)) ); 
+    p -= i - dot(i, float3(0.166666,0.166666,0.166666)) ;
+    float3 i1 = step(0., p-p.yzx), i2 = max(i1, 1.0-i1.zxy); i1 = min(i1, 1.0-i1.zxy); 
+    float3 p1 = p - i1 + 0.166666, p2 = p - i2 + 0.333333, p3 = p - 0.5;
+    float3 rnd = float3(7, 157, 113); 
+    float4 v = max(0.5 - float4(dot(p, p), dot(p1, p1), dot(p2, p2), dot(p3, p3)), 0.);
+    float4 d = float4( dot(i, rnd), dot(i + i1, rnd), dot(i + i2, rnd), dot(i + 1., rnd) ); 
+    d = frac(sin(d)*262144.)*v*2.; 
+    v.x = max(d.x, d.y), v.y = max(d.z, d.w); 
+    return max(v.x, v.y); 
+}
+
+
+float3 getVel( float3 p1 , float3 p2 ){
+
+	float3 v = p1 - p2;
+
+	if( length( v )> .5){ v = normalize( v ) *.5; }
+	return v;
+}
+
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  Vert vert = vertBuffer[ pID ];
+
+
+// Inertia: objects in motion stay in motion.
+	float3 vel = getVel( vert.pos , vert.oPos);
+
+
+	//if( vert.pos.y < 0 ){ vert.pos.y = 0; }
+
+	// GRAVITY
+
+	float n = noise( vert.pos * 10 );
+	float n2 = noise( vert.pos * 5 + float3( 0 , _Time , 0 ) );
+	float n3 = noise( vert.pos * 7 + float3( 0 , _Time , 0 ));
+	float g = 0;
+
+	if( vert.life > 1 ){ g = -.3 * (n + .1); }
+
+	float3 force = float3( 0 , g , 0 );
+	if( vert.life > 1 ){ force += float3( n2 -.5, 0 , n3-.5 ) * 1; }
+
+	//force += .00000001 * n * normalize(float3( vert.pos.x , 0 , vert.pos.z ));
+	float mass = 1;
+	float3 acceleration= float3( 0 ,0,0); 
+
+
+	float l1 = vertBuffer[vert.ids[0]].life;
+	float l2 = vertBuffer[vert.ids[2]].life;
+	float l3 = vertBuffer[vert.ids[4]].life;
+	float l4 = vertBuffer[vert.ids[6]].life;
+	float l5 = vertBuffer[vert.ids[1]].life;
+	float l6 = vertBuffer[vert.ids[3]].life;
+	float l7 = vertBuffer[vert.ids[5]].life;
+	float l8 = vertBuffer[vert.ids[7]].life;
+	vert.life =1.8 * ((l1 + l2 + l3 + l4 + l5 + l6 + l7 + l8) / 8);
+
+	vert.life = min( 2 , vert.life );
+
+
+
+		float f = 0;
+		for( int i = 0; i < _NumShapes; i++ ){
+			float l = boxDistance( vert.pos , shapeBuffer[i].mat );
+			f = min( f , l );// , 32);
+		}
+		f = length( vert.pos - float3( 0 , 0 , 0 )) -.5;
+
+		if( f < 0 ){
+
+			vert.life += 1;
+
+			vert.pos = vert.oPos; //float3( 0 , -f , 0 );
+			vert.oPos = vert.pos;
+			//vert.pos += normalize(vel) * f * .5;
+			//vert.oPos = vert.pos;
+		}
+
+	
+
+	/*float l = length(vert.pos - float3(0,0,0))-.5;
+	float n = vNoise( vert.pos * 5);
+	if( l + (n * .1) < 0 ){
+		vert.pos -= vel;//float3( 0 , -l * .1 , 0 );
+	}*/
+
+// Inertia: objects in motion stay in motion.
+	vel = getVel( vert.pos , vert.oPos);
+
+	
+	acceleration = force;
+
+	float3 next = vert.pos + vel * .99 + acceleration * _DeltaTime * _DeltaTime;
+
+	vert.oPos = vert.pos;
+	vert.pos = next;
+
+
+
+
+	
+	
+
+
+	vertBuffer[pID] = vert;
+
+
+	
+}

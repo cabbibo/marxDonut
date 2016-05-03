@@ -1,0 +1,61 @@
+﻿
+
+#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 6
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float3 ogPos;
+	float mass;
+	float ids[8];
+	float3 debug;
+};
+
+
+struct Shape{
+	float4x4 mat;
+	float shape;
+};
+
+
+RWStructuredBuffer<Vert> vertBuffer;
+
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  	int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  	Vert vert = vertBuffer[ pID ];
+
+	float3 testSphere = float3( 0.0 , .2, 0.3);
+
+	if( length(vert.pos - testSphere) < .1 ){
+
+		vert.pos = normalize(vert.pos - testSphere) *.1 + testSphere;
+
+	}
+
+
+	if( vert.pos.y < 0 ){ vert.pos.y = vert.oPos.y; }
+
+
+ 
+
+	vertBuffer[pID] = vert;
+
+
+	
+}

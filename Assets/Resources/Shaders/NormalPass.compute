@@ -1,0 +1,66 @@
+﻿#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 6
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+struct Vert{
+	float3 pos;
+	float3 oPos;
+	float3 ogPos;
+	float3 norm;
+	float2 uv;
+	float mass;
+	float ids[8];
+	float3 debug;
+};
+
+RWStructuredBuffer<Vert> vertBuffer;
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  Vert v = vertBuffer[ pID ];
+  float3 l = v.pos , u = v.pos , d = v.pos  , r = v.pos;
+
+  if( v.ids[0] > -1 ){ r = vertBuffer[v.ids[0]].pos; }
+  if( v.ids[2] > -1 ){ d = vertBuffer[v.ids[2]].pos; }
+  if( v.ids[4] > -1 ){ l = vertBuffer[v.ids[4]].pos; }
+  if( v.ids[6] > -1 ){ u = vertBuffer[v.ids[6]].pos; }
+
+
+  float3 n = cross( normalize(l - r) , normalize(u - d));
+	n = normalize( n );
+
+
+	l = v.pos , u = v.pos , d = v.pos  , r = v.pos;
+
+  if( v.ids[1] > -1 ){ r = vertBuffer[v.ids[1]].pos; }
+  if( v.ids[3] > -1 ){ d = vertBuffer[v.ids[3]].pos; }
+  if( v.ids[5] > -1 ){ l = vertBuffer[v.ids[5]].pos; }
+  if( v.ids[7] > -1 ){ u = vertBuffer[v.ids[7]].pos; }
+
+
+  float3 n2 = cross( normalize(l - r) , normalize(u - d));
+	n2 = normalize( n2 );
+
+	v.norm = normalize( n2 + n );
+
+	vertBuffer[pID] = v;
+
+
+	
+}
+
+
+

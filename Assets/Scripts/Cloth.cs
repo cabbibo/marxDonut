@@ -17,7 +17,11 @@ public class Cloth : MonoBehaviour {
     public ComputeShader normalPass;
     public ComputeShader forcePass;
 
+    public Transform finalTransform;
     public GameObject[] Shapes;
+
+    public Texture2D normalMap;
+    public Cubemap cubeMap;
 
     public float clothSize = 1;
     public float startingHeight = 1;
@@ -180,9 +184,11 @@ public class Cloth : MonoBehaviour {
         material.SetInt( "_RibbonWidth"  , ribbonWidth  );
         material.SetInt( "_RibbonLength" , ribbonLength );
         material.SetInt( "_TotalVerts"   , vertexCount  );
+        material.SetTexture( "_NormalMap" , normalMap);
+        material.SetTexture( "_CubeMap"  , cubeMap );
 
-        material.SetMatrix("worldMat", transform.localToWorldMatrix);
-        material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+        material.SetMatrix("worldMat", finalTransform.localToWorldMatrix);
+        material.SetMatrix("invWorldMat", finalTransform.worldToLocalMatrix);
 
         Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
 
@@ -317,8 +323,8 @@ public class Cloth : MonoBehaviour {
 
             vert.pos = fVec * 1.000001f;
 
-            vert.oPos = fVec;
-            vert.ogPos = fVec;
+            vert.oPos = fVec- new Vector3( 0 , -.11f , 0 );
+            vert.ogPos = fVec ;
             vert.norm = new Vector3( 0 , 1 , 0 );
             vert.uv = new Vector2( uvX , uvY );
 
@@ -357,7 +363,7 @@ public class Cloth : MonoBehaviour {
             inValues[index++] = vert.uv.x;
             inValues[index++] = vert.uv.y;
 
-            inValues[index++] = vert.mass;
+            inValues[index++] = 0;
 
             inValues[index++] = vert.ids[0];
             inValues[index++] = vert.ids[1];
