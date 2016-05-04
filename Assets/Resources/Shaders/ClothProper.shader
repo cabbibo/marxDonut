@@ -16,11 +16,10 @@
             #pragma fragment frag
  
             #include "UnityCG.cginc"
-
-            #include "Chunks/semLookup.cginc"
             #include "Chunks/uvNormalMap.cginc"
 
             uniform sampler2D _NormalMap;
+            uniform samplerCUBE _CubeMap;
  
 
             struct Vert{
@@ -112,11 +111,13 @@
 
                 o.worldPos = mul( worldMat , float4( v.pos , 1.) ).xyz;
 
+                o.eye = _WorldSpaceCameraPos - o.worldPos;
+
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
 
 
                 o.debug = v.debug;//n * .5 + .5;
-                o.debug = v.norm * .5 + .5;
+                //o.debug = v.norm * .5 + .5;
                 o.life = v.life;
                 o.uv = v.uv;
                 o.nor = v.norm;
@@ -134,10 +135,13 @@
 
                 float3 col = fNorm * .5 + .5;//i.debug;
 
+                float3 fRefl = reflect( -i.eye , fNorm );
+                float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
+
                 //float og = min( abs(sin( i.uv.x * 10 * 3.16 )) , abs(sin( i.uv.y * 10  * 3.16 )));
                 float2 cuv = abs(i.uv - float2( .5 , .5 ));
                 float og = max(cuv.x , cuv.y);
-                float sizeVal = (.1 + _Time.y * .125);
+                float sizeVal = (.1 + _Time.y * _Time.y* .014);
 
                 float2 nuv = cuv / sizeVal;
                 float d = min( abs(sin( nuv.x * 6 * 3.16 )) , abs(sin( nuv.y * 6  * 3.16 )));
@@ -152,9 +156,10 @@
                 }
 
 
-                col = lerp( float3( 1 ,1,1) , col , min( i.life , 1 ));
+                col = lerp( float3( 1 ,1,1) , col * cubeCol * 2 , min( i.life , 1 ));
                 
 
+              //  if( i.debug.z >= 3 ){ col = float3(1,1,1);}
                 return float4( col , 1 );
 
             }

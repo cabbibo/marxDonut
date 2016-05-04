@@ -1,12 +1,12 @@
 ﻿#pragma kernel CSMain
  
-#define threadX 6
-#define threadY 6
-#define threadZ 6
+#define threadX 8
+#define threadY 8
+#define threadZ 8
 
-#define strideX 6
-#define strideY 6
-#define strideZ 6
+#define strideX 8
+#define strideY 8
+#define strideZ 8
 
 #define gridX (threadX * strideX)
 #define gridY (threadY * strideY)
@@ -70,6 +70,96 @@ float boxDistance( float3 p , float4x4 m ){
 }
 
 
+float sdCylinder( float3 p, float3 c )
+{
+  return length(p.xz-c.xy)-c.z;
+}
+
+float sdSphere( float3 p, float s )
+{
+  return length(p)-s;
+}
+
+
+float lPow( float2 p , float n ){
+     return pow((pow(p.x,n) + pow(p.y,n)) , 1. / n );
+}
+float lPow( float3 p , float n ){
+     return pow((pow(p.x,n) + pow(p.y,n)+ pow(p.z,n)) , 1. / n );
+}
+float sdTorus82( float3 p, float2 t )
+{
+  float2 q = float2(lPow(p.xz,2.)-t.x,p.y);
+  return lPow(q,8.)-t.y;
+}
+
+
+float opU( float d1, float d2 )
+{
+    return min(d1,d2);
+}
+		
+
+float opS( float d1, float d2 )
+{
+    return max(-d1,d2);
+}
+
+// ROTATION FUNCTIONS TAKEN FROM
+//https://www.shadertoy.com/view/XsSSzG
+float3x3 xrotate(float t) {
+	return float3x3(1.0, 0.0, 0.0,
+                0.0, cos(t), -sin(t),
+                0.0, sin(t), cos(t));
+}
+
+float3x3 yrotate(float t) {
+	return float3x3(cos(t), 0.0, -sin(t),
+                0.0, 1.0, 0.0,
+                sin(t), 0.0, cos(t));
+}
+
+float3x3 zrotate(float t) {
+    return float3x3(cos(t), -sin(t), 0.0,
+                sin(t), cos(t), 0.0,
+                0.0, 0.0, 1.0);
+}
+
+
+
+float doBox( float3 p , float r ){
+    
+    float3 q = mul( zrotate( r ) , p );
+    return sdBox( q , float3( .4 , .022 , .022 ));
+
+}
+
+//--------------------------------
+// Modelling 
+//--------------------------------
+float map( float3 pos ){  
+
+
+		pos /= 1.;
+		pos = mul( xrotate( 3.14159 / 2. ), pos);
+    
+    float3 q = mul(xrotate( 3.14159 / 2. ) ,pos);
+    float2 res = float2( sdTorus82( q , float2( .3 , .022 )),1. );
+    
+    float cabibboAngle = 13.02 / 360.;
+    cabibboAngle *= 2. * 3.14159;
+
+    res.x = opU( res.x , doBox( pos, 0. ));
+    res.x = opU( res.x , doBox( pos, cabibboAngle ));
+    res.x = opU( res.x , doBox( pos, 3.14159 / 2. ));
+    res.x = opU( res.x , doBox( pos, (3.14159 / 2.) + cabibboAngle ));
+
+    return res.x * 1.;
+    
+}
+
+
+
 // From https://www.shadertoy.com/view/XtjSRm
 // shane code
 float vNoise( in float3 p )
@@ -108,18 +198,22 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	float3 vel = getVel( vert.pos , vert.oPos);
 
 
-	//if( vert.pos.y < 0 ){ vert.pos.y = 0; }
+	// floor
+	//if( vert.pos.y < -.2 ){ vert.pos.y = -.2; }
 
 	// GRAVITY
 
-	float n = noise( vert.pos * 10 );
-	float n2 = noise( vert.pos * 5 + float3( 0 , _Time , 0 ) );
-	float n3 = noise( vert.pos * 7 + float3( 0 , _Time , 0 ));
+	float3 nPos = vert.pos * 4;
+	float n = noise( nPos * 10 );
+	float n2 = noise( nPos * 5 + float3( 0 , _Time , 0 ) );
+	float n3 = noise( nPos * 7 + float3( 0 , _Time , 0 ));
 	float g = 0;
 
 	if( vert.life > 1 ){ g = -.3 * (n + .1); }
 
 	float3 force = float3( 0 , g , 0 );
+	force *= .1;
+
 	if( vert.life > 1 ){ force += float3( n2 -.5, 0 , n3-.5 ) * 1; }
 
 	//force += .00000001 * n * normalize(float3( vert.pos.x , 0 , vert.pos.z ));
@@ -146,17 +240,24 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 			float l = boxDistance( vert.pos , shapeBuffer[i].mat );
 			f = min( f , l );// , 32);
 		}
-		f = length( vert.pos - float3( 0 , 0 , 0 )) -.5;
+		//f = length( vert.pos - float3( 0 , 0 , 0 )) -.5;
 
+		//f = map( vert.pos ).x;
 		if( f < 0 ){
 
 			vert.life += 1;
 
+
+			vert.debug.z = 4;
 			vert.pos = vert.oPos; //float3( 0 , -f , 0 );
 			vert.oPos = vert.pos;
 			//vert.pos += normalize(vel) * f * .5;
 			//vert.oPos = vert.pos;
+		}else{
+			vert.debug.z = 0;
 		}
+
+	//	if( f < 0.01 ){ vert.debug.z = 4; }
 
 	
 

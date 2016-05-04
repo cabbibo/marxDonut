@@ -40,13 +40,13 @@ public class Cloth : MonoBehaviour {
     private ComputeBuffer _shapeBuffer;
 
 
-    private const int threadX = 6;
-    private const int threadY = 6;
-    private const int threadZ = 6;
+    private const int threadX = 8;
+    private const int threadY = 8;
+    private const int threadZ = 8;
 
-    private const int strideX = 6;
-    private const int strideY = 6;
-    private const int strideZ = 6;
+    private const int strideX = 8;
+    private const int strideY = 8;
+    private const int strideZ = 8;
 
     private int gridX { get { return threadX * strideX; } }
     private int gridY { get { return threadY * strideY; } }
@@ -57,7 +57,7 @@ public class Cloth : MonoBehaviour {
 
 
 
-    private int ribbonWidth = 216;
+    private int ribbonWidth = 512;
     private int ribbonLength { get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
     
 

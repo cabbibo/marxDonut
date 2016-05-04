@@ -58,6 +58,7 @@
      <None Include="Assets\Resources\Shaders\cloth.compute" />
      <None Include="Assets\Resources\Shaders\Chunks\getGridDiscard.cginc" />
      <None Include="Assets\Resources\Shaders\ConstraintPass.compute" />
+     <None Include="Assets\Resources\Shaders\Title.shader" />
      <None Include="Assets\Resources\Shaders\NormalPass.compute" />
      <None Include="Assets\Resources\Shaders\ForcePass.compute" />
      <None Include="Assets\Resources\Shaders\CollisionPass.compute" />

@@ -1,12 +1,12 @@
 ﻿#pragma kernel CSMain
  
-#define threadX 6
-#define threadY 6
-#define threadZ 6
+#define threadX 8
+#define threadY 8
+#define threadZ 8
 
-#define strideX 6
-#define strideY 6
-#define strideZ 6
+#define strideX 8
+#define strideY 8
+#define strideZ 8
 
 #define gridX (threadX * strideX)
 #define gridY (threadY * strideY)
