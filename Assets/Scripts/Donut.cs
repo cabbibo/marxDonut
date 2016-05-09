@@ -104,6 +104,7 @@ public class Donut : MonoBehaviour {
 
     }
 
+
     //When this GameObject is disabled we must release the buffers or else Unity complains.
     private void OnDisable(){
         Camera.onPostRender -= Render;
@@ -342,8 +343,8 @@ public class Donut : MonoBehaviour {
         return id;
 
     }
-    
-    private void Dispatch() {
+    void Dispatch(){}
+   /* private void Dispatch() {
 
         AssignStructs.AssignTransBuffer( transform , transValues , _transBuffer );
 
@@ -373,5 +374,5 @@ public class Donut : MonoBehaviour {
         computeShader.Dispatch(_kernel, strideX , strideY , strideZ );
 
 
-    }
+    }*/
 }

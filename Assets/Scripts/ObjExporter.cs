@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -20,7 +19,7 @@ public class ObjExporter {
       
         StringBuilder sb = new StringBuilder();
  
-        sb.Append("g ").Append( m.name ).Append("\n");
+        sb.Append("o ").Append( m.name ).Append("\n");
         foreach(Vector3 v in m.vertices) {
             sb.Append(string.Format("v {0} {1} {2}\n",v.x,v.y,v.z));
         }
@@ -51,6 +50,18 @@ public class ObjExporter {
         using (StreamWriter sw = new StreamWriter(filename)) 
         {
             sw.Write(MeshToString(m));
+        }
+    }
+
+    public static void MeshesToFile( string name , MeshInfo[] meshes ) {
+
+        string filename = name + ".OBJ";
+
+        using (StreamWriter sw = new StreamWriter(filename)) 
+        {
+            for( int i = 0; i < meshes.Length; i++){
+                sw.Write(MeshToString(meshes[i]));
+            }
         }
     }
 }

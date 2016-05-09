@@ -1,12 +1,12 @@
 ﻿#pragma kernel CSMain
  
-#define threadX 8
-#define threadY 8
-#define threadZ 8
+#define threadX 6
+#define threadY 6
+#define threadZ 6
 
-#define strideX 8
-#define strideY 8
-#define strideZ 8
+#define strideX 6
+#define strideY 6
+#define strideZ 6
 
 #define gridX (threadX * strideX)
 #define gridY (threadY * strideY)
@@ -18,6 +18,8 @@
 float _DeltaTime;
 float _Time;
 int _NumShapes;
+int _NumberHands;
+int _Reset;
 
 
 
@@ -33,14 +35,31 @@ struct Vert{
 	float3 debug;
 };
 
+
+  
+struct Hand{
+  float active;
+  float3 pos;
+  float3 vel;
+  float3 aVel;
+  float  triggerVal;
+  float  thumbVal;
+  float  sideVal;
+  float2 thumbPos;
+};
+
 struct Shape{
 	float4x4 mat;
 	float shape;
 };
 
 
+//float4x4 _TransformMatrix;
+
+RWStructuredBuffer<float4x4> transformBuffer;
 RWStructuredBuffer<Vert> vertBuffer;
 RWStructuredBuffer<Shape> shapeBuffer;
+RWStructuredBuffer<Hand> handBuffer;
 
 #include "Chunks/noise.cginc"
 
@@ -65,7 +84,7 @@ float boxDistance( float3 p , float4x4 m ){
     float3 s = float3(  length( float3( m[0][0] , m[0][1] , m[0][2] ) ),
     					length( float3( m[1][0] , m[1][1] , m[1][2] ) ),
     					length( float3( m[2][0] , m[2][1] , m[2][2] ) ) );
-    return sdBox( q.xyz , float3( .51 , .51 , .51 ) ) ;
+    return sdBox( q.xyz , s * .05 + float3( .5 , .5 , .5 ) ) ;
 
 }
 
@@ -186,6 +205,18 @@ float3 getVel( float3 p1 , float3 p2 ){
 }
 
 
+float3 calcNormal( in float3 pos , in float4x4 mat ){
+
+        float3 eps = float3( 0.001, 0.0, 0.0 );
+        float3 nor = float3(
+            boxDistance(pos+eps.xyy,mat).x - boxDistance(pos-eps.xyy,mat).x,
+            boxDistance(pos+eps.yxy,mat).x - boxDistance(pos-eps.yxy,mat).x,
+            boxDistance(pos+eps.yyx,mat).x - boxDistance(pos-eps.yyx,mat).x );
+        return normalize(nor);
+
+      }
+
+
 [numthreads(threadX,threadY,threadZ)]
 void CSMain (uint3 id : SV_DispatchThreadID) {
   
@@ -193,90 +224,149 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
   Vert vert = vertBuffer[ pID ];
 
-
-// Inertia: objects in motion stay in motion.
-	float3 vel = getVel( vert.pos , vert.oPos);
-
-
-	// floor
-	//if( vert.pos.y < -.2 ){ vert.pos.y = -.2; }
-
-	// GRAVITY
-
-	float3 nPos = vert.pos * 4;
-	float n = noise( nPos * 10 );
-	float n2 = noise( nPos * 5 + float3( 0 , _Time , 0 ) );
-	float n3 = noise( nPos * 7 + float3( 0 , _Time , 0 ));
-	float g = 0;
-
-	if( vert.life > 1 ){ g = -.3 * (n + .1); }
-
-	float3 force = float3( 0 , g , 0 );
-	force *= .1;
-
-	if( vert.life > 1 ){ force += float3( n2 -.5, 0 , n3-.5 ) * 1; }
-
-	//force += .00000001 * n * normalize(float3( vert.pos.x , 0 , vert.pos.z ));
-	float mass = 1;
-	float3 acceleration= float3( 0 ,0,0); 
+  if( _Reset == 1 ){
+    vert.oPos = vert.ogPos;
+    vert.pos = vert.ogPos;
+  }else{
 
 
-	float l1 = vertBuffer[vert.ids[0]].life;
-	float l2 = vertBuffer[vert.ids[2]].life;
-	float l3 = vertBuffer[vert.ids[4]].life;
-	float l4 = vertBuffer[vert.ids[6]].life;
-	float l5 = vertBuffer[vert.ids[1]].life;
-	float l6 = vertBuffer[vert.ids[3]].life;
-	float l7 = vertBuffer[vert.ids[5]].life;
-	float l8 = vertBuffer[vert.ids[7]].life;
-	vert.life =1.8 * ((l1 + l2 + l3 + l4 + l5 + l6 + l7 + l8) / 8);
-
-	vert.life = min( 2 , vert.life );
+  // Inertia: objects in motion stay in motion.
+  	float3 vel = getVel( vert.pos , vert.oPos);
 
 
+  	// floor
+  	if( vert.pos.y < .05 ){ vert.pos.y = .05; }
 
-		float f = 0;
-		for( int i = 0; i < _NumShapes; i++ ){
-			float l = boxDistance( vert.pos , shapeBuffer[i].mat );
-			f = min( f , l );// , 32);
-		}
-		//f = length( vert.pos - float3( 0 , 0 , 0 )) -.5;
+  	// GRAVITY
 
-		//f = map( vert.pos ).x;
-		if( f < 0 ){
+  	float3 nPos = vert.pos * 4;
+  	float n = noise( nPos * 10 );
+  	float n2 = noise( nPos * 5 + float3( 0 , _Time , 0 ) );
+  	float n3 = noise( nPos * 7 + float3( 0 , _Time , 0 ));
+  	float g = -.53;
 
-			vert.life += 1;
+    //if( vert.life > 1 ){ g = -.3 * (n + .1); }
+  	 g = -.3 * (n + .1);
+
+  	float3 force = float3( 0 , g , 0 );
+  	//force *= 1 - .8 * vert.life;
+
+  	//if( vert.life > 1 ){ 
+      // wind noise
+      force += float3( n2 -.5, 0 , n3-.5 ) * 1; 
+
+      for( int i = 0; i < _NumberHands; i++){
+
+        float3 dif = handBuffer[i].pos - vert.pos;
+        if(length(dif)< .1){
+          force += float3( normalize(dif) ) * 30.1 * handBuffer[i].triggerVal;
+        }
+      }
+
+     // if( vert.pos.y > -.01 ){ force += float3( 0 , -3 , 0 );}
+// floor
+    if( vert.pos.y < .05 ){ 
+      vert.pos.y = .05;
+
+    }
+
+    if( vert.pos.y < .06 ){ force += .01  * float3( vert.pos.x , 0 , vert.pos.z ); }
+
+    //}
+
+  	//force += .00000001 * n * normalize(float3( vert.pos.x , 0 , vert.pos.z ));
+  	float mass = 1;
+  	float3 acceleration= float3( 0 ,0,0); 
 
 
-			vert.debug.z = 4;
-			vert.pos = vert.oPos; //float3( 0 , -f , 0 );
-			vert.oPos = vert.pos;
-			//vert.pos += normalize(vel) * f * .5;
-			//vert.oPos = vert.pos;
-		}else{
-			vert.debug.z = 0;
-		}
+  	float l1 = vertBuffer[vert.ids[0]].life;
+  	float l2 = vertBuffer[vert.ids[2]].life;
+  	float l3 = vertBuffer[vert.ids[4]].life;
+  	float l4 = vertBuffer[vert.ids[6]].life;
+  	float l5 = vertBuffer[vert.ids[1]].life;
+  	float l6 = vertBuffer[vert.ids[3]].life;
+  	float l7 = vertBuffer[vert.ids[5]].life;
+  	float l8 = vertBuffer[vert.ids[7]].life;
+  	vert.life =400.* ((l1 + l2 + l3 + l4 + l5 + l6 + l7 + l8) / 8);
 
-	//	if( f < 0.01 ){ vert.debug.z = 4; }
+  	vert.life = min( 2 , vert.life );
 
-	
 
-	/*float l = length(vert.pos - float3(0,0,0))-.5;
-	float n = vNoise( vert.pos * 5);
-	if( l + (n * .1) < 0 ){
-		vert.pos -= vel;//float3( 0 , -l * .1 , 0 );
-	}*/
 
-// Inertia: objects in motion stay in motion.
-	vel = getVel( vert.pos , vert.oPos);
+  		float f = 100;
+  		for( int i = 0; i < _NumShapes; i++ ){
+       
+  			float l = boxDistance( vert.pos , shapeBuffer[i].mat );
 
-	
-	acceleration = force;
+        if( l < 0 ){
 
-	float3 next = vert.pos + vel * .99 + acceleration * _DeltaTime * _DeltaTime;
 
-	vert.oPos = vert.pos;
-	vert.pos = next;
+
+          float l2 = boxDistance( vert.oPos , shapeBuffer[i].mat );
+
+          if( l2 < 0 ){
+
+            // get norm;
+            float3 n = calcNormal( vert.pos , shapeBuffer[i].mat );
+            vert.pos = vert.pos - n * l2;
+            vert.oPos = vert.pos;
+
+
+
+
+                
+
+          }else{
+            vert.pos = vert.oPos; //float3( 0 , -f , 0 );
+            vert.oPos = vert.pos;
+
+          }
+
+        }
+  			
+  		}
+
+  		//f = length( vert.pos - float3( 0 , 0 , 0 )) -.5;
+
+  		//f =  min(f , map( vert.pos ).x);
+  		/*if( f < 0 ){
+
+        //if( length(vert.uv - float2( .5 , .5 )) < .01 ){
+  			 vert.life += 1;
+        //}
+
+
+  			vert.debug.z = 4;
+  			vert.pos = vert.oPos; //float3( 0 , -f , 0 );
+  			vert.oPos = vert.pos;
+  			//vert.pos += normalize(vel) * f * .5;
+  			//vert.oPos = vert.pos;
+  		}else{
+  			vert.debug.z = 0;
+  		}*/
+
+  	//	if( f < 0.01 ){ vert.debug.z = 4; }
+
+  	
+
+  	/*float l = length(vert.pos - float3(0,0,0))-.5;
+  	float n = vNoise( vert.pos * 5);
+  	if( l + (n * .1) < 0 ){
+  		vert.pos -= vel;//float3( 0 , -l * .1 , 0 );
+  	}*/
+
+  // Inertia: objects in motion stay in motion.
+  	vel = getVel( vert.pos , vert.oPos);
+
+  	
+  	acceleration = force;
+
+    float dampening = .99;// - vert.life * .01;
+  	float3 next = vert.pos + vel * dampening + acceleration * _DeltaTime * _DeltaTime;
+
+  	vert.oPos = vert.pos;
+  	vert.pos = next;
+  }
 
 
 

@@ -11,6 +11,7 @@ public class Cloth : MonoBehaviour {
     // How the donut looks
     public Shader shader;
     public Shader debugShader;
+    public Shader logoShader;
 
     // How the donut feels
     public ComputeShader constraintPass;
@@ -23,11 +24,15 @@ public class Cloth : MonoBehaviour {
     public Texture2D normalMap;
     public Cubemap cubeMap;
 
+    public Texture2D titleTexture;
+
+
     public float clothSize = 1;
     public float startingHeight = 1;
 
     private float[] inValues;
     private float[] shapeValues;
+    private float[] transformValues;
 
 
     private ComputeBuffer _vertBuffer;
@@ -38,6 +43,7 @@ public class Cloth : MonoBehaviour {
     private ComputeBuffer _diagonalUpLinkBuffer;
 
     private ComputeBuffer _shapeBuffer;
+    private ComputeBuffer _transformBuffer;
 
 
     private const int threadX = 8;
@@ -53,6 +59,15 @@ public class Cloth : MonoBehaviour {
     private int gridZ { get { return threadZ * strideZ; } }
 
     private int vertexCount { get { return gridX * gridY * gridZ; } }
+
+    private int ended = -1;
+    private int hit = -1;
+    private int started = -1;
+    private float endTime = 100000;
+    private float hitTime = 100000;
+    private float startTime = 100000;
+
+    private GameObject logo;
 
 
 
@@ -106,28 +121,32 @@ public class Cloth : MonoBehaviour {
     void Start () {
 
     	oTime = Time.time;
-        shapeValues = new float[ Shapes.Length * ShapeStructSize ];
+      shapeValues = new float[ Shapes.Length * ShapeStructSize ];
+      transformValues = new float[ 16 ];
 
-        createBuffers();
-        createMaterial();
+      createBuffers();
+      createMaterial();
+      createLogo();
 
-        _kernelforce = forcePass.FindKernel("CSMain");
-        _kernelnormal = normalPass.FindKernel("CSMain");
-        _kernelconstraint = constraintPass.FindKernel("CSMain");
+      _kernelforce = forcePass.FindKernel("CSMain");
+      _kernelnormal = normalPass.FindKernel("CSMain");
+      _kernelconstraint = constraintPass.FindKernel("CSMain");
 
 
-        Camera.main.gameObject.AddComponent<PostRenderEvent>();
-        
 
-        //TODO:
-        //Figure out how to add this script to the main camera!
-        Camera.onPostRender += Render;
+
+     // Camera.main.gameObject.AddComponent<PostRenderEvent>();
+      
+
+      //TODO:
+      //Figure out how to add this script to the main camera!
+      Camera.onPostRender += Render;
 
 
     
     }
 
-    void Update(){
+    void FixedUpdate(){
     	//print(Input.GetKey ("a"));
         if( Input.GetKey(KeyCode.Space)){
             createOBJ();
@@ -141,6 +160,21 @@ public class Cloth : MonoBehaviour {
     private void OnDisable(){
         Camera.onPostRender -= Render;
         ReleaseBuffer();
+    }
+
+    private void createLogo(){
+
+
+      GameObject logo = GameObject.CreatePrimitive(PrimitiveType.Quad);
+      
+      Material mat = new Material( logoShader );
+      logo.GetComponent<Renderer>().material = mat;
+      logo.transform.localScale = new Vector3( 1 , .2f , 1 );
+
+      logo.transform.parent = finalTransform;
+
+      mat.SetTexture( "_TitleTexture" , titleTexture );
+
     }
 
       //For some reason I made this method to create a material from the attached shader.
@@ -157,6 +191,8 @@ public class Cloth : MonoBehaviour {
     void ReleaseBuffer(){
 
       _vertBuffer.Release(); 
+      _shapeBuffer.Release(); 
+      _transformBuffer.Release(); 
 
       _upLinkBuffer.Release(); 
       _rightLinkBuffer.Release(); 
@@ -218,9 +254,10 @@ public class Cloth : MonoBehaviour {
     }
 
     private void createBuffers() {
-
+      _transformBuffer  = new ComputeBuffer( 1 ,  16);
       _shapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );
 
+      
       _vertBuffer  = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
       
       _upLinkBuffer 			      = new ComputeBuffer( vertexCount / 2 , LinkStructSize * sizeof(float));
@@ -442,42 +479,65 @@ public class Cloth : MonoBehaviour {
 
     }
 
+    private void assignTransform(){
+
+      Matrix4x4 m = transform.worldToLocalMatrix;
+      int index = 0;
+      for( int j = 0; j < 16; j++ ){
+        int x = j % 4;
+        int y = (int) Mathf.Floor(j / 4);
+        transformValues[index++] = m[x,y];
+      }
+
+      _transformBuffer.SetData(transformValues);
+
+
+
+    }
+
     private void Dispatch() {
 
-    	assignShapeBuffer();
+      if( started > 0 ){
 
-		  forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
-		  forcePass.SetFloat( "_Time"         , Time.time      );
+      	assignShapeBuffer();
+        assignTransform();
 
-		  oTime = Time.time;
+  		  forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
+  		  forcePass.SetFloat( "_Time"         , Time.time      );
 
-		  forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
-		  forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
-		  forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
+  		  oTime = Time.time;
 
-		  forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
-		  forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
-		  forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
+  		  forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+  		  forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
+  		  forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
 
-			constraintPass.SetInt( "_RibbonWidth"   , ribbonWidth     );
-      constraintPass.SetInt( "_RibbonLength"  , ribbonLength    );
+  		  forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
+        forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
+  		  forcePass.SetBuffer( _kernelforce , "transformBuffer"   , _transformBuffer );
+  		  forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
 
-			constraintPass.SetBuffer( _kernelconstraint , "vertBuffer"   , _vertBuffer     );
+  			constraintPass.SetInt( "_RibbonWidth"   , ribbonWidth     );
+        constraintPass.SetInt( "_RibbonLength"  , ribbonLength    );
 
-			doConstraint( 1 , 1 , _upLinkBuffer );
-			doConstraint( 1 , 1 , _rightLinkBuffer );
-			doConstraint( 1 , 1 , _diagonalDownLinkBuffer );
-			doConstraint( 1 , 1 , _diagonalUpLinkBuffer );
+  			constraintPass.SetBuffer( _kernelconstraint , "vertBuffer"   , _vertBuffer     );
 
-			doConstraint( 1 , 0 , _upLinkBuffer );
-			doConstraint( 1 , 0 , _rightLinkBuffer );
-			doConstraint( 1 , 0 , _diagonalDownLinkBuffer );
-			doConstraint( 1 , 0 , _diagonalUpLinkBuffer );
+  			doConstraint( 1 , 1 , _upLinkBuffer );
+  			doConstraint( 1 , 1 , _rightLinkBuffer );
+  			doConstraint( 1 , 1 , _diagonalDownLinkBuffer );
+  			doConstraint( 1 , 1 , _diagonalUpLinkBuffer );
+
+  			doConstraint( 1 , 0 , _upLinkBuffer );
+  			doConstraint( 1 , 0 , _rightLinkBuffer );
+  			doConstraint( 1 , 0 , _diagonalDownLinkBuffer );
+  			doConstraint( 1 , 0 , _diagonalUpLinkBuffer );
 
 
-			//calculate our normals
-			normalPass.SetBuffer( _kernelnormal , "vertBuffer"   , _vertBuffer );
-			normalPass.Dispatch( _kernelnormal , strideX , strideY  , strideZ );
+  			//calculate our normals
+  			normalPass.SetBuffer( _kernelnormal , "vertBuffer"   , _vertBuffer );
+  			normalPass.Dispatch( _kernelnormal , strideX , strideY  , strideZ );
+
+      }
+
 	}
 
 

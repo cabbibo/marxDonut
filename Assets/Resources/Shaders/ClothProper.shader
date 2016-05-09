@@ -20,6 +20,8 @@
 
             uniform sampler2D _NormalMap;
             uniform samplerCUBE _CubeMap;
+
+            uniform float _StartTime;
  
 
             struct Vert{
@@ -131,7 +133,7 @@
             float4 frag (varyings i) : COLOR {
 
 
-                float3 fNorm = uvNormalMap( _NormalMap , i.pos ,  i.uv  * float2( 1. , .2), i.nor , 4.1 , 1. );
+                float3 fNorm = uvNormalMap( _NormalMap , i.pos ,  i.uv  * float2( 1. , .2), i.nor , 4.1 , .001 );
 
                 float3 col = fNorm * .5 + .5;//i.debug;
 
@@ -141,22 +143,28 @@
                 //float og = min( abs(sin( i.uv.x * 10 * 3.16 )) , abs(sin( i.uv.y * 10  * 3.16 )));
                 float2 cuv = abs(i.uv - float2( .5 , .5 ));
                 float og = max(cuv.x , cuv.y);
-                float sizeVal = (.1 + _Time.y * _Time.y* .014);
+                float realTime = max( _Time.y - _StartTime , 0 );
+                float sizeVal = (.1 + realTime * realTime * .014);
 
                 float2 nuv = cuv / sizeVal;
                 float d = min( abs(sin( nuv.x * 6 * 3.16 )) , abs(sin( nuv.y * 6  * 3.16 )));
                    
 
-                if( og > sizeVal && i.life <= 1  ){
-                    discard;
-                }
+               if( og > sizeVal && i.life <= 1  ){
+                   discard;
+               }
 
-                if( d > .3 && i.life <= 1 ){
-                    discard;
-                }
+               if( d > .3 && i.life <= 1 ){
+                   discard;
+               }
 
+                //if( i.life <= 1 && length(i.uv - float2( .5 , .5 )) > .01 + realTime * .1 ){ discard; }
+                //if( i.life <= 1 && abs( i.uv.y - .5 ) < .48 && abs( i.uv.x - .5 ) < .48 ){ discard; }
+
+                //if( length(i.uv - float2( .5 , .5 )) > .5 ){ discard; }
 
                 col = lerp( float3( 1 ,1,1) , col * cubeCol * 2 , min( i.life , 1 ));
+                //col *= float3( 1. , .5 , .1 );
                 
 
               //  if( i.debug.z >= 3 ){ col = float3(1,1,1);}

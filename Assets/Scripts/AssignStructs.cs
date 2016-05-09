@@ -11,6 +11,7 @@ public class AssignStructs : MonoBehaviour {
     public float  ribbonID;
     public float  life; 
     public Vector3 debug;
+
   };
 
 
@@ -76,16 +77,23 @@ public class AssignStructs : MonoBehaviour {
 
 
 
+  
   public struct Hand{
+    public float active;
     public Vector3 pos;
+    public Vector3 vel;
+    public Vector3 aVel;
     public float  triggerVal;
+    public float  thumbVal;
+    public float  sideVal;
+    public Vector2 thumbPos;
   };
 
 
   public static int VertStructSize = 16;
   public static int VertC4StructSize = 22;
   public static int VertClothStructSize = 50;
-  public static int HandStructSize = 4;
+  public static int HandStructSize = 1 + 3 + 3 + 3 + 1 + 1 + 1 + 2;
 
   public static void test(){
     print("Assign Structs working");
@@ -260,17 +268,37 @@ public class AssignStructs : MonoBehaviour {
 
   }
 
-
-  public static void AssignHandStruct( float[] inValues , int id , out int index , GameObject i , float triggerVal ){
+  public static void AssignHandStruct( float[] inValues , int id , out int index , Hand i ){
 
     index = id;
 
-    //pos
-    inValues[index++] = i.transform.position.x;
-    inValues[index++] = i.transform.position.y;
-    inValues[index++] = i.transform.position.z;
 
-    inValues[index++] = triggerVal;
+    inValues[index++] = i.active;
+
+
+    //pos
+    inValues[index++] = i.pos.x;
+    inValues[index++] = i.pos.y;
+    inValues[index++] = i.pos.z;
+   
+    //vel
+    inValues[index++] = i.vel.x;
+    inValues[index++] = i.vel.y;
+    inValues[index++] = i.vel.z;
+
+    //nor
+    inValues[index++] = i.aVel.x;
+    inValues[index++] = i.aVel.y;
+    inValues[index++] = i.aVel.z;
+
+    //vals
+    inValues[index++] = i.triggerVal;
+    inValues[index++] = i.thumbVal;
+    inValues[index++] = i.sideVal;
+
+    //thumb pos
+    inValues[index++] = i.thumbPos.x;
+    inValues[index++] = i.thumbPos.y;
 
   }
 
@@ -280,13 +308,32 @@ public class AssignStructs : MonoBehaviour {
     index = id;
 
 
+    inValues[index++] = 0;
+
+
     //pos
     inValues[index++] = 0;
     inValues[index++] = 0;
     inValues[index++] = 0;
-
+   
+    //vel
     inValues[index++] = 0;
-  
+    inValues[index++] = 0;
+    inValues[index++] = 0;
+
+    //nor
+    inValues[index++] = 0;
+    inValues[index++] = 0;
+    inValues[index++] = 0;
+
+    //vals
+    inValues[index++] = 0;
+    inValues[index++] = 0;
+    inValues[index++] = 0;
+
+    //thumb pos
+    inValues[index++] = 0;
+    inValues[index++] = 0;
 
   }
 
@@ -322,6 +369,20 @@ public class AssignStructs : MonoBehaviour {
 
     _disformBuffer.SetData( disformValues );
   
+  }
+
+   public static void AssignHandBuffer( GameObject[] Hands , float[] handValues , ComputeBuffer _handBuffer ){
+
+    int index = 0;
+    for( int i =0; i < Hands.Length; i++ ){
+      if( Hands[i] != null ){
+        AssignHandStruct( handValues , index , out index , Hands[i].GetComponent<controllerInfo>().hand );
+      }else{
+        AssignNullHandStruct( handValues , index , out index );
+      }
+    }
+  
+      _handBuffer.SetData( handValues );
   }
 
 
