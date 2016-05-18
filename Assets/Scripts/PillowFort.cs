@@ -20,6 +20,8 @@ public class PillowFort : MonoBehaviour {
     public GameObject Pillow;
     public GameObject Node;
 
+    public GameObject floor;
+
     public int NumShapes;
     private GameObject[] Shapes;
     private GameObject[] Hands;
@@ -32,9 +34,19 @@ public class PillowFort : MonoBehaviour {
 
     public GameObject handBufferInfo; 
 
+    public AudioClip startLoop;
+    public AudioClip clothLoop;
+    public AudioClip lastLoop;
+
+    private AudioSource startSource;
+    private AudioSource clothSource;
+    private AudioSource lastSource;
+
     private float[] inValues;
     private float[] shapeValues;
     private float[] transformValues;
+
+
 
 
 
@@ -82,6 +94,18 @@ public class PillowFort : MonoBehaviour {
     private bool objMade = false;
 
     private int started = -1;
+    private int ending = -1;
+
+
+    private bool clothDropped = false;
+    private bool allBlocksStarted = false;
+
+    private float clothDown = 0;
+    private int framesSinceDrop = 0;
+    private float endingVal = 0;
+
+    private float fullEnd = 0;
+
 
   struct Vert{
     public Vector3 pos;
@@ -121,6 +145,30 @@ public class PillowFort : MonoBehaviour {
       transformValues = new float[ 16 ];
 
 
+      startSource = transform.gameObject.AddComponent<AudioSource>();
+      startSource.clip = startLoop;
+      startSource.spatialize = true;
+      startSource.loop = true;
+      startSource.volume = 0;
+      startSource.Play();
+    
+
+      clothSource = transform.gameObject.AddComponent<AudioSource>();
+      clothSource.clip = clothLoop;
+      clothSource.spatialize = true;
+      clothSource.loop = true;
+      clothSource.volume = 0;
+      clothSource.Play();
+    
+
+      lastSource = transform.gameObject.AddComponent<AudioSource>();
+      lastSource.clip = lastLoop;
+      lastSource.spatialize = true;
+      lastSource.loop = true;
+      lastSource.volume = 0;
+      lastSource.Play();
+  
+
       createBuffers();
       createMaterial();
 
@@ -129,6 +177,7 @@ public class PillowFort : MonoBehaviour {
       _kernelconstraint = constraintPass.FindKernel("CSMain");
 
       forcePass.SetInt( "_Reset"    , 0 );
+      forcePass.SetInt( "_Ended"   , 0 );
 
       Dispatch();
 
@@ -154,10 +203,11 @@ public class PillowFort : MonoBehaviour {
 
         Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.5f + new Vector3( 0 , 1.5f , 0 ) , Random.rotation) as GameObject;
         Shapes[i].GetComponent<Stretch>().node = Node;
-        print( "noadsassinged");
+
+        //print( "noadsassinged");
 
         Vector3 v = Random.insideUnitSphere;
-        Shapes[i].transform.localScale = new Vector3( Random.Range( .4f , 1 ) , Random.Range( .05f , .1f ) , Random.Range( .05f , .1f ) ) + new Vector3( .1f , .1f , .1f );
+        Shapes[i].GetComponent<BeginBox>().targetScale = new Vector3( .2f , .2f , Random.Range( .05f , .1f ) );
 
         Shapes[i].GetComponent<Renderer>().material.SetTexture("_CubeMap" , cubeMap );
 
@@ -166,6 +216,15 @@ public class PillowFort : MonoBehaviour {
     }
 
     void OnPadDown( GameObject go ){
+      //dropCloth();
+    }
+
+ 
+
+
+    void dropCloth(){
+
+      clothDropped = true;
       oTime = Time.time;
       started = 1;
       forcePass.SetInt( "_Reset"    , 1 );
@@ -175,9 +234,10 @@ public class PillowFort : MonoBehaviour {
     }
 
     void OnGripDown( GameObject go ){
-      createOBJ();
+      //createOBJ();
       for( int i = 0; i < Shapes.Length; i++){
-        Shapes[i].GetComponent<Renderer>().enabled = false;
+        //Shapes[i].GetComponent<Renderer>().enabled = false;
+        Shapes[i].GetComponent<BeginBox>().Begin();
       }
 
     }
@@ -191,13 +251,63 @@ public class PillowFort : MonoBehaviour {
 
 
     void FixedUpdate(){
-      //print(Input.GetKey ("a"));
-        if( Input.GetKey(KeyCode.Space)){
-            createOBJ();
-        }
-        if( started > 0 ){
-          Dispatch();
-        }
+
+      allBlocksStarted = true;
+      for( int i = 0; i < Shapes.Length; i++ ){
+
+        if( Shapes[i].GetComponent<BeginBox>().begun == false ){ allBlocksStarted = false; }
+
+      }
+
+      if( allBlocksStarted == true && clothDropped == false ){ dropCloth(); }
+
+      if( clothDropped == true ){
+        clothDown += .01f;
+        if( clothDown > 1 ){ clothDown = 1;}
+        framesSinceDrop ++;
+
+        
+      }
+      if( framesSinceDrop > 6000 && ending < 0 ){
+        onEnd();
+      }
+      clothSource.volume = clothDown;
+      startSource.volume = 1 - clothDown;
+      if( ending > 0 ){
+        endingVal += .001f;
+        if( endingVal > 1 ){ endingVal = 1;}
+        clothSource.volume = 1 - endingVal;
+        lastSource.volume = endingVal;
+
+      }
+
+      if( endingVal > .99 ){
+        fullEnd += .001f;
+        if( fullEnd > 1 ){ fullEnd = 1;}
+        lastSource.volume = 1 - fullEnd;
+
+
+      }
+
+      
+      if( started > 0 ){
+        Dispatch();
+      }
+
+     
+    
+    }
+
+    private void onEnd(){
+      ending = 1;
+      floor.GetComponent<Renderer>().enabled = false;
+      forcePass.SetInt( "_Ended"   , 1 );
+      for( int i = 0; i < Shapes.Length; i++ ){
+        Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
+        Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );
+        Shapes[i].GetComponent<Stretch>().rightDrag.transform.position = new Vector3( 100000 , 0 , 0 );
+      }
+
     }
 
 
@@ -242,6 +352,7 @@ public class PillowFort : MonoBehaviour {
     public void Render(Camera camera) {
 
 
+      if( clothDropped == true ){ 
         
         int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
 
@@ -249,6 +360,8 @@ public class PillowFort : MonoBehaviour {
 
         material.SetBuffer("buf_Points", _vertBuffer);
         material.SetBuffer("shapeBuffer", _shapeBuffer);
+
+        material.SetFloat( "_FullEnd" , fullEnd );
      
         material.SetInt( "_RibbonWidth"  , ribbonWidth  );
         material.SetInt( "_RibbonLength" , ribbonLength );
@@ -272,6 +385,8 @@ public class PillowFort : MonoBehaviour {
 
         debugMaterial.SetMatrix("worldMat", transform.localToWorldMatrix);
         debugMaterial.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+    }
 
         //Graphics.DrawProcedural(MeshTopology.Lines, 16 * ribbonLength * ribbonWidth );
 
@@ -543,6 +658,7 @@ public class PillowFort : MonoBehaviour {
         forcePass.SetInt( "_RibbonLength"  , ribbonLength    );
         forcePass.SetInt( "_NumShapes"     , Shapes.Length   );
         forcePass.SetInt( "_NumberHands"   , handBufferInfo.GetComponent<HandBuffer>().numberHands );
+
 
         forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
         forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );

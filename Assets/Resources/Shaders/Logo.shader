@@ -23,6 +23,7 @@
 
             uniform float _StartTime;
             uniform float _FadeTime;
+            uniform float _RealTime;
  
 
             struct Vert{
@@ -134,17 +135,18 @@
             float4 frag (varyings i) : COLOR {
 
 
-                float3 fNorm = i.nor;//uvNormalMap( _NormalMap , i.pos ,  i.uv  * float2( 1. , .2), i.nor , 4.1 , 0 );
+                float3 fNorm = uvNormalMap( _NormalMap , i.pos ,  i.uv  * float2( 1. , .2), i.nor , 1.1 , 1 );
 
                 float3 col = fNorm * .5 + .5;//i.debug;
 
                 float3 fRefl = reflect( -i.eye , fNorm );
                 float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
 
+
                 //float og = min( abs(sin( i.uv.x * 10 * 3.16 )) , abs(sin( i.uv.y * 10  * 3.16 )));
                 float2 cuv = abs(i.uv - float2( .5 , .5 ));
                 float og = max(cuv.x , cuv.y);
-                float realTime = max( _Time.y - _StartTime , 0 );
+                float realTime = max( _RealTime - _StartTime , 0 );
                 float sizeVal = (.1 + realTime * realTime * .014);
 
                 float2 nuv = cuv / sizeVal;
@@ -161,11 +163,12 @@
 
 
 
-                col = lerp( float3( 1 ,1,1) , col * cubeCol * 2 , min( i.life , 1 ));
+                col = lerp( float3( 1 ,1,1) , col * cubeCol * cubeCol * 2 , min( i.life , 1 ));
+                //col = cubeCol;
 
                 col *= min( realTime * .5, 1);
 
-                float fadeTime = clamp( (_Time.y - _FadeTime) * .5 , 0 , 1 );
+                float fadeTime = clamp( (_RealTime - _FadeTime) * .5 , 0 , 1 );
 
                 col = lerp( col , float3( 0 , 0 , 0 ) , fadeTime);
 

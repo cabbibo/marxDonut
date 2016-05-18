@@ -20,6 +20,7 @@ float _Time;
 int _NumShapes;
 int _NumberHands;
 int _Reset;
+int _Ended;
 
 
 
@@ -234,8 +235,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
   	float3 vel = getVel( vert.pos , vert.oPos);
 
 
-  	// floor
-  	if( vert.pos.y < .05 ){ vert.pos.y = .05; }
+ 
 
   	// GRAVITY
 
@@ -259,19 +259,22 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
         float3 dif = handBuffer[i].pos - vert.pos;
         if(length(dif)< .1){
-          force += float3( normalize(dif) ) * 30.1 * handBuffer[i].triggerVal;
+          force += float3( normalize(dif) ) * 30.1 * (handBuffer[i].triggerVal-.3);
         }
       }
 
      // if( vert.pos.y > -.01 ){ force += float3( 0 , -3 , 0 );}
 // floor
-    if( vert.pos.y < .05 ){ 
-      vert.pos.y = .05;
 
+    if( _Ended == 0 ){
+      if( vert.pos.y < .05 ){ 
+        vert.pos.y = .05;
+
+      }
+
+
+      if( vert.pos.y < .06 ){ force += .01  * float3( vert.pos.x , 0 , vert.pos.z ); }
     }
-
-    if( vert.pos.y < .06 ){ force += .01  * float3( vert.pos.x , 0 , vert.pos.z ); }
-
     //}
 
   	//force += .00000001 * n * normalize(float3( vert.pos.x , 0 , vert.pos.z ));

@@ -16,11 +16,14 @@ public class MoveByController : MonoBehaviour {
   private Quaternion relQuat;
   private Vector3 relPos;
 
+  private GameObject insideGO;
+  public GameObject movingController;
 
 
   Collider colInside;
 
 	void OnEnable(){
+
     EventManager.OnTriggerDown += OnTriggerDown;
     EventManager.OnTriggerUp += OnTriggerUp;
     EventManager.StayTrigger += StayTrigger;
@@ -49,7 +52,12 @@ public class MoveByController : MonoBehaviour {
 	}
 
   void OnTriggerDown(GameObject o){
+
+    
+
     if( inside == true ){
+
+      //if( o.GetInstanceID() == insideGO.transform.parent.GetInstanceID() ){
       //transform.SetParent(o.transform);
       moving = true;
 
@@ -59,6 +67,9 @@ public class MoveByController : MonoBehaviour {
       relPos = Quaternion.Inverse(colInside.transform.rotation) * relPos;
 
       GetComponent<Rigidbody>().isKinematic = true;
+    //}
+
+      movingController = o;
     
     }
   }
@@ -99,6 +110,9 @@ public class MoveByController : MonoBehaviour {
     if( Other.tag == "Hand"){ 
       colInside = Other;
       inside = true; 
+      //print( Other.gameObject );
+      insideGO = Other.gameObject;
+      //print( insideGO );
     }
   }
 
@@ -106,6 +120,7 @@ public class MoveByController : MonoBehaviour {
     if( Other.tag == "Hand" && Other == colInside && moving == false){ 
       colInside = null;
       inside = false; 
+      //insideGO = null;
     }
   }
 

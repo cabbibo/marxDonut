@@ -28,6 +28,7 @@ public class controllerInfo : MonoBehaviour{
     trackedObj = GetComponent<SteamVR_TrackedObject>();
     sliderX = 0;
     sliderY = 0;
+
   }
 
   void FixedUpdate(){
@@ -41,6 +42,8 @@ public class controllerInfo : MonoBehaviour{
       triggerDown = 0;
     }
 
+  
+    
     position = transform.position;
     velocity = device.velocity;
     angularVelocity = device.angularVelocity;

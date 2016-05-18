@@ -22,9 +22,9 @@ Shader "Custom/Title" {
     LOD 200
 
     Pass {
-      //Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
+      Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
 
-      CULL OFF
+      //CULL OFF
       CGPROGRAM
       #pragma vertex vert
       #pragma fragment frag
@@ -136,8 +136,7 @@ float3 hsv(float h, float s, float v)
 
           if( total > .8 ){
           	hit = 1;
-            col += lerp( float3( 1,1,1) , hsv( noiseVal ,1,1), float(i)/30);
-
+            col += lerp(  hsv( noiseVal ,1,0) , hsv( noiseVal ,.5,1), float(i)/30);
             break;
           }
         }

@@ -65,6 +65,7 @@ public class EventManager : MonoBehaviour
     var device = SteamVR_Controller.Input((int)tObj.index);
 
     if ( device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger)){
+      device.TriggerHapticPulse(1000);
       if(OnTriggerDown != null) OnTriggerDown(go);
     }
 

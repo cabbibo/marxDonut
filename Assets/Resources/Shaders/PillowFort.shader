@@ -7,7 +7,7 @@
         Cull off
         Pass{
 
-            Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
+           // Blend SrcAlpha OneMinusSrcAlpha // Alpha blending
  
             CGPROGRAM
             #pragma target 5.0
@@ -22,6 +22,7 @@
             uniform samplerCUBE _CubeMap;
 
             uniform float _StartTime;
+            uniform float _FullEnd;
             uniform int _NumShapes;
  
 
@@ -164,7 +165,7 @@ float boxDistance( float3 p , float4x4 m ){
 
                 float3 col = fNorm * .5 + .5;//i.debug;
 
-                float3 fRefl = reflect( -i.eye , fNorm );
+                float3 fRefl = reflect( -normalize(i.eye) , fNorm );
                 float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
 
                 col =  col * cubeCol * 2;
@@ -188,13 +189,16 @@ float boxDistance( float3 p , float4x4 m ){
   							}// / max( .5 , f / 5);} //float3( .1 / f , 0 , 0 );}
   							//col /= max(0.04 , f* 2);
 
-  							float match = (1-abs(dot( -i.eye , fNorm )));
-  							col = lerp( float3( 2. , 1.6 , .9) * match  + col * (1-match), col ,  min( i.worldPos.y, 1 )  );
+  							float match = (1-abs(dot( -normalize(i.eye) , fNorm )));
+  							col = lerp( float3( 2. , 1.6 , .9) * match  + col * (1-match), col ,  max(min( i.worldPos.y, 1 ),-1)  );
 
   							//col += float3( 0 , 0 , .5 );
 
-								col = pow(col,  2.2);  
+								col = pow(col,  2.2); 
+
+                                col *= ( 1 - _FullEnd ); 
                 fixed4 color;
+               // col = float3( 1 , 1 , 1 );
 	            	color = fixed4( col , 1. );
 	            	return color;
 	           

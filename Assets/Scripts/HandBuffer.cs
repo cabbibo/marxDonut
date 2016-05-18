@@ -12,7 +12,7 @@ public class HandBuffer : MonoBehaviour
 
  
     //We initialize the buffers and the material used to draw.
-    void Start (){
+    void Awake (){
 
       handValues = new float[numberHands * AssignStructs.HandStructSize];
 
@@ -33,6 +33,8 @@ public class HandBuffer : MonoBehaviour
     private void createBuffers() {
 
       _handBuffer = new ComputeBuffer( numberHands , AssignStructs.HandStructSize * sizeof(float));
+      print( "HB");
+      print( _handBuffer );
       
 
     }

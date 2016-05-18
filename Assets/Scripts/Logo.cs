@@ -9,6 +9,7 @@ public class Logo : MonoBehaviour {
   public Shader shader;
   public Shader debugShader;
   public Shader logoShader;
+  public Shader tracerShader;
 
   // How the donut feels
   public ComputeShader constraintPass;
@@ -28,12 +29,12 @@ public class Logo : MonoBehaviour {
   public float startingHeight = 1;
   public float startingVel = .01f;
 
-
   public AudioClip startSound;
   public AudioClip approachSound;
   public AudioClip hitSound;
   public AudioClip logoSound;
   public AudioClip fadeSound;
+  public AudioClip beepSound;
 
 
   private float[] inValues;
@@ -77,10 +78,11 @@ public class Logo : MonoBehaviour {
   private float fadeTime = 100000;
   private float startTime = 100000;
 
-  private float timeToStart = 3;
+
+  private float timeToStart = 10; //10
   private float timeToHit = 2.35f;
   private float timeToLogo = 4.0f;
-  private float timeToFade = 6;
+  private float timeToFade = 6; // 6
   private float timeToEnd = 3;
 
   private GameObject logo;
@@ -107,6 +109,9 @@ public class Logo : MonoBehaviour {
   private Vector3 p2;
 
   private float oTime = 0;
+  private float baseTime = 0;
+  private float realTime = 0;
+  private float tracerOn = 0;
 
   struct Vert{
     public Vector3 pos;
@@ -136,12 +141,17 @@ public class Logo : MonoBehaviour {
   private int ShapeStructSize = 16 + 1;
 
 
+  private Color tracerOnCol = new Color( 1 , 1, 1,1);
+  private Color tracerOffCol = new Color( 0 , 0, 0,1);
 
 
 
   // Use this for initialization
   void Start () {
 
+    baseTime = Time.time;
+
+    print( baseTime );
     oTime = Time.time;
     shapeValues = new float[ Shapes.Length * ShapeStructSize ];
     transformValues = new float[ 16 ];
@@ -163,8 +173,6 @@ public class Logo : MonoBehaviour {
 
     SetConstants();
 
-
-
    // Camera.main.gameObject.AddComponent<PostRenderEvent>();
     
 
@@ -174,19 +182,45 @@ public class Logo : MonoBehaviour {
   }
 
   void FixedUpdate(){
+
+    realTime = Time.time - baseTime;
     checkForEvents();
 
+    
+    switchTracer();
+    
+
     if( start > 0 ){  
-      float t = (Time.time - startTime) * (Time.time - startTime);
+      float t = (realTime - startTime) * (realTime - startTime);
       float speed = .1f / (t *1.3f+1);
       tracer.transform.position = tracer.transform.position - transform.localToWorldMatrix.MultiplyVector( new Vector3( 0 , speed  , 0 ));
     }
+
     Dispatch();
+  }
+
+  private void switchTracer(){
+
+    float t = Mathf.Sin( realTime * 10 + (realTime * realTime) );
+    if( start < 0 ){
+
+      if( t > 0  && tracerOn == 0 ){
+        tracerOn = 1;
+        tracer.GetComponent<Renderer>().material.SetColor( "_Color" , tracerOnCol);
+        approachSource.Play();
+      }
+
+      if( t < 0 && tracerOn == 1 ){
+        tracerOn = 0;
+        tracer.GetComponent<Renderer>().material.SetColor( "_Color" , tracerOffCol);
+      }
+    }
+
   }
 
   private void checkForEvents(){
 
-    float t = Time.time;
+    float t = realTime;
 
     if( t > timeToStart && start < 0 ){ onStart(); }
     if( t > timeToHit + timeToStart && hit < 0 ){ onHit(); }
@@ -216,7 +250,7 @@ public class Logo : MonoBehaviour {
 
     logo.transform.position = transform.position;
     logo.transform.rotation = transform.rotation;
-    logo.transform.position += logo.transform.up * insideOutside * .04f * transform.localScale.x;
+    logo.transform.position += logo.transform.up * insideOutside * .07f * transform.localScale.x;
     logo.transform.localScale = Vector3.Scale( new Vector3( 1 , .2f , 1 )  * .8f , transform.localScale);
 
     logo.transform.parent = transform;
@@ -241,12 +275,16 @@ public class Logo : MonoBehaviour {
   }
 
   private void createTracer(){
+
     tracer = GameObject.CreatePrimitive( PrimitiveType.Sphere );
-    tracer.transform.localScale = new Vector3( .1f , .1f , .1f );
+    Material mat = new Material( tracerShader );
+    tracer.GetComponent<Renderer>().material = mat;
+    float l = .05f * transform.localScale.x;
+    tracer.transform.localScale = new Vector3( l,l,l );
     tracer.transform.position = transform.localToWorldMatrix.MultiplyVector( new Vector3(0 , 10 , 0) ) + transform.position;
-    tracer.GetComponent<Renderer>().enabled = false;
+    //tracer.GetComponent<Renderer>().enabled = false;
     approachSource = tracer.AddComponent<AudioSource>();
-    approachSource.clip = approachSound;
+    approachSource.clip = beepSound;
     approachSource.spatialize = true;
 
 
@@ -254,18 +292,21 @@ public class Logo : MonoBehaviour {
 
   private void onStart(){
     start = 1;
-    startTime = Time.time;
+    oTime = realTime;
+    startTime = realTime;
     logo.GetComponent<Renderer>().material.SetInt( "_Start" , start );     
     logo.GetComponent<Renderer>().material.SetFloat( "_StartTime" , startTime );  
     material.SetFloat("_StartTime" , startTime );   
+    tracer.GetComponent<Renderer>().enabled = false;
     tracer.GetComponent<Renderer>().material.color = new Color( 1,  1, 0,1);
+    approachSource.clip = approachSound;
     approachSource.Play();
   }
 
 
   private void onHit(){
     hit = 1;
-    hitTime = Time.time;
+    hitTime = realTime;
     logo.GetComponent<Renderer>().material.SetInt( "_Hit" , hit );     
     logo.GetComponent<Renderer>().material.SetFloat( "_HitTime" , hitTime );     
     tracer.GetComponent<Renderer>().material.color = new Color( 1,  0, 0,1);
@@ -274,7 +315,7 @@ public class Logo : MonoBehaviour {
 
   private void onLogo(){
     logoStart = 1;
-    logoTime = Time.time;
+    logoTime = realTime;
     logo.GetComponent<Renderer>().material.SetInt( "_Logo" , logoStart );     
     logo.GetComponent<Renderer>().material.SetFloat( "_LogoTime" , logoTime );   
     tracer.GetComponent<Renderer>().material.color = new Color( 1,  0, 1,1);  
@@ -283,7 +324,7 @@ public class Logo : MonoBehaviour {
 
   private void onFadeOut(){
     fadeOut = 1;
-    fadeTime = Time.time;
+    fadeTime = realTime;
     logo.GetComponent<Renderer>().material.SetInt( "_Fade" , fadeOut );     
     logo.GetComponent<Renderer>().material.SetFloat( "_FadeTime" , fadeTime );
     material.SetFloat( "_FadeTime" , fadeTime );      
@@ -294,8 +335,8 @@ public class Logo : MonoBehaviour {
   //Trigger next scene
   private void onEnd(){
     end = 1;
-    endTime = Time.time;
-    print( "TEST");  
+    endTime = realTime;
+   // print( "TEST");  
     Application.LoadLevel(level);
 
   }
@@ -333,10 +374,14 @@ public class Logo : MonoBehaviour {
   public void Render(Camera camera) {
 
 
+
       
       int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
 
       material.SetPass(0);
+      // Different time since on different update cycle
+      float rt = Time.time - baseTime;
+      material.SetFloat( "_RealTime"         , rt     );
       material.SetMatrix("worldMat", transform.localToWorldMatrix);
       material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
 
@@ -611,10 +656,10 @@ public class Logo : MonoBehaviour {
       assignShapeBuffer();
       assignTransform();
 
-      forcePass.SetFloat( "_DeltaTime"    , Time.time - oTime );
-      forcePass.SetFloat( "_Time"         , Time.time      );
+      forcePass.SetFloat( "_DeltaTime"    , realTime - oTime );
+      forcePass.SetFloat( "_Time"         , realTime      );
 
-      oTime = Time.time;
+      oTime = realTime;
       forcePass.Dispatch( _kernelforce , strideX , strideY  , strideZ );
 
 
