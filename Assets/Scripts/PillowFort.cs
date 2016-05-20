@@ -19,6 +19,7 @@ public class PillowFort : MonoBehaviour {
 
     public GameObject Pillow;
     public GameObject Node;
+    public GameObject lune;
 
     public GameObject floor;
 
@@ -38,6 +39,7 @@ public class PillowFort : MonoBehaviour {
     public AudioClip clothLoop;
     public AudioClip lastLoop;
 
+    public float cycle;
     private AudioSource startSource;
     private AudioSource clothSource;
     private AudioSource lastSource;
@@ -99,12 +101,17 @@ public class PillowFort : MonoBehaviour {
 
     private bool clothDropped = false;
     private bool allBlocksStarted = false;
+    private bool fullDropped = false;
 
     private float clothDown = 0;
     private int framesSinceDrop = 0;
     private float endingVal = 0;
+    private float disappearVal = 0;
+    private float fadeIn = 0;
 
     private float fullEnd = 0;
+
+
 
 
   struct Vert{
@@ -139,6 +146,8 @@ public class PillowFort : MonoBehaviour {
 
       oTime = Time.time;
 
+     // cycle = calcCycle();
+
       createShapes();
 
       shapeValues = new float[ Shapes.Length * ShapeStructSize ];
@@ -149,6 +158,7 @@ public class PillowFort : MonoBehaviour {
       startSource.clip = startLoop;
       startSource.spatialize = true;
       startSource.loop = true;
+      startSource.pitch = .1f + cycle * .9f ;
       startSource.volume = 0;
       startSource.Play();
     
@@ -157,6 +167,7 @@ public class PillowFort : MonoBehaviour {
       clothSource.clip = clothLoop;
       clothSource.spatialize = true;
       clothSource.loop = true;
+      clothSource.pitch = .25f + cycle * .75f;
       clothSource.volume = 0;
       clothSource.Play();
     
@@ -165,6 +176,7 @@ public class PillowFort : MonoBehaviour {
       lastSource.clip = lastLoop;
       lastSource.spatialize = true;
       lastSource.loop = true;
+      lastSource.pitch = .5f + cycle * .5f;
       lastSource.volume = 0;
       lastSource.Play();
   
@@ -179,6 +191,8 @@ public class PillowFort : MonoBehaviour {
       forcePass.SetInt( "_Reset"    , 0 );
       forcePass.SetInt( "_Ended"   , 0 );
 
+      setCycle();
+
       Dispatch();
 
       
@@ -187,12 +201,29 @@ public class PillowFort : MonoBehaviour {
       //Figure out how to add this script to the main camera!
       Camera.onPostRender += Render;
 
-      EventManager.OnPadDown += OnPadDown;
-      EventManager.OnGripDown += OnGripDown;
-      EventManager.OnGripUp += OnGripUp;
+      //EventManager.OnPadDown += OnPadDown;
+      //EventManager.OnGripDown += OnGripDown;
+      //EventManager.OnGripUp += OnGripUp;
 
 
     
+    }
+   /* float calcCycle(){
+      return 1;
+    }*/
+
+    void setCycle( ){
+      //float cycle = Mathf.Abs( Mathf.Sin( Time.time ));
+      material.SetFloat( "_Cycle" , cycle );
+      lune.GetComponent<Lune>().cycle = cycle;
+      floor.GetComponent<Renderer>().material.SetFloat("_Cycle",cycle);
+      for( int i = 0;  i < NumShapes; i++ ){ 
+        Shapes[i].GetComponent<Renderer>().material.SetFloat("_CubeMap" , cycle );
+      }
+
+
+
+
     }
 
     void createShapes(){
@@ -201,7 +232,7 @@ public class PillowFort : MonoBehaviour {
       Shapes = new GameObject[NumShapes];
       for( int i = 0;  i < NumShapes; i++ ){ 
 
-        Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.5f + new Vector3( 0 , 1.5f , 0 ) , Random.rotation) as GameObject;
+        Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.0f + new Vector3( 0 , 1.0f , 0 ) , Random.rotation) as GameObject;
         Shapes[i].GetComponent<Stretch>().node = Node;
 
         //print( "noadsassinged");
@@ -233,7 +264,7 @@ public class PillowFort : MonoBehaviour {
 
     }
 
-    void OnGripDown( GameObject go ){
+    /*void OnGripDown( GameObject go ){
       //createOBJ();
       for( int i = 0; i < Shapes.Length; i++){
         //Shapes[i].GetComponent<Renderer>().enabled = false;
@@ -247,7 +278,7 @@ public class PillowFort : MonoBehaviour {
         Shapes[i].GetComponent<Renderer>().enabled = true;
       }
 
-    }
+    }*/
 
 
     void FixedUpdate(){
@@ -261,28 +292,43 @@ public class PillowFort : MonoBehaviour {
 
       if( allBlocksStarted == true && clothDropped == false ){ dropCloth(); }
 
+      fadeIn += .01f;
+      if( fadeIn > 1 ){ fadeIn = 1; }
+
       if( clothDropped == true ){
-        clothDown += .01f;
-        if( clothDown > 1 ){ clothDown = 1;}
+        clothDown += .002f;
+        if( clothDown > 1 ){ 
+          clothDown = 1; 
+          if( fullDropped == false ){
+            fullDropped = true;
+            lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = false;
+            lune.GetComponent<Lune>().title.GetComponent<Renderer>().enabled = false;
+
+
+          }
+        }
         framesSinceDrop ++;
 
         
       }
-      if( framesSinceDrop > 6000 && ending < 0 ){
+      if( framesSinceDrop > 3000 && ending < 0 ){
         onEnd();
       }
       clothSource.volume = clothDown;
       startSource.volume = 1 - clothDown;
       if( ending > 0 ){
-        endingVal += .001f;
+        endingVal += .0003f;
         if( endingVal > 1 ){ endingVal = 1;}
+
+        disappearVal += .001f;
+        if( disappearVal > 1 ){ disappearVal = 1;}
         clothSource.volume = 1 - endingVal;
         lastSource.volume = endingVal;
 
       }
 
       if( endingVal > .99 ){
-        fullEnd += .001f;
+        fullEnd += .0003f;
         if( fullEnd > 1 ){ fullEnd = 1;}
         lastSource.volume = 1 - fullEnd;
 
@@ -298,10 +344,25 @@ public class PillowFort : MonoBehaviour {
     
     }
 
+    void Update(){
+      setCycle();
+      lune.GetComponent<Lune>().clothDown = clothDown;
+      lune.GetComponent<Lune>().endingVal = endingVal;
+      lune.GetComponent<Lune>().fullEnd = fullEnd;
+      floor.GetComponent<Renderer>().material.SetFloat("_ClothDown",clothDown);
+      floor.GetComponent<Renderer>().material.SetFloat("_Disappear",disappearVal);
+    }
+
     private void onEnd(){
       ending = 1;
-      floor.GetComponent<Renderer>().enabled = false;
+      //floor.GetComponent<Renderer>().enabled = false;
       forcePass.SetInt( "_Ended"   , 1 );
+
+
+
+      lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = true;
+      lune.GetComponent<Lune>().title.GetComponent<Renderer>().enabled = true;
+      
       for( int i = 0; i < Shapes.Length; i++ ){
         Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
         Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );

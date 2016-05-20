@@ -109,11 +109,11 @@ public class Stretch : MonoBehaviour {
       device.TriggerHapticPulse(300);
     }
 	
-    if( GetComponent<BeginBox>().hasBegun == true ){
+    //if( GetComponent<BeginBox>().hasBegun == true ){
       if( GetComponent<MoveByController>().moving == false ){
 
         setPosition();
-
+        GetComponent<LineRenderer>().enabled = true;
       }else{
 
 
@@ -124,10 +124,11 @@ public class Stretch : MonoBehaviour {
 
         leftDrag.transform.localScale = Vector3.zero;// Vector3.Scale( lScale , transform.localScale);
         rightDrag.transform.localScale = Vector3.zero;// Vector3.Scale( lScale , transform.localScale); 
+        GetComponent<LineRenderer>().enabled = false;
 
 
       } 
-    }
+   // }
 
 	}
 }

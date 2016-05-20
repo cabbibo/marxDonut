@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AudioListenerTexture.cs" />
      <Compile Include="Assets\BeginBox.cs" />
      <Compile Include="Assets\HitAndHoldPlay.cs" />
      <Compile Include="Assets\Scripts\AssignStructs.cs" />
@@ -53,6 +54,7 @@
      <Compile Include="Assets\Scripts\EventManager.cs" />
      <Compile Include="Assets\Scripts\HandBuffer.cs" />
      <Compile Include="Assets\Scripts\Logo.cs" />
+     <Compile Include="Assets\Scripts\Lune.cs" />
      <Compile Include="Assets\Scripts\MoveByController.cs" />
      <Compile Include="Assets\Scripts\MoveBySpringController.cs" />
      <Compile Include="Assets\Scripts\ObjExporter.cs" />
@@ -112,6 +114,7 @@
      <None Include="Assets\Resources\Shaders\Crystals.shader" />
      <None Include="Assets\Resources\Shaders\Chunks\getGridDiscard.cginc" />
      <None Include="Assets\Resources\Shaders\ConstraintPass.compute" />
+     <None Include="Assets\Resources\Shaders\LuneTitle.shader" />
      <None Include="Assets\Resources\Shaders\Title.shader" />
      <None Include="Assets\Resources\Shaders\NormalPass.compute" />
      <None Include="Assets\Resources\Shaders\ForcePass.compute" />
@@ -126,6 +129,7 @@
      <None Include="Assets\Resources\Shaders\donut.shader" />
      <None Include="Assets\SteamVR\readme.txt" />
      <None Include="Assets\SteamVR\Resources\SteamVR_ColorOut.shader" />
+     <None Include="Assets\Resources\Shaders\MoonTrace.shader" />
      <None Include="Assets\Resources\Shaders\donut.compute" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity 5.4.0b17/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

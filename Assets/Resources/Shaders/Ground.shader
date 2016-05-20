@@ -45,6 +45,8 @@ Shader "Custom/Gound" {
       uniform int _Fade;
       uniform float  _IntersectionPrecision;
       uniform float _MaxTraceDistance;
+      uniform float _ClothDown;
+      uniform float _Disappear;
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
@@ -120,7 +122,7 @@ Shader "Custom/Gound" {
         int3 test;
         float2 res2 = float2( sdBox( modit(pos , modVal) - modVal / 2. , float3( .4 , .4 , .4 ) ) , 0.4 );
         res2.x += .3 * (noise( pos - float3( 0 , _Time.y / 6, 0 ) )+1);
-        res2.x += .1 * (noise( pos * 10 - float3( 0 , _Time.y / 10 , 0 ) )+1);
+        res2.x += (.1 +.1* _ClothDown) * (noise( pos * 10 - float3( 0 , _Time.y / 10 , 0 ) )+1);
         res2.x += .2 * length( pos.xz );
        	//res = smoothU( res , res2 , 0.1 );
     		//res = float2( length( pos - float3( 0., -.8 ,0) ) - 1., 0.1 );
@@ -228,6 +230,8 @@ Shader "Custom/Gound" {
 
       //col= float3( 2. , 1.5 , 1. ) * .5;
 
+      if(length( i.uv.xy - float2( .5 , .5 )) < _Disappear ){discard;}
+
         if( _Fade == 1 ){
           float l = length( i.uv - float2( .5 ,.5 ) )*2;
 
@@ -236,9 +240,14 @@ Shader "Custom/Gound" {
 
 
          col = min( float3( 1 , 1 ,1), col);
+
+         //gamma correction
+        col = pow(col,  2.2);  
+        float3 col2 = float3( length( col ) , length( col ) , length( col ) ) * .5;
+
+        col = lerp( col2 , col , _ClothDown );
      
-    		//col = float3( 1. , 1. , 1. );
-            col = pow(col,  2.2);  
+
             fixed4 color;
             color = fixed4( col , 1. );
             return color;

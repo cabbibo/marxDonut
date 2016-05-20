@@ -45,6 +45,7 @@ Shader "Custom/Node" {
       uniform int _Fade;
       uniform float  _IntersectionPrecision;
       uniform float _MaxTraceDistance;
+      uniform float _BeginVal;
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
@@ -113,7 +114,7 @@ Shader "Custom/Node" {
 
         res.x = sdSphere( pos , .4 );
 
-        res.x -= .1 * noise( pos * 10 );
+        res.x -= (.1 * _BeginVal) * noise( pos * 10 );
         res.y = 1;
        
        //res.x = n - 1.5;
@@ -130,9 +131,9 @@ Shader "Custom/Node" {
 
       	float3 eps = float3( 0.001, 0.0, 0.0 );
       	float3 nor = float3(
-      	    map(pos+eps.xyy).x - map(pos-eps.xyy).x,
-      	    map(pos+eps.yxy).x - map(pos-eps.yxy).x,
-      	    map(pos+eps.yyx).x - map(pos-eps.yyx).x );
+    	    map(pos+eps.xyy).x - map(pos-eps.xyy).x,
+    	    map(pos+eps.yxy).x - map(pos-eps.yxy).x,
+    	    map(pos+eps.yyx).x - map(pos-eps.yyx).x );
       	return normalize(nor);
 
       }
@@ -149,14 +150,14 @@ Shader "Custom/Node" {
         
         for( int i=0; i< _NumberSteps; i++ ){
             
-            if( h < _IntersectionPrecision || t > _MaxTraceDistance ) break;
-    
-            float3 pos = ro + rd*t;
-            float2 m = map( pos );
-            
-            h = m.x;
-            t += h;
-            id = m.y;
+          if( h < _IntersectionPrecision || t > _MaxTraceDistance ) break;
+  
+          float3 pos = ro + rd*t;
+          float2 m = map( pos );
+          
+          h = m.x;
+          t += h;
+          id = m.y;
             
         }
     
@@ -187,8 +188,7 @@ Shader "Custom/Node" {
         o.ro = mPos;// v.position;
         o.camPos = _WorldSpaceCameraPos;//mul( _World2Object , float4( _WorldSpaceCameraPos  , 1. )); 
 
-
-         o.ro = v.position;
+        o.ro = v.position;
         o.camPos = mul( unity_WorldToObject , float4( _WorldSpaceCameraPos  , 1. )); 
 
         return o;
@@ -212,6 +212,7 @@ Shader "Custom/Node" {
     			float3 pos = ro + rd * res.x;
     			float3 norm = calcNormal( pos );
 
+
           float3 fRefl = reflect( -rd , norm );
           float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
     			col = norm * .5 + .5;
@@ -231,12 +232,16 @@ Shader "Custom/Node" {
 
         //gamma correction
         col = pow(col,  2.2);  
+        float3 col2 = float3( length( col ) , length( col ) , length( col ) ) * .5;
+
+        col = lerp( col2 , col , _BeginVal );
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 
-            fixed4 color;
-            color = fixed4( col , 1. );
-            return color;
+        fixed4 color;
+        color = fixed4( col , 1. );
+        return color;
+
       }
 
       ENDCG
