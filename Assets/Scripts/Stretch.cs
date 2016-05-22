@@ -16,6 +16,10 @@ public class Stretch : MonoBehaviour {
 
   private Vector3 lScale;
 
+  // saving old transforms for delta
+  public Transform oLDrag;
+  public Transform oRDrag;
+
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +44,9 @@ public class Stretch : MonoBehaviour {
 
     leftDrag.AddComponent<MoveByController>();
     rightDrag.AddComponent<MoveByController>();
+
+    leftDrag.GetComponent<Wrench>().BasisObject = gameObject;
+    rightDrag.GetComponent<Wrench>().BasisObject = gameObject;
 
 
 
@@ -83,6 +90,7 @@ public class Stretch : MonoBehaviour {
 
     length = getLength();
 
+
     transform.localScale = new Vector3( transform.localScale.x , transform.localScale.y , length );
 
     leftDrag.transform.localScale = lScale;
@@ -94,6 +102,8 @@ public class Stretch : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+    if( GetComponent<BeginBox>().ssFinished == false ){
 
     length = getLength();
 
@@ -122,13 +132,17 @@ public class Stretch : MonoBehaviour {
 
         upVec = transform.localToWorldMatrix.MultiplyVector( new Vector3(0 , 1 , 0) ).normalized;
 
-        leftDrag.transform.localScale = Vector3.zero;// Vector3.Scale( lScale , transform.localScale);
-        rightDrag.transform.localScale = Vector3.zero;// Vector3.Scale( lScale , transform.localScale); 
+        leftDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
+        rightDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
+        //rightDrag.transform.localScale = rightDrag.transform.lossyScale; //Vector3.Scale( lScale , rightDrag.transform.lossyScale );//new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z);
         GetComponent<LineRenderer>().enabled = false;
 
 
       } 
+
+    }
    // }
+
 
 	}
 }

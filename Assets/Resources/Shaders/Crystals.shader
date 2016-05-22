@@ -46,6 +46,8 @@ Shader "Custom/Crystals" {
       uniform float  _IntersectionPrecision;
       uniform float _MaxTraceDistance;
 
+      uniform float _SecondVal;
+
       uniform float3 _Hand1;
       uniform float3 _Hand2;
       
@@ -240,6 +242,8 @@ Shader "Custom/Crystals" {
 
         //gamma correction
         col = pow(col,  2.2);  
+
+        col = lerp( col , float3( 1 , 1 , 1) , _SecondVal);
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 

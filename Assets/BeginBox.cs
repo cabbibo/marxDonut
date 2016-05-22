@@ -14,6 +14,23 @@ public class BeginBox : MonoBehaviour {
   public float beginMag;
   public float beginVal = 0;
 
+  public bool beginningSS = false;
+  public bool begunSS = false;
+  public bool canBeginSS = false;
+  public bool willBeginSS = false;
+  public bool ssFinished = false;
+
+  public bool beginningDead = false;
+  public bool begunDead = false;
+
+  
+
+  public float secondVal = 0;
+  public float deadVal = 0;
+
+  public AudioClip audioClip;
+  private AudioSource audio;
+
 
 	// Use this for initialization
 	void Start () {
@@ -21,7 +38,14 @@ public class BeginBox : MonoBehaviour {
     GetComponent<Renderer>().enabled = false;
     GetComponent<Collider>().enabled = false;
 
-	
+    audio = transform.gameObject.AddComponent<AudioSource>();
+    audio.clip = audioClip;
+    audio.spatialize = true;
+    audio.loop = false;
+    audio.volume = 1;
+    audio.pitch = .8f + .2f * Random.Range(0,.999f);
+    //audio.Play();
+  	
 	}
 	
 	// Update is called once per frame
@@ -42,8 +66,21 @@ public class BeginBox : MonoBehaviour {
       Begin();
     }
 
+
+    if( canBeginSS == true && begunSS == false && GetComponent<MoveByController>().moving == true ){
+      willBeginSS = true;
+    }
+
+    if( willBeginSS == true && GetComponent<MoveByController>().moving == false ){
+      BeginSS();
+    }
+
     if( beginning == true ){
       Beginning();
+    }
+
+    if( beginningSS == true ){
+      BeginningSS();
     }
 	
 	}
@@ -60,6 +97,8 @@ public class BeginBox : MonoBehaviour {
     GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
     GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
 
+    GetComponent<LineRenderer>().SetPosition( 0 , new Vector3( 0 , 0 , (1 - beginVal) * .6f ));
+    GetComponent<LineRenderer>().SetPosition( 2 , new Vector3( 0 , 0 , (1 - beginVal) * -.6f ));
 
     if( beginVal > 1 && hasBegun == false ){
       beginVal = 1;
@@ -71,7 +110,47 @@ public class BeginBox : MonoBehaviour {
   public void FinishBegin(){
     beginning= false;
     hasBegun = true;
+    //canBeginSS = true;
     GetComponent<Collider>().enabled = true;
+
+  }
+
+  public void BeginSS(){
+    begunSS = true;
+    beginningSS = true;
+  }
+
+  public void BeginningSS(){
+
+    secondVal += .01f;
+
+    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+
+    GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+
+    if( secondVal > 1 && ssFinished == false  ){
+      secondVal = 1;
+      ssFinished = true;
+      FinishSS();
+    }
+  }
+
+  public void FinishSS(){
+
+//    print("YA");
+
+    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().enabled = false;
+    GetComponent<Stretch>().leftDrag.GetComponent<MoveByController>().enabled = false;
+    GetComponent<Stretch>().leftDrag.GetComponent<Wrench>().enabled = false;
+    GetComponent<Stretch>().leftDrag.GetComponent<HitAndHoldPlay>().enabled = false;
+
+    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().enabled = false;
+    GetComponent<Stretch>().rightDrag.GetComponent<MoveByController>().enabled = false;
+    GetComponent<Stretch>().rightDrag.GetComponent<Wrench>().enabled = false;
+    GetComponent<Stretch>().rightDrag.GetComponent<HitAndHoldPlay>().enabled = false;
+    
+
 
   }
 
@@ -86,6 +165,8 @@ public class BeginBox : MonoBehaviour {
     beginning = true;
     begun = true;
     transform.localScale = new Vector3(0,0,0);
+
+    audio.Play();
 
   }
 

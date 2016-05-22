@@ -121,11 +121,11 @@ float3 hsv(float h, float s, float v)
 
           float val = tex2D(_TitleTexture , w ).w;
 
-          float noiseVal = 2 * noise( pos *  20.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , _Time.y));
-          noiseVal += 1 * noise( pos *  50.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
-          noiseVal += .5 * noise( pos *  100.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
+          float noiseVal = 2 * noise( pos *  30.0 * float3( 1.1 , 1 , 1 ) + float3( 0 , 0 , _Time.y));
+          //noiseVal += 1 * noise( pos *  50.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
+          //noiseVal += .5 * noise( pos *  100.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
 
-          float total = val;// + val * noiseVal;// val +  noiseVal * val;
+          float total = val + noiseVal * .4;// + val * noiseVal;// val +  noiseVal * val;
 
           if( total > .8 ){
           	hit = 1;
@@ -138,6 +138,10 @@ float3 hsv(float h, float s, float v)
         if( hit < .5 ){
         	discard;
         }
+
+        col = float3( length( col ), length( col ), length( col )) / 2;
+
+        col = col * col * col;
 
         col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
         fixed4 color;

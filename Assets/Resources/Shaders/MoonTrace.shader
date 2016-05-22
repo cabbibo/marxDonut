@@ -248,7 +248,8 @@ Shader "Custom/MoonTrace" {
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 
-
+   col = float3( length( col) , length( col ) , length( col));
+   col = col * col * col;
    col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
 
             fixed4 color;

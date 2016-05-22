@@ -113,14 +113,14 @@ Shader "Custom/Gound" {
         float2 sphere;
 
 			//res = float2( sdSphere( pos , .4 ) , 0.6 );
-        float3 modVal = float3( .3   , .3 , .3 );
+        float3 modVal = float3( .3 + _ClothDown * .2  , .3+ _ClothDown * .2 , .3+ _ClothDown * .2 );
         //pos -= float3( 0 , .2 , 0.);
 //
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         int3 test;
-        float2 res2 = float2( sdBox( modit(pos , modVal) - modVal / 2. , float3( .4 , .4 , .4 ) ) , 0.4 );
+        float2 res2 = float2( sdBox( modit(pos , modVal) - modVal / 2. , float3( .4 - _ClothDown * .2 , .4- _ClothDown * .2 , .4- _ClothDown * .2 ) ) , 0.4 );
         res2.x += .3 * (noise( pos - float3( 0 , _Time.y / 6, 0 ) )+1);
         res2.x += (.1 +.1* _ClothDown) * (noise( pos * 10 - float3( 0 , _Time.y / 10 , 0 ) )+1);
         res2.x += .2 * length( pos.xz );

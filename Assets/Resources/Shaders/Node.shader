@@ -46,6 +46,7 @@ Shader "Custom/Node" {
       uniform float  _IntersectionPrecision;
       uniform float _MaxTraceDistance;
       uniform float _BeginVal;
+      uniform float _SecondVal;
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
@@ -113,6 +114,7 @@ Shader "Custom/Node" {
 
 
         res.x = sdSphere( pos , .4 );
+        res.x = lerp( res.x , sdBox( pos , float3( .2 , .2 , .2 ) ) , 1 - _BeginVal);
 
         res.x -= (.1 * _BeginVal) * noise( pos * 10 );
         res.y = 1;
@@ -238,6 +240,7 @@ Shader "Custom/Node" {
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 
+        col = lerp( col , float3( 1 , 0 , 0 ) , _SecondVal );
         fixed4 color;
         color = fixed4( col , 1. );
         return color;
