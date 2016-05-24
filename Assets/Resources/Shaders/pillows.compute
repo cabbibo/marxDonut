@@ -1,0 +1,102 @@
+﻿#pragma kernel CSMain
+ 
+#define threadX 6
+#define threadY 6
+#define threadZ 6
+
+#define strideX 6
+#define strideY 6
+#define strideZ 6
+
+#define gridX (threadX * strideX)
+#define gridY (threadY * strideY)
+#define gridZ (threadZ * strideZ)
+
+
+
+
+float _DeltaTime;
+float _Time;
+int _NumShapes;
+int _NumberHands;
+int _Reset;
+int _Ended;
+
+
+
+
+struct Vert{
+  float3 pos;
+  float3 vel;
+  float3 ogPos;
+  float3 norm;
+  float2 uv;
+  float boxID;
+  float ids[8];
+  float3 debug;
+};
+
+
+  
+struct Hand{
+  float active;
+  float3 pos;
+  float3 vel;
+  float3 aVel;
+  float  triggerVal;
+  float  thumbVal;
+  float  sideVal;
+  float2 thumbPos;
+};
+
+struct Shape{
+  float4x4 mat;
+  float shape;
+};
+
+
+
+//float4x4 _TransformMatrix;
+RWStructuredBuffer<Vert> vertBuffer;
+RWStructuredBuffer<Shape> shapeBuffer;
+RWStructuredBuffer<Hand> handBuffer;
+
+
+[numthreads(threadX,threadY,threadZ)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+  
+  int pID = id.x + id.y * gridX + id.z * gridX * gridY;
+
+  Vert vert = vertBuffer[pID];
+
+
+  Shape s = shapeBuffer[ int( vert.boxID ) ];
+
+
+  float3 force = float3( 0 , 0 , 0 );
+
+  float3 target = mul( s.mat , float4( vert.ogPos , 1 ) ).xyz;
+
+  force += (target - vert.pos) * .01;
+
+  for( int i = 0; i < _NumberHands; i++){
+
+    float3 dif = handBuffer[i].pos - vert.pos;
+    if(length(dif)< .1){
+      force += float3( normalize(dif) ) * (handBuffer[i].triggerVal-.3) * .001;
+    }
+  }
+
+
+  vert.vel += force;
+  vert.vel *= .95;
+
+ // float dampening = .99;// - vert.life * .01;
+  float3 next = vert.pos + vert.vel;// * dampening + acceleration * _DeltaTime * _DeltaTime;
+ 
+  vert.pos = next;//mul( s.mat , float4( vert.ogPos , 1 ) ).xyz;
+  vertBuffer[pID] = vert;
+
+
+  
+}

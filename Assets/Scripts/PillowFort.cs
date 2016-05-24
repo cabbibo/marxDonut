@@ -11,7 +11,7 @@ TODO:
 - when cloth is dropped, convert to pillows that can be dragged but not skewed
 - exploded pillows are the stars in the world. 
 - they explode at the end, making the cloth be able to fully drop
-- twist using x and y matching to scale x and y
+//- twist using x and y matching to scale x and y
 
 
 */

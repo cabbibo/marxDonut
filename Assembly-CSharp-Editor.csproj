@@ -72,6 +72,7 @@
      <None Include="Assets\Resources\Shaders\ConstraintPass.compute" />
      <None Include="Assets\Resources\Shaders\LuneTitle.shader" />
      <None Include="Assets\Resources\Shaders\Title.shader" />
+     <None Include="Assets\Resources\Shaders\Pillows.shader" />
      <None Include="Assets\Resources\Shaders\NormalPass.compute" />
      <None Include="Assets\Resources\Shaders\ForcePass.compute" />
      <None Include="Assets\Resources\Shaders\Node.shader" />
@@ -84,6 +85,7 @@
      <None Include="Assets\Resources\Shaders\Chunks\noise.cginc" />
      <None Include="Assets\Resources\Shaders\donut.shader" />
      <None Include="Assets\SteamVR\readme.txt" />
+     <None Include="Assets\Resources\Shaders\pillows.compute" />
      <None Include="Assets\SteamVR\Resources\SteamVR_ColorOut.shader" />
      <None Include="Assets\Resources\Shaders\MoonTrace.shader" />
      <None Include="Assets\Resources\Shaders\donut.compute" />

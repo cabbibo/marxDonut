@@ -44,6 +44,8 @@ public class BeginBox : MonoBehaviour {
     audio.loop = false;
     audio.volume = 1;
     audio.pitch = .8f + .2f * Random.Range(0,.999f);
+
+    transform.localScale = new Vector3( targetScale.x , targetScale.y , transform.localScale.z );
     //audio.Play();
   	
 	}
@@ -160,7 +162,7 @@ public class BeginBox : MonoBehaviour {
     beginMag = (targetScale - transform.localScale).magnitude;
 
     GetComponent<Stretch>().setPosition();
-    GetComponent<Renderer>().enabled = true;
+    //GetComponent<Renderer>().enabled = true;
 
     beginning = true;
     begun = true;

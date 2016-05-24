@@ -188,7 +188,7 @@ Shader "Custom/Crystals" {
         o.camPos = _WorldSpaceCameraPos;//mul( _World2Object , float4( _WorldSpaceCameraPos  , 1. )); 
 
 
-         o.ro = v.position;
+        o.ro = v.position;
         o.camPos = mul( unity_WorldToObject , float4( _WorldSpaceCameraPos  , 1. )); 
 
         return o;

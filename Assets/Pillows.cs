@@ -11,7 +11,6 @@ public class Pillows : MonoBehaviour {
 
   // How the donut looks
   public Shader shader;
-  public Shader debugShader;
 
   // How the donut feels
   public ComputeShader forcePass;
@@ -26,9 +25,10 @@ public class Pillows : MonoBehaviour {
 
   public ComputeBuffer _vertBuffer;
   public ComputeBuffer _shapeBuffer;
+  public ComputeBuffer _inverseShapeBuffer;
+  public ComputeBuffer _startedBuffer;
 
   private Material material;
-  private Material debugMaterial;
 
   private const int threadX = 6;
   private const int threadY = 6;
@@ -45,14 +45,17 @@ public class Pillows : MonoBehaviour {
   private int vertexCount { get { return gridX * gridY * gridZ; } }
 
 
-  private int ribbonWidth = 216;
-  private int ribbonLength { get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
+  private int ribbonWidth { get { return (int)Mathf.Floor( Mathf.Pow( (float)vertexCount / (6 * NumShapes)  , .5f ) ); }}
+  private int ribbonLength { get { return (int)Mathf.Floor( Mathf.Pow( (float)vertexCount / (6 * NumShapes)  , .5f ) ); }} //{ get { return (int)Mathf.Floor( (float)vertexCount / ribbonWidth ); } }
   
 
   private int _kernelforce;
 
   private float[] inValues;
   private float[] shapeValues;
+  private float[] inverseShapeValues;
+  private float[] startedVals;
+ 
 
   struct Shape{
     public Matrix4x4 mat;
@@ -79,10 +82,14 @@ public class Pillows : MonoBehaviour {
   void Start () {
 
     PF = GetComponent<PillowFort>();
+
+    print( "RibbonWidth" );
+    print( ribbonWidth );
     
     createShapes();
 
     shapeValues = new float[ Shapes.Length * ShapeStructSize ];
+    inverseShapeValues = new float[ Shapes.Length * ShapeStructSize ];
     createBuffers();
     createMaterial();
 
@@ -92,17 +99,15 @@ public class Pillows : MonoBehaviour {
     forcePass.SetInt( "_Ended"   , 0 );
 
 
+    startedVals = new float[ Shapes.Length ];
+
     //Dispatch();
-    //Camera.onPostRender += Render;
+    Camera.onPostRender += Render;
 
   
   }
   
   public void dropCloth(){
-    //forcePass.SetInt( "_Reset"    , 1 );
-    //Dispatch();
-    //forcePass.SetInt( "_Reset"    , 0 );
-
     for( int i = 0;  i < NumShapes; i++ ){ 
       Shapes[i].GetComponent<BeginBox>().canBeginSS = true;
     }
@@ -136,7 +141,17 @@ public class Pillows : MonoBehaviour {
 
     }
 
+    for( int i = 0; i < NumShapes; i++ ){
+
+        startedVals[i] = Shapes[i].GetComponent<BeginBox>().beginVal;
+
+    }
+
+    _startedBuffer.SetData(startedVals);
+
     assignShapeBuffer();
+
+    Dispatch();
     /*if( started > 0 ){
       Dispatch();
     }*/
@@ -146,7 +161,7 @@ public class Pillows : MonoBehaviour {
 
   //When this GameObject is disabled we must release the buffers or else Unity complains.
     private void OnDisable(){
-       // Camera.onPostRender -= Render;
+        Camera.onPostRender -= Render;
         ReleaseBuffer();
     }
 
@@ -155,33 +170,46 @@ public class Pillows : MonoBehaviour {
     private void createMaterial(){
 
       material = new Material( shader );
-      debugMaterial = new Material( debugShader );
 
     }
 
 
-    private Vector3 getVertPosition( float uvX , float uvY  ){
+  void createShapes(){
 
-        float u = (uvY -.5f);
-        float v = (uvX -.5f);
+    Shapes = new GameObject[NumShapes];
+    for( int i = 0;  i < NumShapes; i++ ){ 
 
-        return new Vector3( u * 1, 0 , v * 1 );
+      Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.0f + new Vector3( 0 , 1.0f , 0 ) , Random.rotation) as GameObject;
+      Shapes[i].GetComponent<Stretch>().node = Node;
+
+      //print( "noadsassinged");
+
+      Vector3 v = Random.insideUnitSphere;
+      Shapes[i].GetComponent<BeginBox>().targetScale = new Vector3( .2f , .2f , Random.Range( .05f , .1f ) );
+
+      Shapes[i].GetComponent<Renderer>().material.SetTexture("_CubeMap" , cubeMap );
+      Shapes[i].GetComponent<Renderer>().enabled = false;
 
     }
+
+  }
+
+
 
           //After all rendering is complete we dispatch the compute shader and then set the material before drawing with DrawProcedural
   //this just draws the "mesh" as a set of points
   public void Render(Camera camera) {
 
 
-    if( PF.clothDropped == true ){ 
+    //if( PF.clothDropped == true ){ 
       
-      int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
+      int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1) * 6 * NumShapes;
 
       material.SetPass(0);
 
       material.SetBuffer("buf_Points", _vertBuffer);
-      material.SetBuffer("shapeBuffer", _shapeBuffer);
+      //forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
+      material.SetBuffer("shapeBuffer", _inverseShapeBuffer );
 
       material.SetFloat( "_FullEnd" , PF.fullEnd );
    
@@ -192,23 +220,16 @@ public class Pillows : MonoBehaviour {
       material.SetTexture( "_NormalMap" , normalMap);
       material.SetTexture( "_CubeMap"  , cubeMap );
 
+      
+
+      material.SetBuffer("startedBuffer", _startedBuffer );
+
       material.SetMatrix("worldMat", transform.localToWorldMatrix);
       material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
 
       Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
 
-      debugMaterial.SetPass(0);
-
-      debugMaterial.SetBuffer("buf_Points", _vertBuffer);
-
-      debugMaterial.SetInt( "_RibbonWidth"  , ribbonWidth  );
-      debugMaterial.SetInt( "_RibbonLength" , ribbonLength );
-      debugMaterial.SetInt( "_TotalVerts"   , vertexCount  );
-
-      debugMaterial.SetMatrix("worldMat", transform.localToWorldMatrix);
-      debugMaterial.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
-
-    }
+    //}
 
   }
 
@@ -217,18 +238,53 @@ public class Pillows : MonoBehaviour {
     void ReleaseBuffer(){
 
       _vertBuffer.Release(); 
+      _startedBuffer.Release(); 
       _shapeBuffer.Release(); 
+      _inverseShapeBuffer.Release(); 
     
       DestroyImmediate( material );
-      DestroyImmediate( debugMaterial );
 
     }
 
 
+
+    private Vector3 getVertPosition( float uvX , float uvY  , int side ){
+
+        float u = (uvY -.5f)* 2;
+        float v = (uvX -.5f)* 2;
+
+        Vector2 uv = new Vector2( u , v );
+        Vector3 n;
+        if( side == 0 ){
+          n = new Vector3( 1 , u * 1 , v * 1 );
+        }else if( side == 1 ){
+          n = new Vector3( -1 , -u*1 , - v*1  );
+        }else if( side == 2 ){
+          n = new Vector3(  -u*1 , 1  , v*1  );
+        }else if( side == 3 ){
+          n = new Vector3(  u*1 , -1  , -v*1  );
+        }else if( side == 4 ){
+          n = new Vector3(  -v*1 , -u * 1 , 1 );
+        }else if( side == 5 ){
+          n = new Vector3(  v*1 , u * 1 , -1  );
+        }else{
+          n = new Vector3( 0 , 0 , 0);
+          print("ISAAC YOU ARE SO DUMB");
+        }
+        n /= 2;
+
+        return n;
+
+
+
+    }
+
     private void createBuffers() {
 
       _shapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );      
+      _inverseShapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );      
       _vertBuffer  = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
+      _startedBuffer  = new ComputeBuffer( NumShapes ,   sizeof(float));
 
 
       float lRight = 1 / (float)ribbonWidth;
@@ -243,35 +299,38 @@ public class Pillows : MonoBehaviour {
 
       // Used for assigning to our buffer;
       int index = 0;
-      int indexOG = 0;
-      int li1= 0;
-      int li2= 0;
-      int li3= 0;
-      int li4= 0;
 
-
-      /*        // second rite up here
-       u   dU   x  . r
-       . .           // third rite down here
-       x  . r        x  . r
-         . 
-           dD
-
-      */
 
       for (int z = 0; z < gridZ; z++) {
         for (int y = 0; y < gridY; y++) {
           for (int x = 0; x < gridX; x++) {
 
             int id = x + y * gridX + z * gridX * gridY; 
+
+            // Gets which box we are in
+            int box = (int)Mathf.Floor( (float)id / (float)( ribbonWidth * ribbonLength * 6));
+            int inBoxID = id % ( ribbonWidth * ribbonLength * 6);
+            int inSideID = inBoxID % (ribbonWidth * ribbonLength);
+            int side = (int)Mathf.Floor( (float)inBoxID / (float)( ribbonWidth * ribbonLength));
+
             
-            float col = (float)(id % ribbonWidth );
-            float row = Mathf.Floor( ((float)id +0.01f) / ribbonWidth);
+            float col = (float)(inSideID % ribbonWidth );
+            float row = Mathf.Floor( ((float)inSideID + 0.01f) / ribbonWidth);
 
-            float uvX = col / ribbonWidth;
-            float uvY = row / ribbonLength;
+            float uvX = col / (ribbonWidth-1);
+            float uvY = row / (ribbonLength-1);
 
-            Vector3 fVec = getVertPosition( uvX , uvY );
+
+             if( inBoxID == 31 * 31 ){
+              print( "BOX : " );
+              print( (float)box );
+              print( uvX );
+              print( uvY );
+              print( side );
+
+            }
+
+            Vector3 fVec = getVertPosition( uvX , uvY , side );
 
 
             Vert vert = new Vert();
@@ -279,24 +338,20 @@ public class Pillows : MonoBehaviour {
 
             vert.pos = fVec * 1.000001f;
 
-            vert.oPos = fVec- new Vector3( 0 , 0 , 0 );
+            vert.oPos = fVec;
             vert.ogPos = fVec ;
-            vert.norm = new Vector3( 0 , 1 , 0 );
+            vert.norm = fVec.normalized;//new Vector3( 0 , 1 , 0 );
             vert.uv = new Vector2( uvX , uvY );
 
-            vert.mass = 0.3f;
-            if( col == 0 || col == ribbonWidth || row == 0 || row == ribbonLength ){
-              vert.mass = 2.0f;
-            }
             vert.ids = new float[8];
-            vert.ids[0] = convertToID( col + 1 , row + 0 );
-            vert.ids[1] = convertToID( col + 1 , row - 1 );
-            vert.ids[2] = convertToID( col + 0 , row - 1 );
-            vert.ids[3] = convertToID( col - 1 , row - 1 );
-            vert.ids[4] = convertToID( col - 1 , row - 0 );
-            vert.ids[5] = convertToID( col - 1 , row + 1 );
-            vert.ids[6] = convertToID( col - 0 , row + 1 );
-            vert.ids[7] = convertToID( col + 1 , row + 1 );
+            vert.ids[0] = convertToID( col + 1 , row + 0 , box , side );
+            vert.ids[1] = convertToID( col + 1 , row - 1 , box , side );
+            vert.ids[2] = convertToID( col + 0 , row - 1 , box , side );
+            vert.ids[3] = convertToID( col - 1 , row - 1 , box , side );
+            vert.ids[4] = convertToID( col - 1 , row - 0 , box , side );
+            vert.ids[5] = convertToID( col - 1 , row + 1 , box , side );
+            vert.ids[6] = convertToID( col - 0 , row + 1 , box , side );
+            vert.ids[7] = convertToID( col + 1 , row + 1 , box , side );
 
             vert.debug = new Vector3(0,1,0);
 
@@ -304,9 +359,10 @@ public class Pillows : MonoBehaviour {
             inValues[index++] = vert.pos.y;
             inValues[index++] = vert.pos.z;
 
-            inValues[index++] = vert.oPos.x;
-            inValues[index++] = vert.oPos.y;
-            inValues[index++] = vert.oPos.z;
+            // using velocity on this one!
+            inValues[index++] = 0;
+            inValues[index++] = 0;
+            inValues[index++] = 0;
 
             inValues[index++] = vert.ogPos.x;
             inValues[index++] = vert.ogPos.y;
@@ -319,7 +375,9 @@ public class Pillows : MonoBehaviour {
             inValues[index++] = vert.uv.x;
             inValues[index++] = vert.uv.y;
 
-            inValues[index++] = 0;
+
+           
+            inValues[index++] = (float)box;
 
             inValues[index++] = vert.ids[0];
             inValues[index++] = vert.ids[1];
@@ -345,38 +403,20 @@ public class Pillows : MonoBehaviour {
 
 
 
-  void createShapes(){
-
-    Shapes = new GameObject[NumShapes];
-    for( int i = 0;  i < NumShapes; i++ ){ 
-
-      Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.0f + new Vector3( 0 , 1.0f , 0 ) , Random.rotation) as GameObject;
-      Shapes[i].GetComponent<Stretch>().node = Node;
-
-      //print( "noadsassinged");
-
-      Vector3 v = Random.insideUnitSphere;
-      Shapes[i].GetComponent<BeginBox>().targetScale = new Vector3( .2f , .2f , Random.Range( .05f , .1f ) );
-
-      Shapes[i].GetComponent<Renderer>().material.SetTexture("_CubeMap" , cubeMap );
-
-    }
-
-  }
 
 
 
-  private float convertToID( float col , float row ){
+  private float convertToID( float col , float row , int box , int side ){
 
       float id;
 
-      if( col >= ribbonWidth ){ return -10; }
-      if( col < 0 ){ return -10; }
+      if( col >= ribbonWidth ){ return -1; }
+      if( col < 0 ){ return -1; }
 
-      if( row >= ribbonLength ){ return -10; }
-      if( row < 0 ){ return -10; }
+      if( row >= ribbonLength ){ return -1; }
+      if( row < 0 ){ return -1; }
 
-      id = row * ribbonWidth + col;
+      id = row * ribbonWidth + col + side * ribbonWidth * ribbonLength + box * ribbonWidth * ribbonLength * 6;
 
       return id;
 
@@ -392,24 +432,26 @@ public class Pillows : MonoBehaviour {
       for( int j = 0; j < 16; j++ ){
         int x = j % 4;
         int y = (int) Mathf.Floor(j / 4);
+        inverseShapeValues[index] = go.transform.localToWorldMatrix[x,y];
         shapeValues[index++] = go.transform.worldToLocalMatrix[x,y];
+        
       }
 
       // TODO:
       // Make different for different shapes
+      inverseShapeValues[index] = 1;
       shapeValues[index++] = 1;
+      
 
     }
 
     _shapeBuffer.SetData(shapeValues);
+    _inverseShapeBuffer.SetData(inverseShapeValues);
 
   }
 
 
    private void Dispatch() {
-
-        
-     
 
         forcePass.SetFloat( "_DeltaTime"    , Time.time - PF.oTime );
         forcePass.SetFloat( "_Time"         , Time.time      );
@@ -421,7 +463,7 @@ public class Pillows : MonoBehaviour {
         forcePass.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
 
         forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
-        forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _shapeBuffer );
+        forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
         forcePass.SetBuffer( _kernelforce , "transformBuffer"   , PF.fortCloth._transformBuffer );
         forcePass.SetBuffer( _kernelforce , "handBuffer"        , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
 
