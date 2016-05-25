@@ -134,6 +134,7 @@ public class PillowFort : MonoBehaviour {
       if( clothDropped == true ){
         clothDown += .002f;
         if( clothDown > 1 ){ 
+
           clothDown = 1; 
           if( fullDropped == false ){
             fullDropped = true;
@@ -190,13 +191,10 @@ public class PillowFort : MonoBehaviour {
 
       lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = true;
       lune.GetComponent<Lune>().title.GetComponent<Renderer>().enabled = true;
-      
-      for( int i = 0; i < pillows.Shapes.Length; i++ ){
-        pillows.Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
-        pillows.Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );
-        pillows.Shapes[i].GetComponent<Stretch>().rightDrag.transform.position = new Vector3( 100000 , 0 , 0 );
-      }
 
+      pillows.onClothDisappear();
+      
+      
     }
 
 

@@ -21,6 +21,8 @@ int _NumShapes;
 int _NumberHands;
 int _Reset;
 int _Ended;
+float _StartedCloth;
+float _StartedFinish;
 
 
 
@@ -75,9 +77,11 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
   float3 force = float3( 0 , 0 , 0 );
 
-  float3 target = mul( s.mat , float4( vert.ogPos , 1 ) ).xyz;
+  float3 curvedPos = lerp( vert.ogPos , normalize( vert.ogPos ) * .5 , _StartedCloth * 2 * length( vert.uv - float2( .5 , .5 )) );
 
-  force += (target - vert.pos) * .01;
+  float3 target = mul( s.mat , float4( curvedPos , 1 ) ).xyz;
+
+  force += (target - vert.pos) * (.01 +  .5 * ( 1 - _StartedCloth ));
 
   for( int i = 0; i < _NumberHands; i++){
 
@@ -89,7 +93,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
 
   vert.vel += force;
-  vert.vel *= .95;
+  vert.vel *= .95 - .5 * ( 1 - _StartedCloth );
 
  // float dampening = .99;// - vert.life * .01;
   float3 next = vert.pos + vert.vel;// * dampening + acceleration * _DeltaTime * _DeltaTime;

@@ -55,6 +55,8 @@ public class Pillows : MonoBehaviour {
   private float[] shapeValues;
   private float[] inverseShapeValues;
   private float[] startedVals;
+
+  private float[] shapesActive;
  
 
   struct Shape{
@@ -90,6 +92,8 @@ public class Pillows : MonoBehaviour {
 
     shapeValues = new float[ Shapes.Length * ShapeStructSize ];
     inverseShapeValues = new float[ Shapes.Length * ShapeStructSize ];
+    shapesActive = new float[ Shapes.Length ];
+
     createBuffers();
     createMaterial();
 
@@ -110,6 +114,7 @@ public class Pillows : MonoBehaviour {
   public void dropCloth(){
     for( int i = 0;  i < NumShapes; i++ ){ 
       Shapes[i].GetComponent<BeginBox>().canBeginSS = true;
+      shapesActive[i] = 1;
     }
 
   }
@@ -122,6 +127,17 @@ public class Pillows : MonoBehaviour {
       }
     }
   }
+
+  public void onClothDisappear(){
+    for( int i = 0; i < Shapes.Length; i++ ){
+      shapesActive[i] = 0;
+     // Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
+     // Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );
+     // Shapes[i].GetComponent<Stretch>().rightDrag.transform.position = new Vector3( 100000 , 0 , 0 );
+    }
+
+  }
+
 
 
   // Update is called once per frame
@@ -422,6 +438,7 @@ public class Pillows : MonoBehaviour {
 
   }
 
+
 	
   private void assignShapeBuffer(){
 
@@ -439,8 +456,8 @@ public class Pillows : MonoBehaviour {
 
       // TODO:
       // Make different for different shapes
-      inverseShapeValues[index] = 1;
-      shapeValues[index++] = 1;
+      inverseShapeValues[index] = shapesActive[i];
+      shapeValues[index++] = shapesActive[i];
       
 
     }
@@ -455,6 +472,7 @@ public class Pillows : MonoBehaviour {
 
         forcePass.SetFloat( "_DeltaTime"    , Time.time - PF.oTime );
         forcePass.SetFloat( "_Time"         , Time.time      );
+        forcePass.SetFloat( "_StartedCloth" , PF.clothDown );
 
 
         forcePass.SetInt( "_RibbonWidth"   , ribbonWidth     );
