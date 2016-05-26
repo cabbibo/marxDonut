@@ -1,24 +1,70 @@
 Base path: C:/Program Files/Unity 5.4.0b17/Editor/Data
 Cmd: getPlatforms
+Cmd: preprocess
+  insize=6301 outsize=835 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=5767 outsize=890 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=5767 outsize=12874 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=7044 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=6727 outsize=3910 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=6727 outsize=1718 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
 Cmd: compileCompute
-  api=4 insize=1752 outsize=2229 ok=1
+  error: 2 plat 4 at pillows.compute(87): syntax error: unexpected token '.'
+  api=4 insize=2074 outsize=33 ok=0
 Cmd: compileCompute
-  api=4 insize=1752 outsize=2229 ok=1
+  error: 2 plat 4 at pillows.compute(87): syntax error: unexpected token '.'
+  api=4 insize=2074 outsize=33 ok=0
 Cmd: compileCompute
-  api=4 insize=1757 outsize=2269 ok=1
+  api=4 insize=2070 outsize=2709 ok=1
 Cmd: compileCompute
-  api=4 insize=1791 outsize=2345 ok=1
+  api=4 insize=2102 outsize=2721 ok=1
+Cmd: preprocess
+  insize=7375 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7058 outsize=4382 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7058 outsize=1718 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=7399 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7082 outsize=4394 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7082 outsize=1718 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=7411 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7094 outsize=4474 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7094 outsize=1718 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
 Cmd: compileCompute
-  api=4 insize=1850 outsize=2417 ok=1
+  api=4 insize=2293 outsize=2933 ok=1
 Cmd: compileCompute
-  api=4 insize=1854 outsize=2449 ok=1
+  api=4 insize=2294 outsize=2933 ok=1
 Cmd: compileCompute
-  error: 1 plat 4 at ForcePass.compute(300): 'i': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used
-  api=4 insize=8595 outsize=10833 ok=1
+  api=4 insize=2294 outsize=2933 ok=1
 Cmd: compileCompute
-  error: 1 plat 4 at ForcePass.compute(300): 'i': loop control variable conflicts with a previous declaration in the outer scope; most recent declaration will be used
-  api=4 insize=8563 outsize=10833 ok=1
+  api=4 insize=2294 outsize=2933 ok=1
+Cmd: preprocess
+  insize=7408 outsize=616 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7091 outsize=4474 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7091 outsize=1738 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: preprocess
+  insize=7420 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7103 outsize=4474 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7103 outsize=1738 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
 Cmd: compileCompute
-  api=4 insize=1883 outsize=2501 ok=1
-Cmd: compileCompute
-  api=4 insize=1915 outsize=2525 ok=1
+  api=4 insize=2294 outsize=2933 ok=1
+Cmd: preprocess
+  insize=7421 outsize=618 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=7104 outsize=4474 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=7104 outsize=1738 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1

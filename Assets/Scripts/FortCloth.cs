@@ -15,7 +15,6 @@ public class FortCloth : MonoBehaviour {
   public Texture2D normalMap;
   public Cubemap cubeMap;
 
-
   public float clothSize = 1;
   public float startingHeight = 1;
 
@@ -105,6 +104,14 @@ public class FortCloth : MonoBehaviour {
 	
 	}
 	
+  public void Restart(){
+  
+    forcePass.SetInt( "_Reset"    , 1 );
+    Dispatch();
+    forcePass.SetInt( "_Reset"    , 0);
+    
+
+  }
 
   public void update(){
 

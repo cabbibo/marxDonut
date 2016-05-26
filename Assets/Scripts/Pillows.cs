@@ -17,6 +17,8 @@ public class Pillows : MonoBehaviour {
 
   public bool allBlocksStarted;
   public bool allBlocksSS;
+  public bool allPillowsPopped;
+  public int pillowsPopped = 0;
 
   public Texture2D normalMap;
   public Cubemap cubeMap;
@@ -57,6 +59,8 @@ public class Pillows : MonoBehaviour {
   private float[] startedVals;
 
   private float[] shapesActive;
+
+  
  
 
   struct Shape{
@@ -110,12 +114,34 @@ public class Pillows : MonoBehaviour {
 
   
   }
+
+  public void Restart(){
+
+    forcePass.SetInt( "_Reset"    , 0 );
+    forcePass.SetInt( "_Ended"   , 0 );
+  
+    for( int i = 0;  i < NumShapes; i++ ){ 
+      Shapes[i].GetComponent<BeginBox>().Restart();
+      shapesActive[i] = 1;
+    }
+
+
+  }
   
   public void dropCloth(){
     for( int i = 0;  i < NumShapes; i++ ){ 
-      Shapes[i].GetComponent<BeginBox>().canBeginSS = true;
+      //Shapes[i].GetComponent<BeginBox>().canBeginSS = true;
       shapesActive[i] = 1;
     }
+
+  }
+
+  public void fullClothDropped(){
+
+     for( int i = 0;  i < NumShapes; i++ ){ 
+      Shapes[i].GetComponent<BeginBox>().canBeginSS = true;
+    }
+
 
   }
 
@@ -131,6 +157,7 @@ public class Pillows : MonoBehaviour {
   public void onClothDisappear(){
     for( int i = 0; i < Shapes.Length; i++ ){
       shapesActive[i] = 0;
+      Shapes[i].GetComponent<BeginBox>().canBeginPop = true;
      // Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
      // Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );
      // Shapes[i].GetComponent<Stretch>().rightDrag.transform.position = new Vector3( 100000 , 0 , 0 );
@@ -139,27 +166,41 @@ public class Pillows : MonoBehaviour {
   }
 
 
+  private void CheckForRandomEnter(){
+    for( int i = 0; i < Shapes.Length; i++ ){
+
+      if( Shapes[i].GetComponent<BeginBox>().entering == false && Shapes[i].GetComponent<BeginBox>().entered == false){
+
+        float f = Random.Range(0.0f,1.0f);
+        if( f < .01 ){
+          Shapes[i].GetComponent<BeginBox>().BeginEnter();
+        }
+      }
+    }
+  }
 
   // Update is called once per frame
   public void update () {
 
+
+    if( PF.fadedIn == true ){
+      CheckForRandomEnter();
+    }
+
     allBlocksStarted = true;
+    allBlocksSS = true;
+    pillowsPopped = 0;
+    allPillowsPopped = true;
+
     for( int i = 0; i < Shapes.Length; i++ ){
 
       if( Shapes[i].GetComponent<BeginBox>().begun == false ){ allBlocksStarted = false; }
-
-    }
-
-    allBlocksSS = true;
-    for( int i = 0; i < Shapes.Length; i++ ){
-
       if( Shapes[i].GetComponent<BeginBox>().begunSS == false ){ allBlocksSS = false; }
+      if( Shapes[i].GetComponent<BeginBox>().popped == false ){ allPillowsPopped = false; }else{
+        pillowsPopped ++;
+      }
 
-    }
-
-    for( int i = 0; i < NumShapes; i++ ){
-
-        startedVals[i] = Shapes[i].GetComponent<BeginBox>().beginVal;
+      startedVals[i] = Shapes[i].GetComponent<BeginBox>().beginVal + Shapes[i].GetComponent<BeginBox>().secondVal;
 
     }
 
@@ -481,6 +522,8 @@ public class Pillows : MonoBehaviour {
         forcePass.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
 
         forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
+        forcePass.SetBuffer( _kernelforce , "startedBuffer"   , _startedBuffer );
+
         forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
         forcePass.SetBuffer( _kernelforce , "transformBuffer"   , PF.fortCloth._transformBuffer );
         forcePass.SetBuffer( _kernelforce , "handBuffer"        , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );

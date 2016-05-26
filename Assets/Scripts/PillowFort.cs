@@ -7,10 +7,10 @@ using System.Collections;
 
 TODO:
 
-- each time bar is released for long time, plays own long note. 
-- when cloth is dropped, convert to pillows that can be dragged but not skewed
-- exploded pillows are the stars in the world. 
-- they explode at the end, making the cloth be able to fully drop
+//- each time bar is released for long time, plays own long note. 
+//- when cloth is dropped, convert to pillows that can be dragged but not skewed
+//- exploded pillows are the stars in the world. 
+//- they explode at the end, making the cloth be able to fully drop
 //- twist using x and y matching to scale x and y
 
 
@@ -45,10 +45,15 @@ public class PillowFort : MonoBehaviour {
     public int started = -1;
     public int ending = -1;
 
+    public bool fadedIn = false;
 
     public bool clothDropped = false;
     public bool allBlocksStarted = false;
+    public bool allPillowsPopped = false;
     public bool fullDropped = false;
+
+
+    public bool finalEndTriggered = false;
 
     public float clothDown = 0;
     public int framesSinceDrop = 0;
@@ -96,6 +101,8 @@ public class PillowFort : MonoBehaviour {
       lastSource.Play();
   
       setCycle();
+
+
     }
 
     void setCycle( ){
@@ -127,16 +134,29 @@ public class PillowFort : MonoBehaviour {
       fortCloth.update();
 
       if( pillows.allBlocksStarted == true && clothDropped == false ){ dropCloth(); }
+      //if( pillows.allPillowsPopped == true && ended == false ){ beginEnd(); }
+
+      if( fadedIn == false ){
+        disappearVal = 1 - fadeIn;
+        fullEnd = 1 - fadeIn;
+      }
 
       fadeIn += .01f;
-      if( fadeIn > 1 ){ fadeIn = 1; }
+      //print( fadeIn );
+      if( fadeIn > 1 ){ 
+        fadeIn = 1; 
+        fadedIn = true;
+      }
 
       if( clothDropped == true ){
-        clothDown += .002f;
+        clothDown += .0006f;
         if( clothDown > 1 ){ 
+
 
           clothDown = 1; 
           if( fullDropped == false ){
+            print( "YAAA");
+            pillows.fullClothDropped();
             fullDropped = true;
             lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = false;
             lune.GetComponent<Lune>().title.GetComponent<Renderer>().enabled = false;
@@ -148,27 +168,46 @@ public class PillowFort : MonoBehaviour {
       }
       
       if( pillows.allBlocksSS == true && ending < 0 ){
-        onEnd();
+        releaseCloth();
       }
 
       clothSource.volume = clothDown;
       startSource.volume = 1 - clothDown;
 
       if( ending > 0 ){
-        endingVal += .0003f;
-        if( endingVal > 1 ){ endingVal = 1;}
 
+        endingVal += .001f;
+
+        // tweens up to new value when another pillow popped!
+        float currentVal = (float)pillows.pillowsPopped / (float)pillows.NumShapes;
+        if( endingVal > currentVal){ endingVal = currentVal; }
+
+
+        if( pillows.allPillowsPopped && finalEndTriggered == false ){ 
+          triggerFinalEnd();
+          endingVal = 1;
+        }
+
+        // used to make floor disappear
         disappearVal += .001f;
         if( disappearVal > 1 ){ disappearVal = 1;}
+
+
         clothSource.volume = 1 - endingVal;
         lastSource.volume = endingVal;
 
       }
 
-      if( endingVal > .99 ){
-        fullEnd += .0003f;
-        if( fullEnd > 1 ){ fullEnd = 1;}
+      if( finalEndTriggered == true ){
+        fullEnd += .001f;
         lastSource.volume = 1 - fullEnd;
+        
+        if( fullEnd > 1 ){ 
+          fullEnd = 1;
+          Restart();
+        }
+
+        
       } 
 
       oTime = Time.time;
@@ -184,9 +223,9 @@ public class PillowFort : MonoBehaviour {
       floor.GetComponent<Renderer>().material.SetFloat("_Disappear",disappearVal);
     }
 
-    private void onEnd(){
+    private void releaseCloth(){
+     
       ending = 1;
-      //floor.GetComponent<Renderer>().enabled = false;
       fortCloth.forcePass.SetInt( "_Ended"   , 1 );
 
       lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = true;
@@ -195,6 +234,43 @@ public class PillowFort : MonoBehaviour {
       pillows.onClothDisappear();
       
       
+    }
+
+    void Restart(){
+
+      started = -1;
+      ending = -1;
+
+      fadedIn = false;
+
+      clothDropped = false;
+      allBlocksStarted = false;
+      allPillowsPopped = false;
+      fullDropped = false;
+
+
+      finalEndTriggered = false;
+
+      clothDown = 0;
+      framesSinceDrop = 0;
+      endingVal = 0;
+      disappearVal = 0;
+      fadeIn = 0;
+
+
+
+      fullEnd = 0;
+
+      pillows.Restart();
+      fortCloth.Restart();
+
+    }
+
+
+    private void triggerFinalEnd(){
+
+      finalEndTriggered = true;
+
     }
 
 

@@ -118,6 +118,8 @@ Shader "Custom/Node" {
 
         res.x -= (.1 * _BeginVal) * noise( pos * 10 );
         res.y = 1;
+
+        res.x += _SecondVal;
        
        //res.x = n - 1.5;
        //res.x /= 100;
@@ -240,7 +242,7 @@ Shader "Custom/Node" {
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 
-        col = lerp( col , float3( 1 , 0 , 0 ) , _SecondVal );
+        //col = lerp( col , float3( 1 , 0 , 0 ) , _SecondVal );
         fixed4 color;
         color = fixed4( col , 1. );
         return color;

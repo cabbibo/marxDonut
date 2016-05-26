@@ -45,16 +45,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\AudioListenerTexture.cs" />
-     <Compile Include="Assets\BeginBox.cs" />
-     <Compile Include="Assets\HitAndHoldPlay.cs" />
-     <Compile Include="Assets\Pillows.cs" />
      <Compile Include="Assets\Scripts\AssignStructs.cs" />
+     <Compile Include="Assets\Scripts\AudioListenerTexture.cs" />
+     <Compile Include="Assets\Scripts\BeginBox.cs" />
      <Compile Include="Assets\Scripts\Cloth.cs" />
      <Compile Include="Assets\Scripts\Donut.cs" />
      <Compile Include="Assets\Scripts\EventManager.cs" />
      <Compile Include="Assets\Scripts\FortCloth.cs" />
      <Compile Include="Assets\Scripts\HandBuffer.cs" />
+     <Compile Include="Assets\Scripts\HitAndHoldPlay.cs" />
      <Compile Include="Assets\Scripts\Logo.cs" />
      <Compile Include="Assets\Scripts\Lune.cs" />
      <Compile Include="Assets\Scripts\LuneExport.cs" />
@@ -62,9 +61,12 @@
      <Compile Include="Assets\Scripts\MoveBySpringController.cs" />
      <Compile Include="Assets\Scripts\ObjExporter.cs" />
      <Compile Include="Assets\Scripts\PillowFort.cs" />
+     <Compile Include="Assets\Scripts\Pillows.cs" />
      <Compile Include="Assets\Scripts\PostRenderEvent.cs" />
      <Compile Include="Assets\Scripts\Stretch.cs" />
+     <Compile Include="Assets\Scripts\Wrench.cs" />
      <Compile Include="Assets\Scripts\controllerInfo.cs" />
+     <Compile Include="Assets\SilenceListener.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_Teleporter.cs" />
@@ -97,7 +99,6 @@
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_TrackedObject.cs" />
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
-     <Compile Include="Assets\Wrench.cs" />
      <None Include="Assets\Resources\Shaders\Ground.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />

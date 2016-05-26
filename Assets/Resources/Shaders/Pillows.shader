@@ -39,7 +39,7 @@
             uniform float _RealTime;
 
             uniform int _NumberSteps;
-						uniform int _Fade;
+			uniform int _Fade;
 
  
 
@@ -79,6 +79,7 @@
                 float3 eye      : TEXCOORD2;
                 float3 debug    : TEXCOORD3;
                 float2 uv       : TEXCOORD4;
+                float secondVal : TEXCOORD6;
                 float life 			: TEXCOORD5;
             };
 
@@ -147,9 +148,12 @@
                 uint base = floor( id / 3 );
                 uint tri  = id % 3;
 
-                float3 rPos = float3( hash( float( base * 100 ) ) , hash( float( base * 511 ) ) , hash( float( base * 1526 ) )  );
+                float3 rPos = float3( hash( float( base * 100 ) + .16123 ) , hash( float( base * 511 ) + .163 ) , hash( float( base * 1526 ) ) + .16123 );
+                float3 rDir = float3( hash( float( base * 612 ) + .9523 ) , hash( float( base * 612 ) + .953 ) , hash( float( base * 6136 ) ) + .8612 );
+                rDir = normalize( rDir - float3( .5 , .5 , .5 ));
+                float rSize = hash( float( base * 105153) + 512 * hash( float( base * 8522))) * .1;
 
-                float3 dir = _WorldSpaceCameraPos - rPos;
+                float3 dir = rDir;//_WorldSpaceCameraPos - rPos;
 
                 float3 x = cross( dir , float3( 0 , 1 , 0 ) );
                 float3 y = cross( x , dir );
@@ -159,11 +163,11 @@
                 y = normalize( y );
 
 
-                float3 triPos = (rPos-float3( .5 , .5 , .5 )) * 10;
+                float3 triPos = (rPos-float3( .5 , .5 , .5 )) * 20;
 
-                if( tri == 0 ){ triPos += x * .01; }
-                if( tri == 1 ){ triPos += -x * .01; }
-                if( tri == 2 ){ triPos += y* .01; }
+                if( tri == 0 ){ triPos += x * rSize * .66; }
+                if( tri == 1 ){ triPos += -x * rSize * .66; }
+                if( tri == 2 ){ triPos += y* rSize; }
 
 
 
@@ -180,7 +184,8 @@
              
                 float3 dif =   - v.pos;
 
-                o.worldPos = lerp( triPos , v.pos , startedBuffer[ int(v.boxID )] ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
+
+                o.worldPos = lerp( triPos , v.pos , clamp( startedBuffer[ int(v.boxID )] , 0 , 1 ) ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
                 //o.worldPos = lerp( triPos , v.pos , _StartedVal ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
 
 
@@ -189,6 +194,8 @@
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
 
 
+
+                o.secondVal = clamp( startedBuffer[ int(v.boxID )] -1 , 0 , 1 );
 
 
                 o.debug = v.debug;//n * .5 + .5;
@@ -219,6 +226,8 @@
                 col =  col * cubeCol * 2;
 
                 col = float3( 1 , .7 , .5 ) * cubeCol  * 2;
+
+                col = lerp( col , float3(1,1,1)-col , i.secondVal );
 
 			        //col = i.nor * .5 + .5;
 

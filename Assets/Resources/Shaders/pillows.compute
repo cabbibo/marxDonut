@@ -62,6 +62,7 @@ struct Shape{
 RWStructuredBuffer<Vert> vertBuffer;
 RWStructuredBuffer<Shape> shapeBuffer;
 RWStructuredBuffer<Hand> handBuffer;
+RWStructuredBuffer<float> startedBuffer;
 
 
 [numthreads(threadX,threadY,threadZ)]
@@ -75,19 +76,24 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
   Shape s = shapeBuffer[ int( vert.boxID ) ];
 
 
+  float sVal =  startedBuffer[ int(vert.boxID ) ];
+
   float3 force = float3( 0 , 0 , 0 );
 
-  float3 curvedPos = lerp( vert.ogPos , normalize( vert.ogPos ) * .5 , _StartedCloth * 2 * length( vert.uv - float2( .5 , .5 )) );
+  float3 curvedPos = lerp( vert.ogPos , normalize( vert.ogPos ) * .5 , _StartedCloth * .5 * length( vert.uv - float2( .5 , .5 )) );
+
+  float n = abs( sin( vert.ogPos.x  * 20 )+ sin( vert.ogPos.y  * 20 ) + sin( vert.ogPos.x  * 20 ));
+  curvedPos = lerp( curvedPos , vert.ogPos * (.5 + n * .2) , clamp( sVal -1 , 0 , 1 ) );
 
   float3 target = mul( s.mat , float4( curvedPos , 1 ) ).xyz;
 
-  force += (target - vert.pos) * (.01 +  .5 * ( 1 - _StartedCloth ));
+  force += (target - vert.pos) * (.01 +  .5 * ( 1 - _StartedCloth ) + .1 * clamp( sVal -1 , 0 , 1 ) );
 
   for( int i = 0; i < _NumberHands; i++){
 
     float3 dif = handBuffer[i].pos - vert.pos;
     if(length(dif)< .1){
-      force += float3( normalize(dif) ) * (handBuffer[i].triggerVal-.3) * .001;
+      force += float3( normalize(dif) ) * (handBuffer[i].triggerVal-.3) * (.001 + .03 * (1 -_StartedCloth) + .01 * clamp( sVal -1 , 0 , 1 ));
     }
   }
 
