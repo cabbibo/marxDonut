@@ -5,8 +5,8 @@ Shader "Custom/Gound" {
  Properties {
   
 
-    _NumberSteps( "Number Steps", Int ) = 10
-    _MaxTraceDistance( "Max Trace Distance" , Float ) = 1.0
+    _NumberSteps( "Number Steps", Int ) = 20
+    _MaxTraceDistance( "Max Trace Distance" , Float ) = 10.0
     _IntersectionPrecision( "Intersection Precision" , Float ) = 0.0001
     _CubeMap( "Cube Map" , Cube )  = "defaulttexture" {}
     _Fade( "Fade", Int ) = 1
@@ -47,6 +47,8 @@ Shader "Custom/Gound" {
       uniform float _MaxTraceDistance;
       uniform float _ClothDown;
       uniform float _Disappear;
+
+      uniform float _Cycle;
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
@@ -106,24 +108,34 @@ Shader "Custom/Gound" {
 			    float3 r = x%m;
 			    return r<0 ? r+m : r;
 			}
+
+
       float2 map( in float3 pos ){
         
         float2 res;
         float2 lineF;
         float2 sphere;
 
+        float c = _Cycle * 1.2 - .2;
+
 			//res = float2( sdSphere( pos , .4 ) , 0.6 );
-        float3 modVal = float3( .3 + _ClothDown * .2  , .3+ _ClothDown * .2 , .3+ _ClothDown * .2 );
+        float3 modVal = float3( .3 + _ClothDown * .2 +  c , .3 + _ClothDown * .2 +  c , .3+ _ClothDown * .2 +  c );
         //pos -= float3( 0 , .2 , 0.);
 //
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         //pos += .1 * float3( sin( pos.x * 10. ) , sin( pos.y * 10. ) , sin( pos.z * 10. ));
         int3 test;
-        float2 res2 = float2( sdBox( modit(pos , modVal) - modVal / 2. , float3( .4 - _ClothDown * .2 , .4- _ClothDown * .2 , .4- _ClothDown * .2 ) ) , 0.4 );
-        res2.x += .3 * (noise( pos - float3( 0 , _Time.y / 6, 0 ) )+1);
-        res2.x += (.1 +.1* _ClothDown) * (noise( pos * 10 - float3( 0 , _Time.y / 10 , 0 ) )+1);
-        res2.x += .2 * length( pos.xz );
+        float bSize = .2 - _ClothDown * .2 + c * 1.9;
+        float3 boxSize = float3( bSize , bSize , bSize );
+        float2 res2 = float2( sdBox( modit(pos , modVal) - modVal / 2. , boxSize ) , 0.4 );
+       
+        float nVal = 0;
+        nVal += .3 * (noise( pos - float3( 0 , _Time.y / 6, 0 ) )+1);
+        nVal += (.1 +.1* _ClothDown) * (noise( pos * 10 - float3( 0 , _Time.y / 10 , 0 ) )+1);
+        nVal += .2 * length( pos.xz );
+
+        res2.x += nVal * c * 1.5;
        	//res = smoothU( res , res2 , 0.1 );
     		//res = float2( length( pos - float3( 0., -.8 ,0) ) - 1., 0.1 );
     		//res = smoothU( res , float2( length( pos - float3( .3 , .2 , -.2) ) - .1, 0.1 ) , .05 );
@@ -149,15 +161,16 @@ Shader "Custom/Gound" {
 
       float2 calcIntersection( in float3 ro , in float3 rd ){     
             
-               
-        float h =  _IntersectionPrecision * 2;
+       
+        float ip = _IntersectionPrecision + .8 * _ClothDown;
+        float h = ip * 2;
         float t = 0.0;
         float res = -1.0;
         float id = -1.0;
         
-        for( int i=0; i< _NumberSteps; i++ ){
+        for( int i=0; i< int(float(_NumberSteps) * (1-_ClothDown) + 1) ; i++ ){
             
-            if( h < _IntersectionPrecision || t > _MaxTraceDistance ) break;
+            if( h < ip|| t > _MaxTraceDistance ) break;
     
             float3 pos = ro + rd*t;
             float2 m = map( pos );
@@ -230,7 +243,13 @@ Shader "Custom/Gound" {
 
       //col= float3( 2. , 1.5 , 1. ) * .5;
 
-      if(length( i.uv.xy - float2( .5 , .5 )) < _Disappear ){discard;}
+
+      float noiseCutoff = noise( float3( i.uv.x , i.uv.y , 0. ) * ( 8  + 8 *_Cycle ));
+      noiseCutoff += noise( float3( i.uv.x , i.uv.y , 0. ) * (17 +30 *_Cycle)  );
+      noiseCutoff += noise( float3( i.uv.x , i.uv.y , 0. ) * (23 + 100 * _Cycle ));
+      noiseCutoff /= 3;
+
+      if( noiseCutoff < _Disappear ){discard;}
 
         if( _Fade == 1 ){
           float l = length( i.uv - float2( .5 ,.5 ) )*2;
@@ -239,18 +258,19 @@ Shader "Custom/Gound" {
         }
 
 
-         col = min( float3( 1 , 1 ,1), col);
+         col = min( float3( 1 , 1 , 1 ) , col );
 
          //gamma correction
         col = pow(col,  2.2);  
-        float3 col2 = float3( length( col ) , length( col ) , length( col ) ) * .5;
+        float v = pow(length( col  ) , .5);//length( col );
+        float3 col2 = float3( v , v, v );//float3( length( col ) , length( col ) , length( col ) ) * .5;
 
         col = lerp( col2 , col , _ClothDown );
-     
 
-            fixed4 color;
-            color = fixed4( col , 1. );
-            return color;
+        fixed4 color;
+        color = fixed4( col , 1. );
+        return color;
+
       }
 
       ENDCG

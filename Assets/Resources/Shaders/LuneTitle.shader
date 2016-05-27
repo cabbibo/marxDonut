@@ -111,9 +111,9 @@ float3 hsv(float h, float s, float v)
     		float2 w = i.uv.xy;
     		float hit = 0;
 
-        for( int j = 0; j < 31; j++){
+        for( int j = 0; j < 30; j++){
 
-          float3 pos = ro + rd * float(j) * .003;
+          float3 pos = ro + rd * float(j) * ( .003 + .01 * _Cycle);
 
           //if( pos.z > -s ){ break; }
 
@@ -125,7 +125,7 @@ float3 hsv(float h, float s, float v)
           //noiseVal += 1 * noise( pos *  50.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
           //noiseVal += .5 * noise( pos *  100.0 * float3( 1.1 , .21 , 1 ) + float3( 0 , 0 , 1.4 * _Time.y));
 
-          float total = val + noiseVal * .4;// + val * noiseVal;// val +  noiseVal * val;
+          float total = val + noiseVal * (.7 * _Cycle) - (.8 *_Cycle);// + val * noiseVal;// val +  noiseVal * val;
 
           if( total > .8 ){
           	hit = 1;
@@ -141,7 +141,8 @@ float3 hsv(float h, float s, float v)
 
         col = float3( length( col ), length( col ), length( col )) / 2;
 
-        col = col * col * col;
+        col = col * col * col; 
+        col *= 1 + _Cycle;
 
         col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
         fixed4 color;

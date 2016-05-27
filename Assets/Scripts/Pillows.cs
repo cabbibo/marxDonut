@@ -30,7 +30,7 @@ public class Pillows : MonoBehaviour {
   public ComputeBuffer _inverseShapeBuffer;
   public ComputeBuffer _startedBuffer;
 
-  private Material material;
+  public Material material;
 
   private const int threadX = 6;
   private const int threadY = 6;
@@ -147,7 +147,10 @@ public class Pillows : MonoBehaviour {
 
   public void setCycle(){
     if( material ){
+
       material.SetFloat( "_Cycle" , PF.cycle );
+      forcePass.SetFloat( "_Cycle" , PF.cycle );
+
       for( int i = 0;  i < NumShapes; i++ ){ 
         Shapes[i].GetComponent<Renderer>().material.SetFloat("_Cycle" , PF.cycle );
       }
@@ -277,7 +280,9 @@ public class Pillows : MonoBehaviour {
       material.SetTexture( "_NormalMap" , normalMap);
       material.SetTexture( "_CubeMap"  , cubeMap );
 
-      
+      material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+
+      material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
 
       material.SetBuffer("startedBuffer", _startedBuffer );
 

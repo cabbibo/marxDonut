@@ -40,6 +40,8 @@ public class Lune : MonoBehaviour {
     moon.GetComponent<Renderer>().material.SetFloat( "_EndingVal" , endingVal);
     title.GetComponent<Renderer>().material.SetFloat( "_EndingVal" , endingVal);
 
+    moon.transform.rotation = Quaternion.Euler(0 , 180 * cycle - 90, 0); //new Quaternion( 0 , 1 , 0  , 90 * cycle);
+
 	
 	}
 }

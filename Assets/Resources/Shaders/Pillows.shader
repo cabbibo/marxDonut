@@ -39,6 +39,7 @@
             uniform float _RealTime;
 
             uniform int _NumberSteps;
+            uniform int _NumberHands;
 			uniform int _Fade;
 
  
@@ -58,10 +59,23 @@
 							float4x4 mat;
 							float shape;
 						};
+
+            struct Hand{
+              float active;
+              float3 pos;
+              float3 vel;
+              float3 aVel;
+              float  triggerVal;
+              float  thumbVal;
+              float  sideVal;
+              float2 thumbPos;
+            };
+
             
             StructuredBuffer<Vert> buf_Points;
             StructuredBuffer<Shape> shapeBuffer;
             StructuredBuffer<float> startedBuffer;
+            StructuredBuffer<Hand> handBuffer;
             
 
 
@@ -70,12 +84,15 @@
             uniform int _RibbonWidth;
             uniform int _RibbonLength;
             uniform int _TotalVerts;
+
+            uniform float _Cycle;
  
             //A simple input struct for our pixel shader step containing a position.
             struct varyings {
                 float4 pos      : SV_POSITION;
                 float3 worldPos : TEXCOORD1;
                 float3 nor      : TEXCOORD0;
+                float started   : TEXCOORD7;
                 float3 eye      : TEXCOORD2;
                 float3 debug    : TEXCOORD3;
                 float2 uv       : TEXCOORD4;
@@ -83,10 +100,10 @@
                 float life 			: TEXCOORD5;
             };
 
-						float hash( float n )
-						{
-						    return frac(sin(n)*43758.5453);
-						}
+			float hash( float n )
+			{
+			    return frac(sin(n)*43758.5453);
+			}
  
 
             uint getID( uint id  ){
@@ -149,9 +166,27 @@
                 uint tri  = id % 3;
 
                 float3 rPos = float3( hash( float( base * 100 ) + .16123 ) , hash( float( base * 511 ) + .163 ) , hash( float( base * 1526 ) ) + .16123 );
-                float3 rDir = float3( hash( float( base * 612 ) + .9523 ) , hash( float( base * 612 ) + .953 ) , hash( float( base * 6136 ) ) + .8612 );
-                rDir = normalize( rDir - float3( .5 , .5 , .5 ));
-                float rSize = hash( float( base * 105153) + 512 * hash( float( base * 8522))) * .1;
+                float3 rDir = float3( hash( float( base * 60012 ) + .9523 ) , hash( float( base * 6000012 ) + .953 ) , hash( float( base * 6151136 ) ) + .8612 );
+                rDir = normalize( rDir - float3( .5 , .1 , .5 ));
+                float rSize = hash( float( base * 105153) + 512 * hash( float( base * 8522)));
+                rSize *= ( .01 + (.5 -  abs( _Cycle-.5)) * .2 );
+                rSize += .05 * (.5 - abs( _Cycle-.5));
+
+
+                
+
+                float3 triPos = (rPos-float3( .5 , .5 , .5 )) * 20;
+
+                for( int i = 0; i< _NumberHands; i++ ){
+                    Hand h = handBuffer[i];
+
+                    float3 dif = triPos - h.pos;
+
+                    if( length( dif) < .1 ){
+                        triPos = h.pos + normalize( dif ) * .1;
+                        rDir = normalize( dif );
+                    }
+                }
 
                 float3 dir = rDir;//_WorldSpaceCameraPos - rPos;
 
@@ -163,7 +198,6 @@
                 y = normalize( y );
 
 
-                float3 triPos = (rPos-float3( .5 , .5 , .5 )) * 20;
 
                 if( tri == 0 ){ triPos += x * rSize * .66; }
                 if( tri == 1 ){ triPos += -x * rSize * .66; }
@@ -184,8 +218,9 @@
              
                 float3 dif =   - v.pos;
 
+                o.started = clamp( startedBuffer[ int(v.boxID )] , 0 , 1 );
 
-                o.worldPos = lerp( triPos , v.pos , clamp( startedBuffer[ int(v.boxID )] , 0 , 1 ) ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
+                o.worldPos = lerp( triPos , v.pos , o.started ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
                 //o.worldPos = lerp( triPos , v.pos , _StartedVal ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
 
 
@@ -195,7 +230,7 @@
 
 
 
-                o.secondVal = clamp( startedBuffer[ int(v.boxID )] -1 , 0 , 1 );
+                o.secondVal = clamp( startedBuffer[ int(v.boxID )] - 1 , 0 , 1 );
 
 
                 o.debug = v.debug;//n * .5 + .5;
@@ -227,7 +262,11 @@
 
                 col = float3( 1 , .7 , .5 ) * cubeCol  * 2;
 
-                col = lerp( col , float3(1,1,1)-col , i.secondVal );
+                col = lerp( col , col * col , i.secondVal );
+
+                col /= .1 + length( i.worldPos ) * length( i.worldPos ) * .5;
+
+                col = lerp( float3( col.x , col.x , col.x ) , col , i.started );
 
 			        //col = i.nor * .5 + .5;
 

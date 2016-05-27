@@ -28,7 +28,7 @@ public class FortCloth : MonoBehaviour {
   private ComputeBuffer _diagonalDownLinkBuffer;
   private ComputeBuffer _diagonalUpLinkBuffer;
 
-  private Material material;
+  public Material material;
   private Material debugMaterial;
 
   private const int threadX = 6;
@@ -123,7 +123,10 @@ public class FortCloth : MonoBehaviour {
 
   public void setCycle(){
     if( material ){
+
+      forcePass.SetFloat( "_Cycle" , PF.cycle );
       material.SetFloat( "_Cycle" , PF.cycle );
+
     }
   }
 

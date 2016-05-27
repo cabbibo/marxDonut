@@ -193,6 +193,7 @@ Shader "Custom/MoonTrace" {
         o.pos = mul( UNITY_MATRIX_MVP , v.position );
      
         float3 mPos = mul( unity_ObjectToWorld , v.position );
+        //o.normal = mul( unity_ObjectToWorld , float4( v.normal , 0 )).xyz;
 
         o.ro = mPos;// v.position;
         o.camPos = _WorldSpaceCameraPos;//mul( _World2Object , float4( _WorldSpaceCameraPos  , 1. )); 
@@ -217,6 +218,8 @@ Shader "Custom/MoonTrace" {
     		
     		col= float3( 0. , 0. , 0. );
 
+        float matchV = dot( float3( 1 , 0 , 0 ) , i.normal );
+
     		if( res.y > -0.5 ){
 
     			float3 pos = ro + rd * res.x;
@@ -236,7 +239,7 @@ Shader "Custom/MoonTrace" {
     			//float3 fRefl = reflect( -rd , i.normal );
           //float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
     			//col = cubeCol;
-          discard;
+          //discard;
     		}
 
 
@@ -252,6 +255,7 @@ Shader "Custom/MoonTrace" {
    col = col * col * col;
    col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
 
+   col *= matchV;
             fixed4 color;
             color = fixed4( col , 1. );
             return color;

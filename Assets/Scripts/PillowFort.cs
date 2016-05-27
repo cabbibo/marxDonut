@@ -33,6 +33,8 @@ public class PillowFort : MonoBehaviour {
 
     public float cycle;
 
+    public float lunarCycle;
+
     private AudioSource startSource;
     private AudioSource clothSource;
     private AudioSource lastSource;
@@ -110,6 +112,11 @@ public class PillowFort : MonoBehaviour {
       
       lune.GetComponent<Lune>().cycle = cycle;
       floor.GetComponent<Renderer>().material.SetFloat("_Cycle",cycle);
+      
+  
+      floor.GetComponent<Renderer>().material.SetFloat( "_Cycle" , cycle );
+      floor.GetComponent<Renderer>().material.SetFloat( "_Cycle" , cycle );
+
       pillows.setCycle();
       fortCloth.setCycle();
 
@@ -141,7 +148,7 @@ public class PillowFort : MonoBehaviour {
         fullEnd = 1 - fadeIn;
       }
 
-      fadeIn += .01f;
+      fadeIn += .001f;
       //print( fadeIn );
       if( fadeIn > 1 ){ 
         fadeIn = 1; 
@@ -150,12 +157,14 @@ public class PillowFort : MonoBehaviour {
 
       if( clothDropped == true ){
         clothDown += .0006f;
+
+
+
         if( clothDown > 1 ){ 
 
 
           clothDown = 1; 
           if( fullDropped == false ){
-            print( "YAAA");
             pillows.fullClothDropped();
             fullDropped = true;
             lune.GetComponent<Lune>().moon.GetComponent<Renderer>().enabled = false;
