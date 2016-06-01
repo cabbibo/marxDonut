@@ -45,6 +45,7 @@ Shader "Custom/MoonTrace" {
       uniform float _ClothDown;
       uniform float _EndingVal;
       uniform float _FullEnd;
+      uniform float _FadeIn;
 
       uniform int _NumberSteps;
       uniform int _Fade;
@@ -118,12 +119,14 @@ Shader "Custom/MoonTrace" {
         float2 sphere;
 
 
-        res.x = sdSphere( pos , .4 );
+        res.x = sdSphere( pos , .3 );
 
-        res.x += .45 - (.4 * _Cycle) * noise( pos * ( 4 + _Cycle * 10 ) + float3(
+        res.x += .0 - (.3 * _Cycle) * noise( pos * ( 4 + _Cycle * 10 ) + float3(
         											_Time.y * ( .414 + .4  * _Cycle ) , 
         											_Time.y * (.264 + .2 * _Cycle ),
         										  _Time.y * ( .1124 + .3 * _Cycle) ));
+
+        //res.x = sdSphere( pos , .45 );
         res.y = 1;
        
        //res.x = n - 1.5;
@@ -138,7 +141,7 @@ Shader "Custom/MoonTrace" {
 
       float3 calcNormal( in float3 pos ){
 
-      	float3 eps = float3( 0.001, 0.0, 0.0 );
+      	float3 eps = float3( 0.01, 0.0, 0.0 );
       	float3 nor = float3(
       	    map(pos+eps.xyy).x - map(pos-eps.xyy).x,
       	    map(pos+eps.yxy).x - map(pos-eps.yxy).x,
@@ -229,7 +232,9 @@ Shader "Custom/MoonTrace" {
           float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
     			col = norm * .5 + .5;
 
-    			col = lerp( col , float3( length( col) , length( col ) , length( col)) , abs( sin(_Cycle * 2 * 3.14159)) );
+          float m = dot( float3( 1 , 0 , 0 ) , norm );
+
+    			col =  float3( m , m , m );//col;//lerp( col , float3( length( col) , length( col ) , length( col)) , abs( sin(_Cycle * 2 * 3.14159)) );
          // col *= cubeCol * 2 * float3( .4 , .6 , .8 );
 
     			//col = float3( 1. , 0. , 0. );
@@ -239,23 +244,24 @@ Shader "Custom/MoonTrace" {
     			//float3 fRefl = reflect( -rd , i.normal );
           //float3 cubeCol = texCUBE(_CubeMap,fRefl ).rgb;
     			//col = cubeCol;
-          //discard;
+          discard;
     		}
 
 
     		//col = float3( 1. , 1. , 1. );
 
         //gamma correction
-        col = pow(col,  2.2);  
+        //col = pow(col,  2.2);  
        // col = lerp( float3( 1 , 1 , 1 ) , float3( 1 , 0 , 0 ) , _Cycle );
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
 
-   col = float3( length( col) , length( col ) , length( col));
-   col = col * col * col;
+   //col = float3( length( col) , length( col ) , length( col));
+   //col = col * col * col;
    col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
 
-   col *= matchV;
+   col = lerp(  .1 * col , col ,  clamp( matchV * 10 , 0 , 1 ));
+   col *= _FadeIn;
             fixed4 color;
             color = fixed4( col , 1. );
             return color;

@@ -7,6 +7,8 @@ public class Lune : MonoBehaviour {
   public float endingVal;
   public float fullEnd; 
   public float cycle;
+  public float moonAge;
+  public float fadeIn;
 
   //public texture2D
 
@@ -40,7 +42,10 @@ public class Lune : MonoBehaviour {
     moon.GetComponent<Renderer>().material.SetFloat( "_EndingVal" , endingVal);
     title.GetComponent<Renderer>().material.SetFloat( "_EndingVal" , endingVal);
 
-    moon.transform.rotation = Quaternion.Euler(0 , 180 * cycle - 90, 0); //new Quaternion( 0 , 1 , 0  , 90 * cycle);
+     moon.GetComponent<Renderer>().material.SetFloat( "_FadeIn" , fadeIn*fadeIn*fadeIn*fadeIn*fadeIn*fadeIn);
+    title.GetComponent<Renderer>().material.SetFloat( "_FadeIn" , fadeIn*fadeIn*fadeIn*fadeIn*fadeIn*fadeIn);
+
+    moon.transform.rotation = Quaternion.Euler(0 , 360 * (moonAge / 29 ) + 90, 0); //new Quaternion( 0 , 1 , 0  , 90 * cycle);
 
 	
 	}

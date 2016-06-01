@@ -42,6 +42,7 @@
       uniform float _ClothDown;
       uniform float _EndingVal;
       uniform float _FullEnd;
+      uniform float _FadeIn;
 
 
 
@@ -144,7 +145,8 @@ float3 hsv(float h, float s, float v)
         col = col * col * col; 
         col *= 1 + _Cycle;
 
-        col = lerp( col , float3( 0 , 0 , 0 ) , _ClothDown - _EndingVal + _FullEnd  );
+        col = lerp( float3( 0 , 0 , 0 ) , col  , 1-(_ClothDown - _EndingVal + _FullEnd)* (_ClothDown - _EndingVal + _FullEnd)*(_ClothDown - _EndingVal + _FullEnd)  );
+        col *= _FadeIn;
         fixed4 color;
         color = fixed4( col , 1 );
         return color;

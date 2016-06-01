@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(SteamVR_TrackedObject))]
 public class controllerInfo : MonoBehaviour{
 
+  public GameObject interactionTip;
+  
   public int triggerDown;
   public int thumbDown;
   public Vector2 thumbPosition;

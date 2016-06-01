@@ -57,6 +57,8 @@ public class Pillows : MonoBehaviour {
   private float[] shapeValues;
   private float[] inverseShapeValues;
   private float[] startedVals;
+  private float[] jiggleVals;
+  private float[] hoveredVals;
 
   private float[] shapesActive;
 
@@ -66,6 +68,9 @@ public class Pillows : MonoBehaviour {
   struct Shape{
     public Matrix4x4 mat;
     public float shape;
+    public float active;
+    public float hovered;
+    public float jiggleVal;
   }
 
   struct Vert{
@@ -80,7 +85,7 @@ public class Pillows : MonoBehaviour {
   };
 
   private int VertStructSize =  3 + 3 + 3 + 3 + 2 + 1 + 8 + 3;
-  private int ShapeStructSize = 16 + 1;
+  private int ShapeStructSize = 16 + 1 + 1 + 1 + 1;
 
   private float oTime = 0;
 
@@ -96,7 +101,6 @@ public class Pillows : MonoBehaviour {
 
     shapeValues = new float[ Shapes.Length * ShapeStructSize ];
     inverseShapeValues = new float[ Shapes.Length * ShapeStructSize ];
-    shapesActive = new float[ Shapes.Length ];
 
     createBuffers();
     createMaterial();
@@ -105,9 +109,13 @@ public class Pillows : MonoBehaviour {
 
     forcePass.SetInt( "_Reset"    , 0 );
     forcePass.SetInt( "_Ended"   , 0 );
+    forcePass.SetFloat( "_ClothDropped" , 0 );
 
 
+    shapesActive = new float[ Shapes.Length ];
     startedVals = new float[ Shapes.Length ];
+    hoveredVals = new float[ Shapes.Length ];
+    jiggleVals = new float[ Shapes.Length ];
 
     //Dispatch();
     Camera.onPostRender += Render;
@@ -119,6 +127,7 @@ public class Pillows : MonoBehaviour {
 
     forcePass.SetInt( "_Reset"    , 0 );
     forcePass.SetInt( "_Ended"   , 0 );
+    forcePass.SetFloat( "_ClothDropped" , 0 );
   
     for( int i = 0;  i < NumShapes; i++ ){ 
       Shapes[i].GetComponent<BeginBox>().Restart();
@@ -148,10 +157,13 @@ public class Pillows : MonoBehaviour {
   public void setCycle(){
     if( material ){
 
+//      print(PF.cycle);
+
       material.SetFloat( "_Cycle" , PF.cycle );
       forcePass.SetFloat( "_Cycle" , PF.cycle );
 
       for( int i = 0;  i < NumShapes; i++ ){ 
+        Shapes[i].GetComponent<BeginBox>().cycle = PF.cycle;
         Shapes[i].GetComponent<Renderer>().material.SetFloat("_Cycle" , PF.cycle );
       }
     }
@@ -164,6 +176,7 @@ public class Pillows : MonoBehaviour {
      // Shapes[i].transform.position = new Vector3( 100000 , 0 , 0 );
      // Shapes[i].GetComponent<Stretch>().leftDrag.transform.position = new Vector3( 100000 , 0 , 0 );
      // Shapes[i].GetComponent<Stretch>().rightDrag.transform.position = new Vector3( 100000 , 0 , 0 );
+      forcePass.SetFloat( "_ClothDropped" , 1 );
     }
 
   }
@@ -204,10 +217,12 @@ public class Pillows : MonoBehaviour {
       }
 
       startedVals[i] = Shapes[i].GetComponent<BeginBox>().beginVal + Shapes[i].GetComponent<BeginBox>().secondVal;
+      hoveredVals[i] = Shapes[i].GetComponent<BeginBox>().hovered;
+      jiggleVals[i] = Shapes[i].GetComponent<BeginBox>().jiggleVal;
 
     }
 
-    _startedBuffer.SetData(startedVals);
+    //_startedBuffer.SetData(startedVals);
 
     assignShapeBuffer();
 
@@ -239,8 +254,9 @@ public class Pillows : MonoBehaviour {
     Shapes = new GameObject[NumShapes];
     for( int i = 0;  i < NumShapes; i++ ){ 
 
-      Shapes[i] = Instantiate( Pillow , Random.insideUnitSphere * 1.0f + new Vector3( 0 , 1.0f , 0 ) , Random.rotation) as GameObject;
+      Shapes[i] = Instantiate( Pillow , Vector3.Scale( Random.insideUnitSphere , new Vector3( .8f , .5f , .8f )) + new Vector3( 0 , 1.5f , 0 ) , Random.rotation) as GameObject;
       Shapes[i].GetComponent<Stretch>().node = Node;
+      Shapes[i].GetComponent<BeginBox>().hitClipArray = GetComponent<HitClipArray>().hitClipArray;
 
       //print( "noadsassinged");
 
@@ -272,6 +288,7 @@ public class Pillows : MonoBehaviour {
       material.SetBuffer("shapeBuffer", _inverseShapeBuffer );
 
       material.SetFloat( "_FullEnd" , PF.fullEnd );
+      material.SetFloat( "_ClothDown" , PF.clothDown );
    
       material.SetInt( "_RibbonWidth"  , ribbonWidth  );
       material.SetInt( "_RibbonLength" , ribbonLength );
@@ -300,7 +317,7 @@ public class Pillows : MonoBehaviour {
     void ReleaseBuffer(){
 
       _vertBuffer.Release(); 
-      _startedBuffer.Release(); 
+//      _startedBuffer.Release(); 
       _shapeBuffer.Release(); 
       _inverseShapeBuffer.Release(); 
     
@@ -346,7 +363,7 @@ public class Pillows : MonoBehaviour {
       _shapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );      
       _inverseShapeBuffer = new ComputeBuffer( Shapes.Length , ShapeStructSize * sizeof(float) );      
       _vertBuffer  = new ComputeBuffer( vertexCount ,  VertStructSize * sizeof(float));
-      _startedBuffer  = new ComputeBuffer( NumShapes ,   sizeof(float));
+
 
 
       float lRight = 1 / (float)ribbonWidth;
@@ -382,15 +399,6 @@ public class Pillows : MonoBehaviour {
             float uvX = col / (ribbonWidth-1);
             float uvY = row / (ribbonLength-1);
 
-
-             if( inBoxID == 31 * 31 ){
-              print( "BOX : " );
-              print( (float)box );
-              print( uvX );
-              print( uvY );
-              print( side );
-
-            }
 
             Vector3 fVec = getVertPosition( uvX , uvY , side );
 
@@ -504,6 +512,18 @@ public class Pillows : MonoBehaviour {
       // Make different for different shapes
       inverseShapeValues[index] = shapesActive[i];
       shapeValues[index++] = shapesActive[i];
+
+      inverseShapeValues[index] = startedVals[i];
+      shapeValues[index++] = startedVals[i];
+
+      inverseShapeValues[index] = hoveredVals[i];
+      shapeValues[index++] = hoveredVals[i];
+
+      inverseShapeValues[index] = jiggleVals[i];
+      shapeValues[index++] = jiggleVals[i];
+
+
+
       
 
     }
@@ -527,7 +547,8 @@ public class Pillows : MonoBehaviour {
         forcePass.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
 
         forcePass.SetBuffer( _kernelforce , "vertBuffer"   , _vertBuffer );
-        forcePass.SetBuffer( _kernelforce , "startedBuffer"   , _startedBuffer );
+        forcePass.SetBuffer( _kernelforce , "iShapeBuffer"     , _shapeBuffer );
+//        forcePass.SetBuffer( _kernelforce , "startedBuffer"   , _startedBuffer );
 
         forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
         forcePass.SetBuffer( _kernelforce , "transformBuffer"   , PF.fortCloth._transformBuffer );

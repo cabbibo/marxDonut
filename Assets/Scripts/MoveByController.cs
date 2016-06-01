@@ -17,6 +17,7 @@ public class MoveByController : MonoBehaviour {
   private Vector3 relPos;
 
   private GameObject insideGO;
+  private GameObject secondInsideGO;
   public GameObject movingController;
 
 
@@ -39,13 +40,13 @@ public class MoveByController : MonoBehaviour {
       for( int i  = 2; i > 0; i --){
         posArray[i] = posArray[i-1];
       }
-      posArray[0] = colInside.transform.position;
+      posArray[0] = insideGO.transform.position;
      
      // vel = oPos - pos;
-      transform.position = colInside.transform.position;
-      transform.rotation = colInside.transform.rotation * relQuat;
+      transform.position = insideGO.transform.position;
+      transform.rotation = insideGO.transform.rotation * relQuat;
 
-      transform.position = transform.position - ( colInside.transform.rotation* relPos);
+      transform.position = transform.position - ( insideGO.transform.rotation* relPos);
       //transform.rotation = transform.rotation * relQuat;
     }
 	
@@ -55,21 +56,50 @@ public class MoveByController : MonoBehaviour {
 
     
 
-    if( inside == true ){
+    if( inside == true  ){
+
+      if( insideGO == o.GetComponent<controllerInfo>().interactionTip ){
+
+        //if( o.GetInstanceID() == insideGO.transform.parent.GetInstanceID() ){
+        //transform.SetParent(o.transform);
+        moving = true;
+
+        relPos = insideGO.transform.position - transform.position;
+
+        relQuat = Quaternion.Inverse(insideGO.transform.rotation) * transform.rotation;
+        relPos = Quaternion.Inverse(insideGO.transform.rotation) * relPos;
+
+        GetComponent<Rigidbody>().isKinematic = true;
+      //}
+
+        movingController = o;
+
+
+
+      }else if( secondInsideGO == o.GetComponent<controllerInfo>().interactionTip  ){
+
+        GameObject tmp = insideGO;
+        insideGO = secondInsideGO;
+        secondInsideGO = tmp;
+
 
       //if( o.GetInstanceID() == insideGO.transform.parent.GetInstanceID() ){
       //transform.SetParent(o.transform);
       moving = true;
 
-      relPos = colInside.transform.position - transform.position;
+      relPos = insideGO.transform.position - transform.position;
 
-      relQuat = Quaternion.Inverse(colInside.transform.rotation) * transform.rotation;
-      relPos = Quaternion.Inverse(colInside.transform.rotation) * relPos;
+      relQuat = Quaternion.Inverse(insideGO.transform.rotation) * transform.rotation;
+      relPos = Quaternion.Inverse(insideGO.transform.rotation) * relPos;
 
       GetComponent<Rigidbody>().isKinematic = true;
     //}
 
       movingController = o;
+
+      }
+
+
     
     }
   }
@@ -78,7 +108,7 @@ public class MoveByController : MonoBehaviour {
    //transform.SetParent(ogTransform);
     
 
-    if( maintainVelocity == true && moving == true ){
+    if( maintainVelocity == true && moving == true   ){
 
       for( int i = 0; i<2; i++){
         vel += ( posArray[i] - posArray[i+1] );
@@ -87,10 +117,20 @@ public class MoveByController : MonoBehaviour {
       print( vel );
       GetComponent<Rigidbody>().velocity = vel * 200.0f;
       GetComponent<Rigidbody>().isKinematic = false; //= vel * 120.0f;
+
     }
 
+    if( insideGO == o.GetComponent<controllerInfo>().interactionTip ){
+      moving = false;
+    }
+
+    if( secondInsideGO != null && insideGO == o.GetComponent<controllerInfo>().interactionTip ){
+      GameObject tmp = insideGO;
+      insideGO = secondInsideGO;
+      secondInsideGO = tmp;
+    }
     
-    moving = false;
+    
   }
 
 
@@ -107,20 +147,41 @@ public class MoveByController : MonoBehaviour {
 
   void OnTriggerEnter(Collider Other){
 
-    if( Other.tag == "Hand"){ 
-      colInside = Other;
+    if( Other.tag == "Hand" ){ 
+  
       inside = true; 
       //print( Other.gameObject );
-      insideGO = Other.gameObject;
+
+     //if( moving == false ){
+     //  insideGO = Other.gameObject;
+     //}else{
+        
+
+      if( moving == false ){
+        if( insideGO == null ){
+          insideGO = Other.gameObject;
+        }
+      }
+
+      if( insideGO != Other.gameObject ){
+        secondInsideGO = Other.gameObject;
+      }
+      //}
       //print( insideGO );
     }
   }
 
   void OnTriggerExit(Collider Other){
-    if( Other.tag == "Hand" && Other == colInside && moving == false){ 
-      colInside = null;
-      inside = false; 
-      //insideGO = null;
+    if( Other.tag == "Hand" ){ 
+      
+      if( Other.gameObject == insideGO && secondInsideGO == null){
+        inside = false;
+        insideGO = null;
+      }
+
+      if( Other.gameObject == secondInsideGO ){
+        secondInsideGO = null;
+      }
     }
   }
 

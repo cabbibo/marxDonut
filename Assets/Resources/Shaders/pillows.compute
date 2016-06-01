@@ -15,6 +15,8 @@
 
 
 
+
+
 float _DeltaTime;
 float _Time;
 int _NumShapes;
@@ -23,6 +25,8 @@ int _Reset;
 int _Ended;
 float _StartedCloth;
 float _StartedFinish;
+float _Cycle;
+float _ClothDropped;
 
 
 
@@ -54,15 +58,58 @@ struct Hand{
 struct Shape{
   float4x4 mat;
   float shape;
+  float active;
+  float hovered;
+  float jiggleVal;
 };
 
+
+#include "Chunks/snoise.cginc"
+#include "Chunks/curlNoise.cginc"
 
 
 //float4x4 _TransformMatrix;
 RWStructuredBuffer<Vert> vertBuffer;
 RWStructuredBuffer<Shape> shapeBuffer;
+RWStructuredBuffer<Shape> iShapeBuffer;
 RWStructuredBuffer<Hand> handBuffer;
-RWStructuredBuffer<float> startedBuffer;
+
+
+
+float sdBox( float3 p, float3 b ){
+  float3 d = abs(p) - b;
+  return min(max(d.x,max(d.y,d.z)),0.0) +
+         length(max(d,0.0));
+}
+
+// exponential smooth min (k = 32);
+float smin( float a, float b, float k ){
+    float res = exp( -k*a ) + exp( -k*b );
+    return -log( res )/k;
+}
+
+
+float boxDistance( float3 p , float4x4 m ){
+
+    float4 q = (mul( m , float4( p.x , p.y , p.z , 1. )));
+
+    float3 s = float3(  length( float3( m[0][0] , m[0][1] , m[0][2] ) ),
+              length( float3( m[1][0] , m[1][1] , m[1][2] ) ),
+              length( float3( m[2][0] , m[2][1] , m[2][2] ) ) );
+    return sdBox( q.xyz , s * .05 + float3( .5 , .5 , .5 ) ) ;
+
+}
+
+float3 calcNormal( in float3 pos , in float4x4 mat ){
+
+        float3 eps = float3( 0.001, 0.0, 0.0 );
+        float3 nor = float3(
+            boxDistance(pos+eps.xyy,mat).x - boxDistance(pos-eps.xyy,mat).x,
+            boxDistance(pos+eps.yxy,mat).x - boxDistance(pos-eps.yxy,mat).x,
+            boxDistance(pos+eps.yyx,mat).x - boxDistance(pos-eps.yyx,mat).x );
+        return normalize(nor);
+
+      }
 
 
 [numthreads(threadX,threadY,threadZ)]
@@ -73,29 +120,54 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
   Vert vert = vertBuffer[pID];
 
 
+
   Shape s = shapeBuffer[ int( vert.boxID ) ];
 
 
-  float sVal =  startedBuffer[ int(vert.boxID ) ];
+  //float sVal =  startedBuffer[ int(vert.boxID ) ];
 
   float3 force = float3( 0 , 0 , 0 );
 
   float3 curvedPos = lerp( vert.ogPos , normalize( vert.ogPos ) * .5 , _StartedCloth * .5 * length( vert.uv - float2( .5 , .5 )) );
 
-  float n = abs( sin( vert.ogPos.x  * 20 )+ sin( vert.ogPos.y  * 20 ) + sin( vert.ogPos.x  * 20 ));
-  curvedPos = lerp( curvedPos , vert.ogPos * (.5 + n * .2) , clamp( sVal -1 , 0 , 1 ) );
+  float n = snoise( vert.pos * 10);//abs( sin( vert.ogPos.x  * 20 )+ sin( vert.ogPos.y  * 20 ) + sin( vert.ogPos.x  * 20 ));
+
+  float3 pos2 = vert.ogPos * (.9 + n * (.03 + _Cycle * .2) );
+  curvedPos = lerp( curvedPos , pos2 , clamp( s.active -1 , 0 , 1 ) );
+  float weirdVal = clamp( (s.active -1) - _ClothDropped , 0 , 1 );
+  force += n * vert.norm * s.jiggleVal * (1.1 - weirdVal) *(1. - _StartedCloth * .9) * .01;
 
   float3 target = mul( s.mat , float4( curvedPos , 1 ) ).xyz;
 
-  force += (target - vert.pos) * (.01 +  .5 * ( 1 - _StartedCloth ) + .1 * clamp( sVal -1 , 0 , 1 ) );
+  
+  force += (target - vert.pos) * ( 1 - .6 * s.jiggleVal * weirdVal ) * (.01 - .002 *_Cycle +  .5 * ( 1 - _StartedCloth ) + .1 * weirdVal );
+
+  float3 cForce = curlNoise( vert.pos * (1 + 2  * _Cycle) + float3( 0 , _Time * (.3 + .3 * _Cycle) , 0 ) );
+  force += _ClothDropped * cForce * .0002 * _Cycle;
 
   for( int i = 0; i < _NumberHands; i++){
 
     float3 dif = handBuffer[i].pos - vert.pos;
     if(length(dif)< .1){
-      force += float3( normalize(dif) ) * (handBuffer[i].triggerVal-.3) * (.001 + .03 * (1 -_StartedCloth) + .01 * clamp( sVal -1 , 0 , 1 ));
+      force += float3( normalize(dif) ) * (handBuffer[i].triggerVal-.3) * (.001 + .03 * (1 -_StartedCloth) + .01 * clamp( s.active -1 , 0 , 1 ));
     }
   }
+
+  for( int i =0; i < _NumShapes; i++ ){
+
+    if( i != vert.boxID ){
+
+      float l = boxDistance( vert.pos , iShapeBuffer[i].mat );
+      if( l < 0 ){
+        float3 n = calcNormal( vert.pos , iShapeBuffer[i].mat );
+        force -= cForce* l *.01* ( 1.1 - _StartedCloth )  ;
+       
+
+      }
+    }
+    
+  }
+
 
 
   vert.vel += force;

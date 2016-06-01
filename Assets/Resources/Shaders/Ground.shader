@@ -260,12 +260,19 @@ Shader "Custom/Gound" {
 
          col = min( float3( 1 , 1 , 1 ) , col );
 
+        float3 noMoonCol = col;
+        float3 fullMoonCol = (col * float3( .3 , 2 , 4 ));
+
+        col = lerp( fullMoonCol , noMoonCol , _Cycle );
          //gamma correction
         col = pow(col,  2.2);  
         float v = pow(length( col  ) , .5);//length( col );
         float3 col2 = float3( v , v, v );//float3( length( col ) , length( col ) , length( col ) ) * .5;
 
         col = lerp( col2 , col , _ClothDown );
+
+
+
 
         fixed4 color;
         color = fixed4( col , 1. );

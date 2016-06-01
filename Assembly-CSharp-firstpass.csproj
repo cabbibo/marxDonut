@@ -48,11 +48,14 @@
      <Compile Include="Assets\Plugins\openvr_api.cs" />
      <None Include="Assets\Resources\Shaders\Ground.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
+     <None Include="Assets\Resources\Shaders\LineTraced.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_ClearAll.shader" />
+     <None Include="Assets\Resources\Shaders\Chunks\curlNoise.cginc" />
      <None Include="Assets\Resources\Shaders\ClothProper.shader" />
      <None Include="Assets\Resources\Shaders\Chunks\uvNormalMap.cginc" />
      <None Include="Assets\Resources\Shaders\Normal.shader" />
+     <None Include="Assets\Resources\Shaders\Chunks\snoise.cginc" />
      <None Include="Assets\Resources\Shaders\ClothProper.compute" />
      <None Include="Assets\SteamVR\Resources\SteamVR_HiddenArea.shader" />
      <None Include="Assets\Resources\Shaders\Logo.shader" />

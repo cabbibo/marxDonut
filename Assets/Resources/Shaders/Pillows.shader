@@ -58,6 +58,9 @@
 						struct Shape{
 							float4x4 mat;
 							float shape;
+                            float active;
+                            float hovered;
+                            float jiggleVal;
 						};
 
             struct Hand{
@@ -74,7 +77,6 @@
             
             StructuredBuffer<Vert> buf_Points;
             StructuredBuffer<Shape> shapeBuffer;
-            StructuredBuffer<float> startedBuffer;
             StructuredBuffer<Hand> handBuffer;
             
 
@@ -86,6 +88,7 @@
             uniform int _TotalVerts;
 
             uniform float _Cycle;
+            uniform float _ClothDown;
  
             //A simple input struct for our pixel shader step containing a position.
             struct varyings {
@@ -97,6 +100,7 @@
                 float3 debug    : TEXCOORD3;
                 float2 uv       : TEXCOORD4;
                 float secondVal : TEXCOORD6;
+
                 float life 			: TEXCOORD5;
             };
 
@@ -177,15 +181,31 @@
 
                 float3 triPos = (rPos-float3( .5 , .5 , .5 )) * 20;
 
+                float closest = 1000000000;
+
+                float3 closeVec;
+                float3 closeHand;
+
                 for( int i = 0; i< _NumberHands; i++ ){
                     Hand h = handBuffer[i];
 
                     float3 dif = triPos - h.pos;
 
-                    if( length( dif) < .1 ){
-                        triPos = h.pos + normalize( dif ) * .1;
-                        rDir = normalize( dif );
+                    if( length( dif ) < closest ){
+                        closest = length( dif );
+                        closeVec = dif;
+                        closeHand = h.pos;
                     }
+
+                    
+                }
+
+                if( closest < .7 ){
+                    rDir = lerp(  rDir , normalize( closeVec ) , clamp( (.7 -  length( closeVec )) * 5 , 0 , 1)) ;
+                } 
+
+                if( closest < .5 ){
+                    triPos = closeHand + normalize( closeVec ) * .5;
                 }
 
                 float3 dir = rDir;//_WorldSpaceCameraPos - rPos;
@@ -218,9 +238,10 @@
              
                 float3 dif =   - v.pos;
 
-                o.started = clamp( startedBuffer[ int(v.boxID )] , 0 , 1 );
+                Shape s = shapeBuffer[ int( v.boxID )];
+                o.started = clamp( s.active , 0 , 1 );
 
-                o.worldPos = lerp( triPos , v.pos , o.started ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
+                o.worldPos = lerp( triPos , v.pos , o.started + s.jiggleVal * .001 ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
                 //o.worldPos = lerp( triPos , v.pos , _StartedVal ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
 
 
@@ -230,10 +251,10 @@
 
 
 
-                o.secondVal = clamp( startedBuffer[ int(v.boxID )] - 1 , 0 , 1 );
+                o.secondVal = clamp( s.active - 1 , 0 , 1 );
 
 
-                o.debug = v.debug;//n * .5 + .5;
+                o.debug = float3( s.hovered , s.shape , s.jiggleVal);//n * .5 + .5;
                 //o.debug = v.norm * .5 + .5;
                 o.life = v.boxID;
                 o.uv = v.uv;
@@ -251,7 +272,7 @@
             	float3 col = float3( 0.0 , 0.0 , 0.0 );			    		
 			    		col= float3( 0. , 0. , 0. );
 
-			  float3 fNorm = uvNormalMap( _NormalMap , i.worldPos ,  i.uv  * float2( 1 , 1), i.nor * .5 + .5, 10.1 , 3);
+			     float3 fNorm = uvNormalMap( _NormalMap , i.worldPos ,  i.uv  * float2( 1 , 1), i.nor * .5 + .5, 10.1 * (_Cycle + .3) , 3 * _Cycle+.2);
 
                 //float3 col = fNorm * .5 + .5;//i.debug;
 
@@ -265,9 +286,23 @@
                 col = lerp( col , col * col , i.secondVal );
 
                 col /= .1 + length( i.worldPos ) * length( i.worldPos ) * .5;
+                
+                float3 noMoonCol = col;
+                float3 fullMoonCol = (col * float3( .1 , 2 , 2));
+                col = lerp( fullMoonCol , noMoonCol , _Cycle );
 
                 col = lerp( float3( col.x , col.x , col.x ) , col , i.started );
 
+                col *= 1 + 2 * i.debug.x;
+
+                float aboveVal = clamp( -i.eye.y * 4 + .5 , 0 , 1 );
+                float3 belowCol = float3( length( col ), length( col) , length( col )) * .4;
+                col = lerp(  belowCol , col , aboveVal * .8 + .2 );
+                col = lerp( col , col * (fNorm * .5 + .5) , clamp( aboveVal - .3 , 0 , 1 ) * clamp((i.started - _ClothDown),0,1) );
+
+             
+                
+                //col = i.debug;
 			        //col = i.nor * .5 + .5;
 
             		//float3 col = float3( i.uv.x , i.uv.y , 1);

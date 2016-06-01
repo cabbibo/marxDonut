@@ -124,16 +124,20 @@ public class Stretch : MonoBehaviour {
 
         setPosition();
         GetComponent<LineRenderer>().enabled = true;
+
       }else{
+        
 
+        leftDrag.transform.position = transform.localToWorldMatrix.MultiplyPoint( new Vector3( 0 , 0 ,.6f) );
+        rightDrag.transform.position = transform.localToWorldMatrix.MultiplyPoint( new Vector3( 0 , 0 ,-.6f) );
 
-        leftDrag.transform.parent = transform;
-        rightDrag.transform.parent = transform;
+       //leftDrag.transform.parent = transform;
+       //rightDrag.transform.parent = transform;
 
         upVec = transform.localToWorldMatrix.MultiplyVector( new Vector3(0 , 1 , 0) ).normalized;
 
-        leftDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
-        rightDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
+        // leftDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
+        //rightDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
         //rightDrag.transform.localScale = rightDrag.transform.lossyScale; //Vector3.Scale( lScale , rightDrag.transform.lossyScale );//new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z);
         GetComponent<LineRenderer>().enabled = false;
 

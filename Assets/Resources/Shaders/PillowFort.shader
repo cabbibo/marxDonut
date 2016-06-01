@@ -24,6 +24,8 @@
             uniform float _StartTime;
             uniform float _FullEnd;
             uniform int _NumShapes;
+
+            uniform float _Cycle;
  
 
             struct Vert{
@@ -44,6 +46,9 @@
             struct Shape{
 	float4x4 mat;
 	float shape;
+    float active;
+    float hovered;
+    float jiggleVal;
 };
 
             StructuredBuffer<Vert> buf_Points;
@@ -161,7 +166,7 @@ float boxDistance( float3 p , float4x4 m ){
             float4 frag (varyings i) : COLOR {
 
 
-                float3 fNorm = uvNormalMap( _NormalMap , i.worldPos ,  i.uv  * float2( 1 , 1), i.nor * .5 + .5, 10.1 , 3);
+                float3 fNorm = uvNormalMap( _NormalMap , i.worldPos ,  i.uv  * float2( 1 , 1), i.nor * .5 + .5, 10.1 * (_Cycle + .3) , 3 * _Cycle+.2);
 
                 float3 col = fNorm * .5 + .5;//i.debug;
 
@@ -173,31 +178,55 @@ float boxDistance( float3 p , float4x4 m ){
                 col = float3( 1 , .7 , .5 ) * cubeCol  * 2;
 
                 float f = 100000;
+                int closest = 0;
 
                 for( int j = 0; j < _NumShapes; j++ ){
        
   								float l = boxDistance( i.worldPos , shapeBuffer[j].mat );
 
   								///col.x = l * .1;
+                                if( l < f ){
+                                    f = l;
+                                    closest = j;
+                                }
+  								
 
-  								f = min( l , f );
+
 
   							}
 
+
+
   							if( f  < 0 ){ col = i.nor; }else{ 
   								col = col * (1 / (f * 6. + .1 ));
+
+                                if( shapeBuffer[closest].hovered > 0 ){
+                                    float3 fullCol = float3( .5 , .8 , 1.6 );
+                                    float3 noCol = float3( 1.5 , 1 , .6 );
+
+                                    col = lerp( col , col * lerp( fullCol , noCol , _Cycle ), clamp(1 - f * 2, 0,1));
+                                }
   							}// / max( .5 , f / 5);} //float3( .1 / f , 0 , 0 );}
   							//col /= max(0.04 , f* 2);
 
   							float match = (1-abs(dot( -normalize(i.eye) , fNorm )));
-  							col = lerp( float3( 2. , 1.6 , .9) * match  + col * (1-match), col ,  max(min( i.worldPos.y, 1 ),-1)  );
+
+                            float l = max(min( i.worldPos.y, 1 ),-1);
+  							col = lerp( float3( 2. , 1.6 , .9) * match  + col * (1-match), col , max( 0 , l ) );
 
   							//col += float3( 0 , 0 , .5 );
 
 								col = pow(col,  2.2); 
 
                                 col *= ( 1 - _FullEnd ); 
+
+                                float3 noMoonCol = col;
+                                float3 fullMoonCol = (col * float3( .3 , 2 , 4 ));
+
+                                col = lerp( fullMoonCol , noMoonCol , _Cycle );
+
                 fixed4 color;
+               // col = float3( _Cycle , _Cycle , _Cycle );
                // col = float3( 1 , 1 , 1 );
 	            	color = fixed4( col , 1. );
 	            	return color;

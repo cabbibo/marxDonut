@@ -16,6 +16,7 @@ public class HitAndHoldPlay : MonoBehaviour {
     holdSource.clip = holdClip;
     holdSource.spatialize = true;
     holdSource.loop = true;
+    holdSource.pitch = 2;
     holdSource.volume = 0;
     holdSource.Play();
 	
@@ -29,7 +30,7 @@ public class HitAndHoldPlay : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
     if( GetComponent<MoveByController>().moving == true ){
-      holdSource.volume = 1;
+      //holdSource.volume = 1;
     }else{
       holdSource.volume = 0;
     }
@@ -37,6 +38,10 @@ public class HitAndHoldPlay : MonoBehaviour {
 	}
 
   void OnTriggerEnter(Collider c ){
-    hitSource.Play();
+
+
+    if( c.tag == "Hand"){ 
+      hitSource.Play();
+    }
   }
 }

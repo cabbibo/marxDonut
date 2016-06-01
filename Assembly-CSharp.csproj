@@ -54,6 +54,8 @@
      <Compile Include="Assets\Scripts\FortCloth.cs" />
      <Compile Include="Assets\Scripts\HandBuffer.cs" />
      <Compile Include="Assets\Scripts\HitAndHoldPlay.cs" />
+     <Compile Include="Assets\Scripts\HitClipArray.cs" />
+     <Compile Include="Assets\Scripts\HoverAndRelease.cs" />
      <Compile Include="Assets\Scripts\Logo.cs" />
      <Compile Include="Assets\Scripts\Lune.cs" />
      <Compile Include="Assets\Scripts\LuneExport.cs" />
@@ -63,10 +65,10 @@
      <Compile Include="Assets\Scripts\PillowFort.cs" />
      <Compile Include="Assets\Scripts\Pillows.cs" />
      <Compile Include="Assets\Scripts\PostRenderEvent.cs" />
+     <Compile Include="Assets\Scripts\SilenceListener.cs" />
      <Compile Include="Assets\Scripts\Stretch.cs" />
      <Compile Include="Assets\Scripts\Wrench.cs" />
      <Compile Include="Assets\Scripts\controllerInfo.cs" />
-     <Compile Include="Assets\SilenceListener.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_GazeTracker.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_LaserPointer.cs" />
      <Compile Include="Assets\SteamVR\Extras\SteamVR_Teleporter.cs" />
@@ -101,11 +103,14 @@
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
      <None Include="Assets\Resources\Shaders\Ground.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
+     <None Include="Assets\Resources\Shaders\LineTraced.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_ClearAll.shader" />
+     <None Include="Assets\Resources\Shaders\Chunks\curlNoise.cginc" />
      <None Include="Assets\Resources\Shaders\ClothProper.shader" />
      <None Include="Assets\Resources\Shaders\Chunks\uvNormalMap.cginc" />
      <None Include="Assets\Resources\Shaders\Normal.shader" />
+     <None Include="Assets\Resources\Shaders\Chunks\snoise.cginc" />
      <None Include="Assets\Resources\Shaders\ClothProper.compute" />
      <None Include="Assets\SteamVR\Resources\SteamVR_HiddenArea.shader" />
      <None Include="Assets\Resources\Shaders\Logo.shader" />

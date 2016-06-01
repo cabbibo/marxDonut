@@ -51,7 +51,10 @@ struct Hand{
 
 struct Shape{
 	float4x4 mat;
-	float active;
+	float shape;
+  float active;
+  float hovered;
+  float jiggleVal;
 };
 
 
@@ -274,6 +277,8 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 
 
       if( vert.pos.y < .06 ){ force += .01  * float3( vert.pos.x , 0 , vert.pos.z ); }
+    }else{
+      force += .005  * float3( vert.pos.x , 0 , vert.pos.z );
     }
     //}
 
@@ -300,7 +305,7 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
   		for( int i = 0; i < _NumShapes; i++ ){
        
   			
-        if( shapeBuffer[i].active > .5 ){
+        if( shapeBuffer[i].shape > .5 ){
           float l = boxDistance( vert.pos , shapeBuffer[i].mat );
           if( l < 0 ){
 

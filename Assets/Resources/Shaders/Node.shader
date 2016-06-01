@@ -1,4 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 // Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
 
 Shader "Custom/Node" {
@@ -47,6 +47,9 @@ Shader "Custom/Node" {
       uniform float _MaxTraceDistance;
       uniform float _BeginVal;
       uniform float _SecondVal;
+      uniform float _Cycle;
+      uniform float _Hovered;
+      
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
@@ -116,10 +119,12 @@ Shader "Custom/Node" {
         res.x = sdSphere( pos , .4 );
         res.x = lerp( res.x , sdBox( pos , float3( .2 , .2 , .2 ) ) , 1 - _BeginVal);
 
-        res.x -= (.1 * _BeginVal) * noise( pos * 10 );
+
+        res.x -= ((.1 * _BeginVal) + _Hovered* .04)* noise( pos * 10 );
         res.y = 1;
 
         res.x += _SecondVal;
+
        
        //res.x = n - 1.5;
        //res.x /= 100;
@@ -236,11 +241,19 @@ Shader "Custom/Node" {
 
         //gamma correction
         col = pow(col,  2.2);  
+           float3 noMoonCol = col;
+                                float3 fullMoonCol = (col * float3( .3 , 2 , 4 ));
+
+                                col = lerp( fullMoonCol , noMoonCol , _Cycle );
         float3 col2 = float3( length( col ) , length( col ) , length( col ) ) * .5;
 
         col = lerp( col2 , col , _BeginVal );
 // Or (cheaper, but assuming gamma of 2.0 rather than 2.2)  
    ///return float4( sqrt( finalCol ), pixelAlpha );  
+
+   col *= _Hovered * 4 + 1;
+
+
 
         //col = lerp( col , float3( 1 , 0 , 0 ) , _SecondVal );
         fixed4 color;
