@@ -131,6 +131,7 @@ public class Pillows : MonoBehaviour {
   
     for( int i = 0;  i < NumShapes; i++ ){ 
       Shapes[i].GetComponent<BeginBox>().Restart();
+      Shapes[i].GetComponent<MoveByController>().Restart();
       shapesActive[i] = 1;
     }
 
@@ -282,6 +283,7 @@ public class Pillows : MonoBehaviour {
       int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1) * 6 * NumShapes;
 
       material.SetPass(0);
+      material.SetInt("_Large" , 0 );
 
       material.SetBuffer("buf_Points", _vertBuffer);
       //forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
@@ -289,6 +291,8 @@ public class Pillows : MonoBehaviour {
 
       material.SetFloat( "_FullEnd" , PF.fullEnd );
       material.SetFloat( "_ClothDown" , PF.clothDown );
+      material.SetFloat( "_Special" , PF.special );
+      material.SetTexture( "_Audio" , PF.audioTexture );
    
       material.SetInt( "_RibbonWidth"  , ribbonWidth  );
       material.SetInt( "_RibbonLength" , ribbonLength );
@@ -298,7 +302,6 @@ public class Pillows : MonoBehaviour {
       material.SetTexture( "_CubeMap"  , cubeMap );
 
       material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
-
       material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
 
       material.SetBuffer("startedBuffer", _startedBuffer );
@@ -307,6 +310,42 @@ public class Pillows : MonoBehaviour {
       material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
 
       Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
+
+   /*   if( PF.special == 1){
+
+        material.SetPass(0);
+
+        material.SetInt("_Large" , 1 );
+
+        material.SetBuffer("buf_Points", _vertBuffer);
+        //forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
+        material.SetBuffer("shapeBuffer", _inverseShapeBuffer );
+
+        material.SetFloat( "_FullEnd" , PF.fullEnd );
+        material.SetFloat( "_ClothDown" , PF.clothDown );
+        material.SetFloat( "_Special" , PF.special );
+        material.SetTexture( "_Audio" , PF.audioTexture );
+     
+        material.SetInt( "_RibbonWidth"  , ribbonWidth  );
+        material.SetInt( "_RibbonLength" , ribbonLength );
+        material.SetInt( "_TotalVerts"   , vertexCount  );
+        material.SetInt( "_NumShapes"   , Shapes.Length  );
+        material.SetTexture( "_NormalMap" , normalMap);
+        material.SetTexture( "_CubeMap"  , cubeMap );
+
+        material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+        material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
+
+        material.SetBuffer("startedBuffer", _startedBuffer );
+
+        material.SetMatrix("worldMat", transform.localToWorldMatrix);
+        material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+        Graphics.DrawProcedural(MeshTopology.Lines, numVertsTotal);
+
+
+
+      }*/
 
     //}
 

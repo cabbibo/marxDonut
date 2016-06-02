@@ -52,6 +52,13 @@ public class MoveByController : MonoBehaviour {
 	
 	}
 
+  public void Restart(){
+    insideGO = null;
+    secondInsideGO = null;
+    inside = false;
+    moving = false;
+  }
+
   void OnTriggerDown(GameObject o){
 
     

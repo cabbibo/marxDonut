@@ -52,6 +52,8 @@ Shader "Custom/Gound" {
 
       uniform float3 _Hand1;
       uniform float3 _Hand2;
+
+      uniform sampler2D _Audio;
       
       uniform samplerCUBE _CubeMap;
 
@@ -224,6 +226,8 @@ Shader "Custom/Gound" {
     		
     		col= float3( 0. , 0. , 0. );
 
+        float3 aCol = float3( 0,0,0);
+
         if( res.y > -0.5 ){
         
         	float3 pos = ro + rd * res.x;
@@ -237,6 +241,8 @@ Shader "Custom/Gound" {
         
           //if( col > float3( 1 , 1, 1) ){ col /= 2; }
           col = min( float3( 2 , 1.5,1), col);
+
+          //aCol = tex2D( _Audio , float2( abs(dot(norm,normalize(float3(1,1,1)))) * .5,0 ) ).xyz;
         	//col = float3( 1. , 0. , 0. );
         	
         }
@@ -270,6 +276,9 @@ Shader "Custom/Gound" {
         float3 col2 = float3( v , v, v );//float3( length( col ) , length( col ) , length( col ) ) * .5;
 
         col = lerp( col2 , col , _ClothDown );
+
+        //col += aCol;
+
 
 
 

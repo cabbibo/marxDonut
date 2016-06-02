@@ -176,21 +176,60 @@ public class FortCloth : MonoBehaviour {
 
    // print( PF.clothDropped );
     if( PF.clothDropped == true ){ 
+
+   
       //print(":s");
       
       int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
 
-      material.SetPass(0);
+      if( PF.special == 1){
 
+        material.SetPass(0);
+
+        material.SetInt("_Large" , 1 );
+
+        material.SetBuffer("buf_Points", _vertBuffer);
+        material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
+
+        material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+        material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
+
+        material.SetFloat( "_FullEnd" , PF.fullEnd );
+        material.SetFloat("_ClothDown" , PF.clothDown );
+     
+        material.SetInt( "_RibbonWidth"  , ribbonWidth  );
+        material.SetInt( "_RibbonLength" , ribbonLength );
+        material.SetInt( "_TotalVerts"   , vertexCount  );
+        material.SetInt( "_NumShapes"   , PF.pillows.Shapes.Length  );
+
+        material.SetFloat("_Special" , PF.special );
+        material.SetTexture( "_NormalMap" , normalMap);
+        material.SetTexture( "_CubeMap"  , cubeMap );
+
+        material.SetMatrix("worldMat", transform.localToWorldMatrix);
+        material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+        Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
+
+      }
+
+      material.SetPass(0);
+      material.SetInt("_Large" , 0 );
       material.SetBuffer("buf_Points", _vertBuffer);
       material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
 
+      material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+      material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
+
       material.SetFloat( "_FullEnd" , PF.fullEnd );
+      material.SetFloat("_ClothDown" , PF.clothDown );
    
       material.SetInt( "_RibbonWidth"  , ribbonWidth  );
       material.SetInt( "_RibbonLength" , ribbonLength );
       material.SetInt( "_TotalVerts"   , vertexCount  );
       material.SetInt( "_NumShapes"   , PF.pillows.Shapes.Length  );
+
+      material.SetFloat("_Special" , PF.special );
       material.SetTexture( "_NormalMap" , normalMap);
       material.SetTexture( "_CubeMap"  , cubeMap );
 
@@ -198,6 +237,8 @@ public class FortCloth : MonoBehaviour {
       material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
 
       Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
+
+      
 
       debugMaterial.SetPass(0);
 

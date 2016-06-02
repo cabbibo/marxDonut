@@ -1,6 +1,2 @@
 Base path: C:/Program Files/Unity 5.4.0b17/Editor/Data
 Cmd: getPlatforms
-Cmd: compileSnippet
-  error: 1 plat 1 at (123): can't use gradient instructions in loops with break, forcing loop to unroll\nCompiling Fragment program
-Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
-  api=1 type=1 insize=3689 outsize=34376 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1

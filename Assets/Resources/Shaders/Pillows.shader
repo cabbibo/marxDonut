@@ -42,6 +42,11 @@
             uniform int _NumberHands;
 			uniform int _Fade;
 
+            uniform sampler2D _Audio;
+            uniform float _Special;
+
+            uniform int _Large;
+
  
 
             struct Vert{
@@ -235,6 +240,10 @@
                 if( v.ids[2] >= 0 ){ d = buf_Points[ v.ids[2] ].pos; }
                 if( v.ids[4] >= 0 ){ l = buf_Points[ v.ids[4] ].pos; }
                 if( v.ids[6] >= 0 ){ u = buf_Points[ v.ids[6] ].pos; }
+
+                o.uv = v.uv;
+                o.nor = normalize(cross( l - r , u - d )); //v.norm;
+
              
                 float3 dif =   - v.pos;
 
@@ -242,6 +251,16 @@
                 o.started = clamp( s.active , 0 , 1 );
 
                 o.worldPos = lerp( triPos , v.pos , o.started + s.jiggleVal * .001 ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
+
+                //if( _Large == 1 ){ o.worldPos *= 5; }
+                o.eye = _WorldSpaceCameraPos - o.worldPos;
+
+                float3 aCol = tex2Dlod( _Audio , float4( length( v.uv - .5 ) * .1 , 0 ,0,0)).xyz;
+                //float3 aCol = tex2D( _Audio , float2(dot( normalize(cross( l - r , u - d )) , _WorldSpaceCameraPos - v.pos)* .5 +v.uv.x * .3 , 0)).xyz;
+
+               // o.worldPos += o.nor * length( aCol ) * .1;
+
+
                 //o.worldPos = lerp( triPos , v.pos , _StartedVal ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
 
 
@@ -257,9 +276,7 @@
                 o.debug = float3( s.hovered , s.shape , s.jiggleVal);//n * .5 + .5;
                 //o.debug = v.norm * .5 + .5;
                 o.life = v.boxID;
-                o.uv = v.uv;
-                o.nor = normalize(cross( l - r , u - d )); //v.norm;
-
+                
 
             
                 return o;
@@ -285,7 +302,7 @@
 
                 col = lerp( col , col * col , i.secondVal );
 
-                col /= .1 + length( i.worldPos ) * length( i.worldPos ) * .5;
+                
                 
                 float3 noMoonCol = col;
                 float3 fullMoonCol = (col * float3( .1 , 2 , 2));
@@ -295,10 +312,18 @@
 
                 col *= 1 + 2 * i.debug.x;
 
+                if( _Special == 1. ){
+                    col = cubeCol *2 *(fNorm * .5 + .5);
+                }
+
                 float aboveVal = clamp( -i.eye.y * 4 + .5 , 0 , 1 );
                 float3 belowCol = float3( length( col ), length( col) , length( col )) * .4;
                 col = lerp(  belowCol , col , aboveVal * .8 + .2 );
                 col = lerp( col , col * (fNorm * .5 + .5) , clamp( aboveVal - .3 , 0 , 1 ) * clamp((i.started - _ClothDown),0,1) );
+
+                col /= .1 + length( i.worldPos ) * length( i.worldPos ) * .5;
+
+                //col = aCol;
 
              
                 

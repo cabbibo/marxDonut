@@ -45,6 +45,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AudioListenerBuffer.cs" />
+     <Compile Include="Assets\LightUpOnHit.cs" />
      <Compile Include="Assets\Scripts\AssignStructs.cs" />
      <Compile Include="Assets\Scripts\AudioListenerTexture.cs" />
      <Compile Include="Assets\Scripts\BeginBox.cs" />
@@ -102,6 +104,7 @@
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_UpdatePoses.cs" />
      <Compile Include="Assets\SteamVR\Scripts\SteamVR_Utils.cs" />
      <None Include="Assets\Resources\Shaders\Ground.shader" />
+     <None Include="Assets\Resources\Shaders\ModelTrace.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_Fade.shader" />
      <None Include="Assets\Resources\Shaders\LineTraced.shader" />
      <None Include="Assets\SteamVR\Resources\SteamVR_BlitFlip.shader" />
@@ -111,6 +114,7 @@
      <None Include="Assets\Resources\Shaders\Chunks\uvNormalMap.cginc" />
      <None Include="Assets\Resources\Shaders\Normal.shader" />
      <None Include="Assets\Resources\Shaders\Chunks\snoise.cginc" />
+     <None Include="Assets\Resources\Shaders\InteractionTip.shader" />
      <None Include="Assets\Resources\Shaders\ClothProper.compute" />
      <None Include="Assets\SteamVR\Resources\SteamVR_HiddenArea.shader" />
      <None Include="Assets\Resources\Shaders\Logo.shader" />

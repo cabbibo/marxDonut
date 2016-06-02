@@ -17,6 +17,7 @@
  
             #include "UnityCG.cginc"
             #include "Chunks/uvNormalMap.cginc"
+            #include "Chunks/noise.cginc"
 
             uniform sampler2D _NormalMap;
             uniform samplerCUBE _CubeMap;
@@ -24,8 +25,12 @@
             uniform float _StartTime;
             uniform float _FullEnd;
             uniform int _NumShapes;
+            uniform int _NumberHands;
 
             uniform float _Cycle;
+            uniform float _Special;
+            uniform float _ClothDown;
+            uniform int _Large;
  
 
             struct Vert{
@@ -38,6 +43,18 @@
 				float ids[8];
 				float3 debug;
 			};
+
+            struct Hand{
+  float active;
+  float3 pos;
+  float3 vel;
+  float3 aVel;
+  float  triggerVal;
+  float  thumbVal;
+  float  sideVal;
+  float2 thumbPos;
+};
+
             
             struct Pos {
                 float3 pos;
@@ -53,6 +70,7 @@
 
             StructuredBuffer<Vert> buf_Points;
             StructuredBuffer<Shape> shapeBuffer;
+            StructuredBuffer<Hand > handBuffer;
 
             uniform float4x4 worldMat;
 
@@ -68,6 +86,7 @@
                 float3 eye      : TEXCOORD2;
                 float3 debug    : TEXCOORD3;
                 float2 uv       : TEXCOORD4;
+                float closest   : TEXCOORD6;
                 float life 			: TEXCOORD5;
             };
 
@@ -142,13 +161,28 @@ float boxDistance( float3 p , float4x4 m ){
                 uint fID = getID( id );
                 Vert v = buf_Points[fID];
 
-                float3 dif =   - v.pos;
+                
 
                 o.worldPos = v.pos;//mul( worldMat , float4( v.pos , 1.) ).xyz;
+
+                if( _Large == 1 ){
+                    o.worldPos /= 5;
+                }
 
                 o.eye = _WorldSpaceCameraPos - o.worldPos;
 
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
+
+                float closestHand = 1000;
+
+                for( int i =0; i< _NumberHands; i++){
+                    Hand h = handBuffer[i];
+                    float3 dif = h.pos - v.pos;
+                    if( length( dif) < closestHand ){
+                        closestHand = length( dif );
+                    }
+                }
+                o.closest = closestHand;
 
 
                 o.debug = v.debug;//n * .5 + .5;
@@ -180,9 +214,34 @@ float boxDistance( float3 p , float4x4 m ){
                 float f = 100000;
                 int closest = 0;
 
+                float distVal =1000;  
+
+                float dVal = .3 * noise( float3(200 * i.uv.x , 200 * i.uv.y ,0) );
+                    dVal += .6 * noise( float3(40 * i.uv.x , 40 * i.uv.y , 0 ) );
+                    dVal += noise( float3(80 * i.uv.x , 80 * i.uv.y , 0 ) );
+
+                if( dVal > _ClothDown * 10 ){ discard;}
+                if( _Special == 1. ){
+
+                    col =  2 *  cubeCol * (fNorm * .5 +.5);
+
+                  
+                    if( dVal > i.closest * i.closest * i.closest * 10){ discard; }
+
+                    distVal = i.closest * i.closest * i.closest * 10 - dVal;
+
+
+                }
+
+
+                float3 p = i.worldPos;
+
+                if( _Large == 1 ){ p *= 5; }
+
                 for( int j = 0; j < _NumShapes; j++ ){
        
-  								float l = boxDistance( i.worldPos , shapeBuffer[j].mat );
+
+  								float l = boxDistance( p , shapeBuffer[j].mat );
 
   								///col.x = l * .1;
                                 if( l < f ){
@@ -213,6 +272,12 @@ float boxDistance( float3 p , float4x4 m ){
 
                             float l = max(min( i.worldPos.y, 1 ),-1);
   							col = lerp( float3( 2. , 1.6 , .9) * match  + col * (1-match), col , max( 0 , l ) );
+
+                             if( _Special == 1. ){
+
+                                col =   2 *  cubeCol * (fNorm * .5 +.5) * ((1 / (f * 6. + .1 ))+ .5);
+                                if( distVal  < .3 ){ col = 3 *  cubeCol * (fNorm * .5 +.5);}
+                            }
 
   							//col += float3( 0 , 0 , .5 );
 

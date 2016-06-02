@@ -21,8 +21,8 @@ TODO:
 //- release note when setting object down
 
 - Something special on full / new moons!
-  - ( cutout pattern on cloth?)
-  - EVERYTHING BECOMES AUDIO REACTIVE!
+ // - ( cutout pattern on cloth?)
+ // - EVERYTHING BECOMES AUDIO REACTIVE!
 
 //- limit jiggle val
 //- subtle higher
@@ -30,10 +30,14 @@ TODO:
 //- make it so that nodes stay visible and figure out neccesary scaling!!!
 //- date +1 every loop
 
+// Cycle being set weirdly somehow?
+//all blocks are considered grab on restart?!?!
+
 */
 
 public class PillowFort : MonoBehaviour {
 
+    public GameObject AudioObject;
     public GameObject lune;
     public GameObject floor;
 
@@ -88,6 +92,10 @@ public class PillowFort : MonoBehaviour {
 
     public float moonAge;
 
+    public Texture2D audioTexture;
+
+
+
     // Use this for initialization
     void Start () {
       
@@ -106,7 +114,7 @@ public class PillowFort : MonoBehaviour {
       //print( d );
       //print( y );
 
-      moonAge = MoonAge( d , m , y );
+      moonAge = MoonAge( d  , m , y );
 
       cycle = moonAge / 29;
       cycle = 1 - Mathf.Sin( cycle * Mathf.PI);
@@ -164,6 +172,8 @@ public class PillowFort : MonoBehaviour {
         special = 0;
       }
 
+      //special = 1;
+
       lastSource.pitch = .5f + cycle * .5f;
       clipPlayer.pitch = .5f + cycle * .5f;
       clothSource.pitch = .5f + cycle * .5f;
@@ -201,8 +211,12 @@ public class PillowFort : MonoBehaviour {
 
     void FixedUpdate(){
 
+      setCycle();
+
       pillows.update();
       fortCloth.update();
+
+
 
       if( pillows.allBlocksStarted == true && clothDropped == false ){ dropCloth(); }
       //if( pillows.allPillowsPopped == true && ended == false ){ beginEnd(); }
@@ -255,15 +269,16 @@ public class PillowFort : MonoBehaviour {
         float currentVal = (float)pillows.pillowsPopped / (float)pillows.NumShapes;
         if( endingVal > currentVal){ endingVal = currentVal; }
 
+        // used to make floor disappear
+        disappearVal += .002f;
+        if( disappearVal > 1 ){ disappearVal = 1;}
 
-        if( pillows.allPillowsPopped && finalEndTriggered == false ){ 
+        if( pillows.allPillowsPopped && finalEndTriggered == false  && disappearVal == 1 ){ 
           triggerFinalEnd();
           endingVal = 1;
         }
 
-        // used to make floor disappear
-        disappearVal += .002f;
-        if( disappearVal > 1 ){ disappearVal = 1;}
+        
 
 
         clothSource.volume = 1 - disappearVal;
@@ -342,12 +357,14 @@ public class PillowFort : MonoBehaviour {
     }
 
     void Update(){
-      setCycle();
+      audioTexture = AudioObject.GetComponent<AudioListenerTexture>().AudioTexture;
+      //setCycle();
       lune.GetComponent<Lune>().clothDown = clothDown;
       lune.GetComponent<Lune>().endingVal = endingVal * endingVal;
       lune.GetComponent<Lune>().fullEnd = fullEnd * fullEnd * fullEnd * fullEnd;
       floor.GetComponent<Renderer>().material.SetFloat("_ClothDown",clothDown);
       floor.GetComponent<Renderer>().material.SetFloat("_Disappear",disappearVal);
+      floor.GetComponent<Renderer>().material.SetTexture("_Audio", audioTexture);
     }
 
     private void releaseCloth(){
@@ -396,7 +413,7 @@ public class PillowFort : MonoBehaviour {
       if( cycle > 1 ){ cycle -= 1; }
       cycle = 1 - Mathf.Sin( cycle * Mathf.PI);
 
-      print( cycle );
+      //print( cycle );
       setCycle();
 
 
