@@ -169,6 +169,11 @@ float boxDistance( float3 p , float4x4 m ){
                     o.worldPos /= 5;
                 }
 
+                if( _Large == 2 ){
+                    o.worldPos *= 5;
+                }
+
+
                 o.eye = _WorldSpaceCameraPos - o.worldPos;
 
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
@@ -237,6 +242,7 @@ float boxDistance( float3 p , float4x4 m ){
                 float3 p = i.worldPos;
 
                 if( _Large == 1 ){ p *= 5; }
+                if( _Large == 2 ){ p /= 5; }
 
                 for( int j = 0; j < _NumShapes; j++ ){
        

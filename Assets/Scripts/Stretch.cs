@@ -11,6 +11,9 @@ public class Stretch : MonoBehaviour {
   public GameObject node;
 
   public float length;
+  public float oLength;
+  public bool oMoving;
+  public bool moving;
 
   private Vector3 upVec;
 
@@ -105,25 +108,40 @@ public class Stretch : MonoBehaviour {
 
     if( GetComponent<BeginBox>().ssFinished == false ){
 
-    length = getLength();
+
+    oLength = length;
+    length = getLength(); 
+
+    float modVal = .1f;/// * (length + .1f);
 
     if( leftDrag.GetComponent<MoveByController>().moving == true ){
       SteamVR_TrackedObject tObj = leftDrag.GetComponent<MoveByController>().movingController.GetComponent<SteamVR_TrackedObject>();
       var device = SteamVR_Controller.Input((int)tObj.index);
-      device.TriggerHapticPulse(300);
+      if( oLength %  modVal < modVal/2 && length % modVal > modVal/2 ){
+        device.TriggerHapticPulse(1000);
+      }
     }
 
     if( rightDrag.GetComponent<MoveByController>().moving == true ){
       SteamVR_TrackedObject tObj = rightDrag.GetComponent<MoveByController>().movingController.GetComponent<SteamVR_TrackedObject>();
       var device = SteamVR_Controller.Input((int)tObj.index);
-      device.TriggerHapticPulse(300);
+       if( oLength %  modVal < .02f && length % modVal > .02f ){
+        device.TriggerHapticPulse(1000);
+      }
     }
+
+    oMoving = moving;
 	
     //if( GetComponent<BeginBox>().hasBegun == true ){
       if( GetComponent<MoveByController>().moving == false ){
 
+        if( oMoving == true ){
+          leftDrag.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
+          rightDrag.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
+        }
         setPosition();
         GetComponent<LineRenderer>().enabled = true;
+        moving = false;
 
       }else{
         
@@ -140,6 +158,8 @@ public class Stretch : MonoBehaviour {
         //rightDrag.transform.localScale = Vector3.zero; //new Vector3( 1 , 1 , 1 );//Vector3.Scale( lScale , new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z));
         //rightDrag.transform.localScale = rightDrag.transform.lossyScale; //Vector3.Scale( lScale , rightDrag.transform.lossyScale );//new Vector3(1 / transform.localScale.x , 1 / transform.localScale.y , 1 / transform.localScale.z);
         GetComponent<LineRenderer>().enabled = false;
+
+        moving = true;
 
 
       } 

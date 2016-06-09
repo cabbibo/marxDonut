@@ -50,13 +50,16 @@ Shader "Custom/Gound" {
 
       uniform float _Cycle;
 
+      uniform int _NumberHands;
       uniform float3 _Hand1;
       uniform float3 _Hand2;
+
+      uniform float _Trigger1;
+      uniform float _Trigger2;
 
       uniform sampler2D _Audio;
       
       uniform samplerCUBE _CubeMap;
-
 
       struct VertexIn
       {
@@ -76,7 +79,6 @@ Shader "Custom/Gound" {
           float3 camPos : TEXCOORD4;
       };
         
-
       float sdBox( float3 p, float3 b ){
 
         float3 d = abs(p) - b;
@@ -138,6 +140,10 @@ Shader "Custom/Gound" {
         nVal += .2 * length( pos.xz );
 
         res2.x += nVal * c * 1.5;
+    
+          res2.x = max( res2.x , -sdSphere( pos - _Hand1 , .2 + .3 * _Trigger1 ) + nVal * .3);
+          res2.x = max( res2.x , -sdSphere( pos - _Hand2 , .2 + .3 * _Trigger2 ) + nVal * .3);
+    
        	//res = smoothU( res , res2 , 0.1 );
     		//res = float2( length( pos - float3( 0., -.8 ,0) ) - 1., 0.1 );
     		//res = smoothU( res , float2( length( pos - float3( .3 , .2 , -.2) ) - .1, 0.1 ) , .05 );

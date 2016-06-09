@@ -382,7 +382,9 @@ public class AssignStructs : MonoBehaviour {
       }
     }
   
+    if( _handBuffer != null ){
       _handBuffer.SetData( handValues );
+    }
   }
 
 

@@ -31,6 +31,8 @@ public class BeginBox : MonoBehaviour {
   public bool entering = false;
   public float enteredVal = 0;
 
+  public PillowFort PF;
+
   
 
   public float secondVal = 0;
@@ -47,18 +49,20 @@ public class BeginBox : MonoBehaviour {
 
   public AudioSource audioSource;
   public AudioSource holdSource;
-
+  private Stretch s;
 
 
 
 	// Use this for initialization
 	void Start () {
 
+    s = GetComponent<Stretch>();
+    
     GetComponent<Renderer>().enabled = false;
     GetComponent<Collider>().enabled = false;
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().enabled = false;
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().enabled = false;
+    s.leftDrag.GetComponent<Renderer>().enabled = false;
+    s.rightDrag.GetComponent<Renderer>().enabled = false;
 
     GetComponent<LineRenderer>().SetPosition( 0 , new Vector3( 0 , 0 , 0 ));
     GetComponent<LineRenderer>().SetPosition( 2 , new Vector3( 0 , 0 , 0 ));
@@ -86,17 +90,19 @@ public class BeginBox : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_Cycle" , cycle);
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_Cycle" , cycle);
+    s = GetComponent<Stretch>();
 
-    if(  GetComponent<Stretch>().leftDrag.GetComponent<HoverAndRelease>().releaseEvent == true ){
+    s.leftDrag.GetComponent<Renderer>().material.SetFloat("_Cycle" , cycle);
+    s.rightDrag.GetComponent<Renderer>().material.SetFloat("_Cycle" , cycle);
+
+    if(  s.leftDrag.GetComponent<HoverAndRelease>().releaseEvent == true ){
       audioSource.clip = hitClipArray[1];
       //audioSource.pitch = .5f;
       holdSource.volume = 0;
       audioSource.Play();
     }
 
-    if(  GetComponent<Stretch>().rightDrag.GetComponent<HoverAndRelease>().releaseEvent == true ){
+    if(  s.rightDrag.GetComponent<HoverAndRelease>().releaseEvent == true ){
       audioSource.clip = hitClipArray[1];
       //audioSource.pitch = .5f;
       audioSource.Play();
@@ -113,6 +119,95 @@ public class BeginBox : MonoBehaviour {
 
 
 
+    //makeSureInSpace(){}
+
+
+
+    if( s.leftDrag.transform.position.x < PF.minMaxPlayArea.x &&
+        s.rightDrag.transform.position.x < PF.minMaxPlayArea.x
+      ){ 
+
+      if(s.leftDrag.transform.position.x >= s.rightDrag.transform.position.x ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.right * 1);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.right * 1);
+      }
+
+     
+    }
+
+    if( s.leftDrag.transform.position.x > PF.minMaxPlayArea.y &&
+        s.rightDrag.transform.position.x > PF.minMaxPlayArea.y
+      ){ 
+
+     
+
+      if(s.leftDrag.transform.position.x <= s.rightDrag.transform.position.x ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.left * 1);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.left * 1);
+      }
+    }
+
+    if( s.leftDrag.transform.position.z < PF.minMaxPlayArea.z &&
+        s.rightDrag.transform.position.z < PF.minMaxPlayArea.z
+      ){ 
+
+     
+      if(s.leftDrag.transform.position.z >= s.rightDrag.transform.position.z ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * 1);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * 1);
+      }
+    }
+
+    if( s.leftDrag.transform.position.z > PF.minMaxPlayArea.w &&
+        s.rightDrag.transform.position.z > PF.minMaxPlayArea.w
+      ){ 
+
+      if(s.leftDrag.transform.position.z <= s.rightDrag.transform.position.z ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * -1);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * -1);
+      }
+    }
+
+    if( s.leftDrag.transform.position.y > 2.3f &&
+        s.rightDrag.transform.position.y > 2.3f
+      ){ 
+
+      if(s.leftDrag.transform.position.y <= s.rightDrag.transform.position.y ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.up * -1);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.up * -1);
+      }
+    }
+
+    if( s.leftDrag.transform.position.y < 0.2f &&
+        s.rightDrag.transform.position.y < 0.2f
+      ){ 
+
+      if(s.leftDrag.transform.position.y >= s.rightDrag.transform.position.y ){
+        s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.up * 3);
+      }else{
+        s.rightDrag.GetComponent<Rigidbody>().AddForce( Vector3.up * 3);
+      }
+    }
+
+
+    /*if( s.leftDrag.transform.position.x > PF.minMaxPlayArea.y ){ 
+      s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.left * .1f);
+    }
+
+    if( s.leftDrag.transform.position.z < PF.minMaxPlayArea.z ){ 
+      s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * -.1f);
+    }
+
+    if( s.leftDrag.transform.position.z > PF.minMaxPlayArea.w ){ 
+      s.leftDrag.GetComponent<Rigidbody>().AddForce( Vector3.forward * .1f);
+    }*/
+
+
 
 
     /*
@@ -120,12 +215,12 @@ public class BeginBox : MonoBehaviour {
       Making sure we grow with proper drag
 
     */
-    if( GetComponent<Stretch>().leftDrag.GetComponent<MoveByController>().moving == true ){
+    if( s.leftDrag.GetComponent<MoveByController>().moving == true ){
       firstMovement = 1;
       holdSource.volume = .3f;
     }
 
-    if( GetComponent<Stretch>().rightDrag.GetComponent<MoveByController>().moving == true ){
+    if( s.rightDrag.GetComponent<MoveByController>().moving == true ){
       firstMovement = 2;
       holdSource.volume = .3f;
     }
@@ -133,24 +228,40 @@ public class BeginBox : MonoBehaviour {
       holdSource.volume = .3f;
     }
 
-    holdSource.pitch = (.5f + cycle * .5f) / GetComponent<Stretch>().length;
+    holdSource.pitch = (PF.cyclePitch) / s.length;
 
-    if( begun == false && firstMovement == 2 && GetComponent<Stretch>().rightDrag.GetComponent<MoveByController>().moving == false ){
+    if( begun == false && firstMovement == 2 && s.rightDrag.GetComponent<MoveByController>().moving == false ){
       Begin();
     }
 
-    if( begun == false && firstMovement == 1 && GetComponent<Stretch>().leftDrag.GetComponent<MoveByController>().moving == false ){
+    if( begun == false && firstMovement == 1 && s.leftDrag.GetComponent<MoveByController>().moving == false ){
       Begin();
     }
 
 
-    /*if( GetComponent<MoveByController>().moving == true ){
-      moving = true;
+    if( GetComponent<MoveByController>().inside == true && GetComponent<Collider>().enabled == true ){
+      SteamVR_TrackedObject tObj =  GetComponent<MoveByController>().insideGO.transform.parent.transform.gameObject.GetComponent<SteamVR_TrackedObject>();
+      var device = SteamVR_Controller.Input((int)tObj.index);
+      short size = (short)(100 * ( 1 + secondVal * 6 + beginVal));
+      if( secondVal < .5 ){
+          device.TriggerHapticPulse(300);
+        }else{
+          device.TriggerHapticPulse(600);
+        }
+
+      if(  GetComponent<MoveByController>().secondInsideGO != null){
+        SteamVR_TrackedObject tObj2 =  GetComponent<MoveByController>().secondInsideGO.transform.parent.transform.gameObject.GetComponent<SteamVR_TrackedObject>();
+        var device2 = SteamVR_Controller.Input((int)tObj2.index);
+
+        if( secondVal < .5 ){
+          device2.TriggerHapticPulse(300);
+        }else{
+          device2.TriggerHapticPulse(600);
+        }
+
+      }
     }
 
-    if( GetComponent<MoveByController>().moving == true ){
-      moving = true;
-    }*/
 
 
     if( canBeginSS == true && begunSS == false && GetComponent<MoveByController>().moving == true ){
@@ -186,24 +297,28 @@ public class BeginBox : MonoBehaviour {
 
   public void BeginEnter(){
 
-    audioSource.pitch = .5f + cycle * .5f;
+    
+
+    float basePitch = PF.cyclePitch;
+    float octave = Mathf.Floor( Random.Range(0,.99f) * 2 ) + 1;
+    audioSource.pitch = octave;
     audioSource.clip = enterClip;
     audioSource.Play();
 
     entering = true;
-    targetScale = new Vector3( targetScale.x , targetScale.y , GetComponent<Stretch>().length);
+    targetScale = new Vector3( targetScale.x , targetScale.y , s.length);
     beginMag = (targetScale - transform.localScale).magnitude;
 
   
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().enabled = true;
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().enabled = true;
-     GetComponent<Stretch>().leftDrag.GetComponent<Collider>().enabled = true;
-    GetComponent<Stretch>().rightDrag.GetComponent<Collider>().enabled = true;
+    s.leftDrag.GetComponent<Renderer>().enabled = true;
+    s.rightDrag.GetComponent<Renderer>().enabled = true;
+     s.leftDrag.GetComponent<Collider>().enabled = true;
+    s.rightDrag.GetComponent<Collider>().enabled = true;
 
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
-    GetComponent<Stretch>().setPosition();
+    s.leftDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
+    s.rightDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
+    s.setPosition();
 
     GetComponent<LineRenderer>().enabled = true;
    
@@ -226,13 +341,13 @@ public class BeginBox : MonoBehaviour {
       entered = true;
       entering = false;
 
-      GetComponent<Stretch>().leftDrag.GetComponent<MoveByController>().enabled = true;
-      GetComponent<Stretch>().leftDrag.GetComponent<Wrench>().enabled = true;
-      GetComponent<Stretch>().leftDrag.GetComponent<HitAndHoldPlay>().enabled = true;
+      s.leftDrag.GetComponent<MoveByController>().enabled = true;
+      s.leftDrag.GetComponent<Wrench>().enabled = true;
+      s.leftDrag.GetComponent<HitAndHoldPlay>().enabled = true;
 
-      GetComponent<Stretch>().rightDrag.GetComponent<MoveByController>().enabled = true;
-      GetComponent<Stretch>().rightDrag.GetComponent<Wrench>().enabled = true;
-      GetComponent<Stretch>().rightDrag.GetComponent<HitAndHoldPlay>().enabled = true;
+      s.rightDrag.GetComponent<MoveByController>().enabled = true;
+      s.rightDrag.GetComponent<Wrench>().enabled = true;
+      s.rightDrag.GetComponent<HitAndHoldPlay>().enabled = true;
 
           
     }
@@ -247,9 +362,22 @@ public class BeginBox : MonoBehaviour {
     Vector3 m = (targetScale - transform.localScale);
     beginVal += .02f;
 
+    if( beginVal == .04f ){ 
+
+      print("PALS");
+
+      float basePitch = PF.cyclePitch;
+      float octave = Mathf.Pow( 2, Mathf.Floor( s.length * 2 ));
+      audioSource.pitch = octave;
+      audioSource.clip = beginClip;
+      audioSource.Play();
+
+    }
+
+
     //GetComponent<Renderer>().material.setFloat("_BeginVal", beginVal);
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
+    s.leftDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
+    s.rightDrag.GetComponent<Renderer>().material.SetFloat("_BeginVal", beginVal);
 
     GetComponent<LineRenderer>().SetPosition( 0 , new Vector3( 0 , 0 , (1 - beginVal) * .6f ));
     GetComponent<LineRenderer>().SetPosition( 2 , new Vector3( 0 , 0 , (1 - beginVal) * -.6f ));
@@ -279,17 +407,25 @@ public class BeginBox : MonoBehaviour {
     begunSS = true;
     beginningSS = true;
     willBeginSS = false;
-    audioSource.pitch = .5f + cycle * .5f;
-    audioSource.clip = secondClip;
-    audioSource.Play();
+
+    
   }
 
   public void BeginningSS(){
 
     secondVal += .01f;
+    if( secondVal == .04f ){ 
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+      float basePitch = PF.cyclePitch;
+    float octave = Mathf.Pow( 2, Mathf.Floor( s.length * 5 ));
+    audioSource.pitch = octave;
+    audioSource.clip = secondClip;
+    audioSource.Play();
+
+    }
+
+    s.leftDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+    s.rightDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
 
     GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
 
@@ -312,11 +448,12 @@ public class BeginBox : MonoBehaviour {
 
 
       if( canBeginPop == true && popping == false ){
+
         popping = true;
         secondVal = 0;
         GetComponent<Collider>().enabled = false;
 
-        audioSource.pitch = .5f + cycle * .5f;
+        audioSource.pitch = PF.cyclePitch;
         audioSource.clip = popClip;
         audioSource.Play();
 
@@ -324,8 +461,10 @@ public class BeginBox : MonoBehaviour {
 
       //  int whichHit = Random.Range(0,hitClipArray.Length);
         //print( whichHit );
-        audioSource.pitch = .5f + cycle * .5f;
-        audioSource.clip = hitClipArray[0];
+        float basePitch = PF.cyclePitch;
+        float octave = Mathf.Pow( 2, Mathf.Floor( s.length * 3 ));
+        audioSource.pitch = basePitch * octave;
+        audioSource.clip = hitClipArray[2];
         audioSource.Play();
 
       }
@@ -366,8 +505,8 @@ public class BeginBox : MonoBehaviour {
     entering = false;
     enteredVal = 0;
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+    s.leftDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
+    s.rightDrag.GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
 
     GetComponent<Renderer>().material.SetFloat("_SecondVal", secondVal);
     GetComponent<Collider>().enabled = false;
@@ -398,17 +537,17 @@ public class BeginBox : MonoBehaviour {
 
   public void FinishSS(){
 
-    GetComponent<Stretch>().leftDrag.GetComponent<Renderer>().enabled = false;
-    GetComponent<Stretch>().leftDrag.GetComponent<Collider>().enabled = false;
-    GetComponent<Stretch>().leftDrag.GetComponent<MoveByController>().enabled = false;
-    GetComponent<Stretch>().leftDrag.GetComponent<Wrench>().enabled = false;
-    GetComponent<Stretch>().leftDrag.GetComponent<HitAndHoldPlay>().enabled = false;
+    s.leftDrag.GetComponent<Renderer>().enabled = false;
+    s.leftDrag.GetComponent<Collider>().enabled = false;
+    s.leftDrag.GetComponent<MoveByController>().enabled = false;
+    s.leftDrag.GetComponent<Wrench>().enabled = false;
+    s.leftDrag.GetComponent<HitAndHoldPlay>().enabled = false;
 
-    GetComponent<Stretch>().rightDrag.GetComponent<Renderer>().enabled = false;
-    GetComponent<Stretch>().rightDrag.GetComponent<Collider>().enabled = false;
-    GetComponent<Stretch>().rightDrag.GetComponent<MoveByController>().enabled = false;
-    GetComponent<Stretch>().rightDrag.GetComponent<Wrench>().enabled = false;
-    GetComponent<Stretch>().rightDrag.GetComponent<HitAndHoldPlay>().enabled = false;
+    s.rightDrag.GetComponent<Renderer>().enabled = false;
+    s.rightDrag.GetComponent<Collider>().enabled = false;
+    s.rightDrag.GetComponent<MoveByController>().enabled = false;
+    s.rightDrag.GetComponent<Wrench>().enabled = false;
+    s.rightDrag.GetComponent<HitAndHoldPlay>().enabled = false;
 
 
     GetComponent<LineRenderer>().enabled = false;
@@ -417,18 +556,18 @@ public class BeginBox : MonoBehaviour {
 
   public void Begin(){
     
-    targetScale = new Vector3( targetScale.x , targetScale.y , GetComponent<Stretch>().length);
+    targetScale = new Vector3( targetScale.x , targetScale.y , s.length);
     beginMag = (targetScale - transform.localScale).magnitude;
 
-    GetComponent<Stretch>().setPosition();
+    s.setPosition();
     //GetComponent<Renderer>().enabled = true;
 
     beginning = true;
     begun = true;
     transform.localScale = new Vector3(0,0,0);
 
-    audioSource.clip = beginClip;
-    audioSource.Play();
+    //audioSource.clip = beginClip;
+    //audioSource.Play();
 
   }
 

@@ -9,6 +9,8 @@ public class Pillows : MonoBehaviour {
   public GameObject Pillow;
   public GameObject Node;
 
+
+
   // How the donut looks
   public Shader shader;
 
@@ -62,7 +64,8 @@ public class Pillows : MonoBehaviour {
 
   private float[] shapesActive;
 
-  
+  public float tallestPoint = 0;
+  public float widestPoint = 0;
  
 
   struct Shape{
@@ -209,6 +212,10 @@ public class Pillows : MonoBehaviour {
     pillowsPopped = 0;
     allPillowsPopped = true;
 
+
+    tallestPoint = 0;
+    widestPoint = 0;
+
     for( int i = 0; i < Shapes.Length; i++ ){
 
       if( Shapes[i].GetComponent<BeginBox>().begun == false ){ allBlocksStarted = false; }
@@ -221,7 +228,29 @@ public class Pillows : MonoBehaviour {
       hoveredVals[i] = Shapes[i].GetComponent<BeginBox>().hovered;
       jiggleVals[i] = Shapes[i].GetComponent<BeginBox>().jiggleVal;
 
+      if( Shapes[i].GetComponent<Stretch>().leftDrag.transform.position.y > tallestPoint ){
+        tallestPoint = Shapes[i].GetComponent<Stretch>().leftDrag.transform.position.y;
+      }
+
+      if( Shapes[i].GetComponent<Stretch>().rightDrag.transform.position.y > tallestPoint ){
+        tallestPoint = Shapes[i].GetComponent<Stretch>().rightDrag.transform.position.y;
+      }
+
+      Vector3 p = Shapes[i].GetComponent<Stretch>().leftDrag.transform.position;
+      Vector3 nP = new Vector3(p.x , 0 , p.z);
+      if( nP.magnitude > widestPoint ){ widestPoint = nP.magnitude; }
+
+      p = Shapes[i].GetComponent<Stretch>().rightDrag.transform.position;
+      nP = new Vector3(p.x , 0 , p.z);
+      if( nP.magnitude > widestPoint ){ widestPoint = nP.magnitude; }
+
+
+
+
+
     }
+
+    print( widestPoint );
 
     //_startedBuffer.SetData(startedVals);
 
@@ -257,12 +286,13 @@ public class Pillows : MonoBehaviour {
 
       Shapes[i] = Instantiate( Pillow , Vector3.Scale( Random.insideUnitSphere , new Vector3( .8f , .5f , .8f )) + new Vector3( 0 , 1.5f , 0 ) , Random.rotation) as GameObject;
       Shapes[i].GetComponent<Stretch>().node = Node;
-      Shapes[i].GetComponent<BeginBox>().hitClipArray = GetComponent<HitClipArray>().hitClipArray;
+      //Shapes[i].GetComponent<BeginBox>().hitClipArray = GetComponent<HitClipArray>().hitClipArray;
 
       //print( "noadsassinged");
 
       Vector3 v = Random.insideUnitSphere;
       Shapes[i].GetComponent<BeginBox>().targetScale = new Vector3( .2f , .2f , Random.Range( .05f , .1f ) );
+      Shapes[i].GetComponent<BeginBox>().PF = PF;// new Vector3( .2f , .2f , Random.Range( .05f , .1f ) );
 
       Shapes[i].GetComponent<Renderer>().material.SetTexture("_CubeMap" , cubeMap );
       Shapes[i].GetComponent<Renderer>().enabled = false;
@@ -270,6 +300,24 @@ public class Pillows : MonoBehaviour {
     }
 
   }
+/*
+  void checkForConnections(){
+
+    for( int i = 0; i < NumShapes; i++ ){
+
+      for( int j = i+1; j < NumShapes; j++ ){
+
+        GameObject s1 = Shapes[i];
+        GameObject s2 = Shapes[j];
+
+
+
+
+      }
+    }
+
+
+  }*/
 
 
 
@@ -288,6 +336,7 @@ public class Pillows : MonoBehaviour {
       material.SetBuffer("buf_Points", _vertBuffer);
       //forcePass.SetBuffer( _kernelforce , "shapeBuffer"   , _inverseShapeBuffer );
       material.SetBuffer("shapeBuffer", _inverseShapeBuffer );
+      material.SetBuffer("shape2Buffer", _shapeBuffer );
 
       material.SetFloat( "_FullEnd" , PF.fullEnd );
       material.SetFloat( "_ClothDown" , PF.clothDown );
@@ -567,8 +616,10 @@ public class Pillows : MonoBehaviour {
 
     }
 
-    _shapeBuffer.SetData(shapeValues);
-    _inverseShapeBuffer.SetData(inverseShapeValues);
+    if( _shapeBuffer != null){
+      _shapeBuffer.SetData(shapeValues);
+      _inverseShapeBuffer.SetData(inverseShapeValues);
+    }
 
   }
 

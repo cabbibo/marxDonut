@@ -16,7 +16,7 @@ public class HitAndHoldPlay : MonoBehaviour {
     holdSource.clip = holdClip;
     holdSource.spatialize = true;
     holdSource.loop = true;
-    holdSource.pitch = 2;
+    holdSource.pitch = 1;
     holdSource.volume = 0;
     holdSource.Play();
 	

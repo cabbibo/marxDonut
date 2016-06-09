@@ -33,10 +33,20 @@ TODO:
 // Cycle being set weirdly somehow?
 //all blocks are considered grab on restart?!?!
 
+//-HAPTICS
+  //-buzz when inside
+  //-click every meter ( more clicks closer ) when stretching
+  //-buzz on hit
+
+- Connect Nodes?
+//- Physics to throw?
+
+
 */
 
 public class PillowFort : MonoBehaviour {
 
+    public GameObject CameraRig;
     public GameObject AudioObject;
     public GameObject lune;
     public GameObject floor;
@@ -56,6 +66,8 @@ public class PillowFort : MonoBehaviour {
     public float cycle;
 
     public float lunarCycle;
+
+    public float cyclePitch;
 
     private AudioSource startSource;
     private AudioSource clothSource;
@@ -94,13 +106,39 @@ public class PillowFort : MonoBehaviour {
 
     public Texture2D audioTexture;
 
+    public bool fullMoon = false;
+    public bool newMoon = false;
 
+    public SteamVR_PlayArea PlayArea;
+
+    public Vector4 minMaxPlayArea;
 
     // Use this for initialization
     void Start () {
-      
 
-   
+      PlayArea = CameraRig.GetComponent<SteamVR_PlayArea>();
+
+      print( PlayArea );
+      float minX = 1000;
+      float maxX = -1000;
+      float minY = 1000;
+      float maxY = -1000;
+
+      for( int i = 0; i < PlayArea.vertices.Length; i++ ){
+        Vector3 v = PlayArea.vertices[i];
+
+        if( v.x < minX ){ minX = v.x; }
+        if( v.x > maxX ){ maxX = v.x; }
+
+        if( v.z < minY ){ minY = v.z; }
+        if( v.z > maxY ){ maxY = v.z; }
+        
+      }
+
+      minMaxPlayArea = new Vector4( minX , maxX , minY , maxY );
+
+      print("ASDSD");
+      print( minMaxPlayArea );
 
       var dt = System.DateTime.Now;
 
@@ -114,7 +152,7 @@ public class PillowFort : MonoBehaviour {
       //print( d );
       //print( y );
 
-      moonAge = MoonAge( d  , m , y );
+      moonAge = MoonAge( d, m , y );
 
       cycle = moonAge / 29;
       cycle = 1 - Mathf.Sin( cycle * Mathf.PI);
@@ -166,18 +204,29 @@ public class PillowFort : MonoBehaviour {
 
       //cycle = 1;///Mathf.Abs( Mathf.Sin( Time.time * .003f ));
 
-      if( cycle < 0.05 || cycle > .95 ){
-        special = 1;
-      }else{
-        special = 0;
-      }
+      cyclePitch = .6f + .5f * cycle;
+      cyclePitch = Mathf.Floor( cyclePitch * 100 );
+      cyclePitch /= 100;
 
+      special = 0;
+      fullMoon = false;
+      newMoon = false;
+      if( cycle < 0.05 ){
+        special = 1;
+        fullMoon = true;
+        print( "FULL");
+      }
+      if( cycle > .95 ){
+        special = 1;
+        newMoon = true;
+        print( "NEW ");
+      }
       //special = 1;
 
-      lastSource.pitch = .5f + cycle * .5f;
-      clipPlayer.pitch = .5f + cycle * .5f;
-      clothSource.pitch = .5f + cycle * .5f;
-      startSource.pitch = .5f + cycle * .5f ;
+      lastSource.pitch = cyclePitch;
+      clipPlayer.pitch = cyclePitch;
+      clothSource.pitch = cyclePitch;
+      startSource.pitch = cyclePitch ;
       
       lune.GetComponent<Lune>().cycle = cycle;
       lune.GetComponent<Lune>().moonAge = moonAge;
@@ -186,6 +235,9 @@ public class PillowFort : MonoBehaviour {
   
       floor.GetComponent<Renderer>().material.SetFloat( "_Cycle" , cycle );
       floor.GetComponent<Renderer>().material.SetFloat( "_Cycle" , cycle );
+
+      
+
 
       pillows.setCycle();
       fortCloth.setCycle();
@@ -224,7 +276,7 @@ public class PillowFort : MonoBehaviour {
       
 
       fadeIn += .001f;
-      //fadeIn += .1f;
+      fadeIn += .1f;
       //print( fadeIn );
       if( fadeIn > 1 ){ 
         fadeIn = 1; 
@@ -365,6 +417,11 @@ public class PillowFort : MonoBehaviour {
       floor.GetComponent<Renderer>().material.SetFloat("_ClothDown",clothDown);
       floor.GetComponent<Renderer>().material.SetFloat("_Disappear",disappearVal);
       floor.GetComponent<Renderer>().material.SetTexture("_Audio", audioTexture);
+      floor.GetComponent<Renderer>().material.SetVector( "_Hand1"   , handBufferInfo.GetComponent<HandBuffer>().Hands[0].GetComponent<controllerInfo>().position);
+      floor.GetComponent<Renderer>().material.SetFloat( "_Trigger1" , handBufferInfo.GetComponent<HandBuffer>().Hands[0].GetComponent<controllerInfo>().triggerVal );
+      floor.GetComponent<Renderer>().material.SetVector( "_Hand2"   , handBufferInfo.GetComponent<HandBuffer>().Hands[1].GetComponent<controllerInfo>().position);
+      floor.GetComponent<Renderer>().material.SetFloat( "_Trigger2" , handBufferInfo.GetComponent<HandBuffer>().Hands[1].GetComponent<controllerInfo>().triggerVal );
+
     }
 
     private void releaseCloth(){

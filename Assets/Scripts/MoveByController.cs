@@ -8,7 +8,7 @@ public class MoveByController : MonoBehaviour {
   public bool moving;
   public bool maintainVelocity;
 
-  private bool inside;
+  public bool inside;
   private Vector3 oPos;
   private Vector3[] posArray = new Vector3[3];
   private Vector3 vel;
@@ -16,8 +16,8 @@ public class MoveByController : MonoBehaviour {
   private Quaternion relQuat;
   private Vector3 relPos;
 
-  private GameObject insideGO;
-  private GameObject secondInsideGO;
+  public GameObject insideGO;
+  public GameObject secondInsideGO;
   public GameObject movingController;
 
 
@@ -36,10 +36,15 @@ public class MoveByController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+
     if( moving == true ){
       for( int i  = 2; i > 0; i --){
         posArray[i] = posArray[i-1];
       }
+
+
+
       posArray[0] = insideGO.transform.position;
      
      // vel = oPos - pos;
@@ -121,7 +126,7 @@ public class MoveByController : MonoBehaviour {
         vel += ( posArray[i] - posArray[i+1] );
       }
       vel /= 3;
-      print( vel );
+//      print( vel );
       GetComponent<Rigidbody>().velocity = vel * 200.0f;
       GetComponent<Rigidbody>().isKinematic = false; //= vel * 120.0f;
 
@@ -173,6 +178,11 @@ public class MoveByController : MonoBehaviour {
       if( insideGO != Other.gameObject ){
         secondInsideGO = Other.gameObject;
       }
+
+      SteamVR_TrackedObject tObj = Other.transform.parent.transform.gameObject.GetComponent<SteamVR_TrackedObject>();
+      var device = SteamVR_Controller.Input((int)tObj.index);
+      device.TriggerHapticPulse(1000);
+      
       //}
       //print( insideGO );
     }
@@ -180,11 +190,25 @@ public class MoveByController : MonoBehaviour {
 
   void OnTriggerExit(Collider Other){
     if( Other.tag == "Hand" ){ 
+
+
+
       
-      if( Other.gameObject == insideGO && secondInsideGO == null){
-        inside = false;
-        insideGO = null;
+      if( Other.gameObject == insideGO ){
+        if( moving == false ){
+          if( secondInsideGO == null ){
+            inside = false;
+            insideGO = null;
+          }else{
+            //inside = false;
+            insideGO = secondInsideGO;
+            secondInsideGO = null;
+
+          }
+        }
       }
+
+    
 
       if( Other.gameObject == secondInsideGO ){
         secondInsideGO = null;

@@ -40,6 +40,7 @@
 
             uniform int _NumberSteps;
             uniform int _NumberHands;
+            uniform int _NumShapes;
 			uniform int _Fade;
 
             uniform sampler2D _Audio;
@@ -82,6 +83,7 @@
             
             StructuredBuffer<Vert> buf_Points;
             StructuredBuffer<Shape> shapeBuffer;
+            StructuredBuffer<Shape> shape2Buffer;
             StructuredBuffer<Hand> handBuffer;
             
 
@@ -105,6 +107,8 @@
                 float3 debug    : TEXCOORD3;
                 float2 uv       : TEXCOORD4;
                 float secondVal : TEXCOORD6;
+
+                float insideBox : TEXCOORD8;
 
                 float life 			: TEXCOORD5;
             };
@@ -159,6 +163,28 @@
                 return fID;
 
             }
+
+        float sdBox( float3 p, float3 b , float3 s ){
+                          float3 d = abs(p) - b;
+                          float x = max( d.x / s.x , 0 );
+                          float y = max( d.y / s.y , 0 );
+                          float z = max( d.z / s.z , 0 );
+                          return min(max(x,max(y,z)),0.0) +
+                                 length(max(d/s,0.0));
+                        }
+            float boxDistance( float3 p , float4x4 m ){
+    float3 s = float3(  length( float3( m[0][0] , m[0][1] , m[0][2] ) ),
+                        length( float3( m[1][0] , m[1][1] , m[1][2] ) ),
+                        length( float3( m[2][0] , m[2][1] , m[2][2] ) ) );
+        //p *= s;
+    float4 q = (mul( m , float4( p.x , p.y , p.z , 1. )));
+
+
+
+
+    return sdBox( q.xyz , float3( .55 , .55 ,  .55) , s);
+
+}
            
 
             //Our vertex function simply fetches a point from the buffer corresponding to the vertex index
@@ -252,6 +278,8 @@
 
                 o.worldPos = lerp( triPos , v.pos , o.started + s.jiggleVal * .001 ); ///mul( worldMat , float4( v.pos , 1.) ).xyz;
 
+
+
                 //if( _Large == 1 ){ o.worldPos *= 5; }
                 o.eye = _WorldSpaceCameraPos - o.worldPos;
 
@@ -267,6 +295,29 @@
                 o.eye = _WorldSpaceCameraPos - o.worldPos;
 
                 o.pos = mul (UNITY_MATRIX_VP, float4(o.worldPos,1.0f));
+                float3 p = o.worldPos;
+                int closeID = 0;
+                float f = 10000;
+
+                for( int i = 0; i < _NumShapes; i++){
+
+                    if( i != int( v.boxID ) ){
+
+                        if( shape2Buffer[i].active ){
+
+                            float l = boxDistance( p , shape2Buffer[i].mat );
+                            ///col.x = l * .1;
+                            if( l < f ){
+                                f = l;
+                                closeID = i;
+                            }
+                        }
+
+                    }
+
+
+                }
+                o.insideBox = f;
 
 
 
@@ -324,6 +375,8 @@
                 col /= .1 + length( i.worldPos ) * length( i.worldPos ) * .5;
 
                 //col = aCol;
+
+                if( i.insideBox < 0.01 ){ col = lerp( col , col *(fNorm * .5 + .5) * 2 , 0  + .5 * i.started);}// float3( 1,1,1);}
 
              
                 

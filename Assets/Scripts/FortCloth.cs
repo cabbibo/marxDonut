@@ -182,11 +182,49 @@ public class FortCloth : MonoBehaviour {
       
       int numVertsTotal = (ribbonWidth-1) * 3 * 2 * (ribbonLength-1);
 
-      if( PF.special == 1){
+      if( PF.special == 1 ){
 
         material.SetPass(0);
 
-        material.SetInt("_Large" , 1 );
+        material.SetInt( "_Large" , 0 );
+        material.SetBuffer("buf_Points", _vertBuffer);
+        material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
+
+        material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+        material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
+
+        material.SetFloat( "_FullEnd" , PF.fullEnd );
+        material.SetFloat("_ClothDown" , PF.clothDown );
+     
+        material.SetInt( "_RibbonWidth"  , ribbonWidth  );
+        material.SetInt( "_RibbonLength" , ribbonLength );
+        material.SetInt( "_TotalVerts"   , vertexCount  );
+        material.SetInt( "_NumShapes"   , PF.pillows.Shapes.Length  );
+
+        material.SetFloat("_Special" , PF.special );
+        material.SetTexture( "_NormalMap" , normalMap);
+        material.SetTexture( "_CubeMap"  , cubeMap );
+
+        material.SetMatrix("worldMat", transform.localToWorldMatrix);
+        material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+        if( PF.newMoon == true ){
+          Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
+        }
+
+        if( PF.fullMoon == true ){
+          Graphics.DrawProcedural(MeshTopology.Lines, numVertsTotal);
+        }
+
+        material.SetPass(0);
+
+        if( PF.newMoon == true ){
+          material.SetInt("_Large" , 1 );
+        }
+
+        if( PF.fullMoon == true ){
+          material.SetInt("_Large" , 2 );
+        }
 
         material.SetBuffer("buf_Points", _vertBuffer);
         material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
@@ -211,45 +249,37 @@ public class FortCloth : MonoBehaviour {
 
         Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
 
+
+        
+
+      }else{
+
+        material.SetPass(0);
+        material.SetInt("_Large" , 0 );
+        material.SetBuffer("buf_Points", _vertBuffer);
+        material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
+
+        material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
+        material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
+
+        material.SetFloat( "_FullEnd" , PF.fullEnd );
+        material.SetFloat("_ClothDown" , PF.clothDown );
+     
+        material.SetInt( "_RibbonWidth"  , ribbonWidth  );
+        material.SetInt( "_RibbonLength" , ribbonLength );
+        material.SetInt( "_TotalVerts"   , vertexCount  );
+        material.SetInt( "_NumShapes"   , PF.pillows.Shapes.Length  );
+
+        material.SetFloat("_Special" , PF.special );
+        material.SetTexture( "_NormalMap" , normalMap);
+        material.SetTexture( "_CubeMap"  , cubeMap );
+
+        material.SetMatrix("worldMat", transform.localToWorldMatrix);
+        material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
+
+        Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
       }
 
-      material.SetPass(0);
-      material.SetInt("_Large" , 0 );
-      material.SetBuffer("buf_Points", _vertBuffer);
-      material.SetBuffer("shapeBuffer", PF.pillows._shapeBuffer);
-
-      material.SetInt( "_NumberHands"   , PF.handBufferInfo.GetComponent<HandBuffer>().numberHands );
-      material.SetBuffer( "handBuffer"  , PF.handBufferInfo.GetComponent<HandBuffer>()._handBuffer );
-
-      material.SetFloat( "_FullEnd" , PF.fullEnd );
-      material.SetFloat("_ClothDown" , PF.clothDown );
-   
-      material.SetInt( "_RibbonWidth"  , ribbonWidth  );
-      material.SetInt( "_RibbonLength" , ribbonLength );
-      material.SetInt( "_TotalVerts"   , vertexCount  );
-      material.SetInt( "_NumShapes"   , PF.pillows.Shapes.Length  );
-
-      material.SetFloat("_Special" , PF.special );
-      material.SetTexture( "_NormalMap" , normalMap);
-      material.SetTexture( "_CubeMap"  , cubeMap );
-
-      material.SetMatrix("worldMat", transform.localToWorldMatrix);
-      material.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
-
-      Graphics.DrawProcedural(MeshTopology.Triangles, numVertsTotal);
-
-      
-
-      debugMaterial.SetPass(0);
-
-      debugMaterial.SetBuffer("buf_Points", _vertBuffer);
-
-      debugMaterial.SetInt( "_RibbonWidth"  , ribbonWidth  );
-      debugMaterial.SetInt( "_RibbonLength" , ribbonLength );
-      debugMaterial.SetInt( "_TotalVerts"   , vertexCount  );
-
-      debugMaterial.SetMatrix("worldMat", transform.localToWorldMatrix);
-      debugMaterial.SetMatrix("invWorldMat", transform.worldToLocalMatrix);
 
     }
 
