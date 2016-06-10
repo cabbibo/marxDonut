@@ -376,7 +376,7 @@
 
                 //col = aCol;
 
-                if( i.insideBox < 0.01 ){ col = lerp( col , col *(fNorm * .5 + .5) * 2 , 0  + .5 * i.started);}// float3( 1,1,1);}
+                if( i.insideBox < 0.02 ){ col = lerp( col , col * float3( 1. , .6 , .1) * 2 , 0  + (.5 * i.started) * min(( .02 - i.insideBox) * 100, 1));}// float3( 1,1,1);}
 
              
                 

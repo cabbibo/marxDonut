@@ -285,8 +285,9 @@ Shader "Custom/Gound" {
 
         //col += aCol;
 
+        col = clamp( col , float3( 0,0,0) , float3( 2, 2,2));
 
-
+        col = col * .5f;
 
 
         fixed4 color;

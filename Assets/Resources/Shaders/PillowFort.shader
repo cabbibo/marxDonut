@@ -247,31 +247,31 @@ float boxDistance( float3 p , float4x4 m ){
                 for( int j = 0; j < _NumShapes; j++ ){
        
 
-  								float l = boxDistance( p , shapeBuffer[j].mat );
+					float l = boxDistance( p , shapeBuffer[j].mat );
 
-  								///col.x = l * .1;
-                                if( l < f ){
-                                    f = l;
-                                    closest = j;
-                                }
-  								
-
-
-
-  							}
+					///col.x = l * .1;
+                    if( l < f ){
+                        f = l;
+                        closest = j;
+                    }
+    					
 
 
 
-  							if( f  < 0 ){ col = i.nor; }else{ 
-  								col = col * (1 / (f * 6. + .1 ));
+				}
 
-                                if( shapeBuffer[closest].hovered > 0 ){
-                                    float3 fullCol = float3( .5 , .8 , 1.6 );
-                                    float3 noCol = float3( 1.5 , 1 , .6 );
 
-                                    col = lerp( col , col * lerp( fullCol , noCol , _Cycle ), clamp(1 - f * 2, 0,1));
-                                }
-  							}// / max( .5 , f / 5);} //float3( .1 / f , 0 , 0 );}
+
+				if( f  < 0 ){ col = i.nor; }else{ 
+					col = col * (1 / (f * f * 40 + .6 ));
+
+                    if( shapeBuffer[closest].hovered > 0 ){
+                        float3 fullCol = float3( .5 , .8 , 1.6 );
+                        float3 noCol = float3( 1.5 , 1 , .6 );
+    
+                        col = lerp( col , col * lerp( fullCol , noCol , _Cycle ), clamp(1 - f * 2, 0,1));
+                    }
+				}// / max( .5 , f / 5);} //float3( .1 / f , 0 , 0 );}
   							//col /= max(0.04 , f* 2);
 
   							float match = (1-abs(dot( -normalize(i.eye) , fNorm )));
